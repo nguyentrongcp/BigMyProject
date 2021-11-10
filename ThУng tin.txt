@@ -1,0 +1,10 @@
+Mẫu dữ liệu trả về:
+{
+    sess: 0 (Có thuộc tính này nếu phiên đăng nhập hết hạn),
+    succ: 0 or 1 (0: fail, 1: success),
+    type: loại thông báo,
+    noti: thông báo,
+    mess: thông báo lỗi,
+    erro: thông báo lỗi trong form,
+    data: {...} dữ liệu
+}

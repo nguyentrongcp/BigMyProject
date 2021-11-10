@@ -1,0 +1,20 @@
+body.swal2-toast-shown .swal2-container.swal2-loading {
+    top: 0 !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    transform: unset !important;
+    width: 100%;
+    pointer-events: unset;
+    padding: 0.625rem;
+}
+body.swal2-toast-shown .swal2-container.swal2-loading.swal2-backdrop-show {
+    background: rgba(0,0,0,.4);
+}
+.swal2-container.swal2-loading.swal2-center>.swal2-popup {
+    width: auto !important;
+    display: flex !important;
+}
+.swal2-actions button {
+    font-weight: bolder;
+}
