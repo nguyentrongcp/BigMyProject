@@ -11,6 +11,7 @@ use App\Models\DanhMuc\NhaCungCap;
 use App\Models\DanhMuc\NhanVien;
 use App\Models\Phieu;
 use App\Models\PhieuChiTiet;
+use App\Models\ThongBaoNhapHang;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -75,6 +76,9 @@ class TaoPhieuController extends Controller
             $message = $exception->getMessage();
         }
 
+        $noidung = ChiNhanh::withTrashed()->find($nhanvien->chinhanh_id,'ten')->ten."\nNCC: ".$data->doituong->ten."\n".'Người tạo: '
+            .$nhanvien->ten;
+
         foreach ($data->dshanghoa as $value) {
             if (!$continue) {
                 break;
@@ -107,6 +111,8 @@ class TaoPhieuController extends Controller
                 $message = $exception->getMessage();
                 $continue = false;
             }
+
+            $noidung .= "\n".$value->hanghoa->ten." (".$value->hanghoa->donvitinh.")    SL: ".((float) $value->soluong);
         }
 
         if (!$continue) {
@@ -119,20 +125,32 @@ class TaoPhieuController extends Controller
         }
         else {
             $phieu->update();
+            $thongbao = [
+                'chinhanh_id' => $phieu->chinhanh_id,
+                'nhanvien_id' => $phieu->nhanvien_id,
+                'nhacungcap_id' => $phieu->doituong_id,
+                'maphieu' => $phieu->maphieu,
+                'noidung' => $noidung,
+                'created_at' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s')
+            ];
+            $nhanviens = NhanVien::all('remember_token');
+            $thongbaos = [];
+            foreach($nhanviens as $item) {
+                $thongbaos[] = [
+                    'topic' => $item->remember_token,
+                    'title' => 'Phiếu nhập hàng mới',
+                    'noidung' => $noidung
+                ];
+            }
+            DB::table('thongbao_nhaphang')->insert($thongbao);
             DB::commit();
             return [
                 'succ' => 1,
                 'noti' => 'Lưu phiếu thành công.',
                 'data' => [
                     'maphieu' => $phieu->maphieu,
-                    'thongbaos' => [
-                        [
-                            'topic' => NhanVien::find('1000000000','remember_token')->remember_token,
-                            'title' => 'Phiếu nhập hàng mới',
-                            'noidung' => ChiNhanh::withTrashed()->find($nhanvien->chinhanh_id,'ten')->ten."\n".'Người tạo: '
-                                .$nhanvien->ten
-                        ]
-                    ]
+                    'thongbaos' => $thongbaos
                 ]
             ];
         }

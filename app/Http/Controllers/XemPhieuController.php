@@ -70,6 +70,17 @@ class XemPhieuController extends Controller
                         ['phieu' => $phieu, 'controls' => $controls, 'auto_print' => $auto_print]);
                 case 'NH':
                     $phieu = $this->getNH($maphieu);
+                    if ($controls->deletable) {
+                        $nhanvien_id = Funcs::getNhanVienIDByToken($_COOKIE['token']);
+                        if ($nhanvien_id != '1000000000') {
+                            if ($phieu->status == 1) {
+                                $controls->deletable = false;
+                            }
+                            elseif ($nhanvien_id != $phieu->nhanvien_id) {
+                                $controls->deletable = false;
+                            }
+                        }
+                    }
                     return view('quanly.xemphieu.nhap-hang',
                         ['phieu' => $phieu, 'controls' => $controls, 'auto_print' => $auto_print]);
                 case 'XKNB':

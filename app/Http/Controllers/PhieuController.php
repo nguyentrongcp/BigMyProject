@@ -206,9 +206,9 @@ class PhieuController extends Controller
                 $wheres['chinhanh_id'] = $chinhanh_id;
             }
         }
-        else {
-            $wheres['chinhanh_id'] = $chinhanh_id ?? $info->chinhanh_id;
-        }
+//        else {
+//            $wheres['chinhanh_id'] = $chinhanh_id ?? $info->chinhanh_id;
+//        }
         $phieus = Phieu::withTrashed()->where($wheres)
             ->whereBetween('created_at',[$begin,$end])->orderByDesc('created_at')
             ->get($options);

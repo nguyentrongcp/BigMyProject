@@ -232,6 +232,7 @@
                                 $('#inpGhiChu').val('').css('height','unset');
                                 tblHangHoa.clearData();
                                 socket.emit('send-notification',result.data.thongbaos);
+                                socket.emit('send-notification-appcu',result.data.thongbaos);
                             }
                         });
                     })

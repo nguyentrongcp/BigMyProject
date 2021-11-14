@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class ThongbaoGia extends Migration
+class ThongbaoNhaphang extends Migration
 {
     /**
      * Run the migrations.
@@ -13,14 +13,13 @@ class ThongbaoGia extends Migration
      */
     public function up()
     {
-        Schema::create('thongbao_gia', function (Blueprint $table) {
+        Schema::create('thongbao_nhaphang', function (Blueprint $table) {
             $table->increments('id');
             $table->string('chinhanh_id',10);
             $table->string('nhanvien_id',10);
-            $table->string('hanghoa_id',10);
-            $table->string('hanghoa_ma',8);
-            $table->double('giacu',12,0);
-            $table->double('giamoi',12,0);
+            $table->string('nhacungcap_id',10);
+            $table->string('maphieu');
+            $table->text('noidung');
 
             $table->dateTime('created_at');
             $table->dateTime('updated_at');
@@ -35,6 +34,6 @@ class ThongbaoGia extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('thongbao_gia');
+        Schema::dropIfExists('thongbao_nhaphang');
     }
 }
