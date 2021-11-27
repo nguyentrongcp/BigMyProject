@@ -83,17 +83,27 @@
     }
 
     function initSelDoiTuong() {
+        let results = JSON.parse('{!! $doituongs !!}');
+        let count = 0;
+        let length = results.length;
         $('#modalLapPhieu .selDoiTuong').select2({
-            ajax: {
-                url: '/api/quan-ly/danh-muc/doi-tuong/tim-kiem',
-                data: function (params) {
-                    let query = {
-                        q: params.term
-                    };
-
-                    // Query parameters will be ?search=[term]&type=public
-                    return query;
+            data: results,
+            matcher: (params, data) => {
+                let result = null;
+                // If there are no search terms, return all of the data
+                // if ($.trim(params.term) === '') {
+                //     return data;
+                // }
+                if (count < 20 && (data.slug.indexOf(convertToSlug(params.term)) > -1 || data.dienthoai.indexOf(convertToSlug(params.term)) > -1)) {
+                    result = data;
+                    count++;
                 }
+
+                if (--length === 0) {
+                    length = results.length;
+                    count = 0;
+                }
+                return result;
             },
             templateResult: (value) => {
                 if (!isUndefined(value.id)) {
@@ -101,6 +111,14 @@
                         '<span class="dienthoai text-info">' + value.dienthoai + '</span> - ' +
                         '<span>' + value.ten + '</span>' +
                         '');
+                }
+                else {
+                    return value.text;
+                }
+            },
+            templateSelection: (value) => {
+                if (convertToSlug(value.dienthoai) !== '') {
+                    return value.dienthoai + ' - ' + value.ten;
                 }
                 else {
                     return value.text;

@@ -13,6 +13,7 @@ use App\Http\Controllers\DanhMuc\KhachHangController;
 use App\Http\Controllers\DanhMuc\NhaCungCapController;
 use App\Http\Controllers\DanhMuc\NhanVienController;
 use App\Http\Controllers\DanhMuc\PhanQuyenController;
+use App\Http\Controllers\DiemDanhController;
 use App\Http\Controllers\HangHoa\GiaBanController;
 use App\Http\Controllers\HangHoa\PhatSinhTonController;
 use App\Http\Controllers\KhachTraHangController;
@@ -194,6 +195,16 @@ Route::prefix('quan-ly')->group(function() {
             Route::get('tra-cuu',[ThuChiController::class, 'tra_cuu']);
             Route::get('ket-so',[ThuChiController::class, 'ket_so']);
             Route::get('mo-so',[ThuChiController::class, 'mo_so']);
+        });
+
+        Route::prefix('diem-danh')->group(function() {
+            Route::get('check-thong-tin',[DiemDanhController::class,'check_thong_tin']);
+            Route::get('bat-dau',[DiemDanhController::class,'bat_dau']);
+            Route::get('ket-thuc',[DiemDanhController::class,'ket_thuc']);
+            Route::get('lich-su',[DiemDanhController::class,'lich_su']);
+            Route::get('danh-sach',[DiemDanhController::class,'danh_sach']);
+            Route::get('xoa',[DiemDanhController::class,'xoa']);
+            Route::get('reset',[DiemDanhController::class,'reset']);
         });
 
         Route::prefix('phieu')->group(function() {

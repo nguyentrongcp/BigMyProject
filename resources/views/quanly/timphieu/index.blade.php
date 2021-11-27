@@ -31,7 +31,6 @@
                 <div class="col" style="max-width: 400px">
                     <div class="card card-outline card-info thongtin-phieu mb-0">
                         <div class="card-body">
-                            <div class="divider my-2"></div>
                             <div class="form-group">
                                 <label>Chọn thời gian</label>
                                 <input type="text" placeholder="Từ ngày - đến ngày..." class="form-control" id="fromToDate" autocomplete="off">

@@ -326,11 +326,12 @@ class PhieuController extends Controller
             $khoanmucs[] = $phieu->khoanmuc_id;
         }
         $nhanviens = NhanVien::withTrashed()->whereIn('id',$nhanviens)->pluck('ten','id');
-        $doituongs = DoiTuong::withTrashed()->whereIn('id',$doituongs)->pluck('ten','id');
+        $_doituongs = DoiTuong::withTrashed()->whereIn('id',$doituongs)->pluck('ten','id');
         $khoanmucs = KhoanMuc::withTrashed()->whereIn('id',$khoanmucs)->pluck('ten','id');
         $khachhangs = KhachHang::withTrashed()->whereIn('id',$doituongs)->pluck('ten','id');
         foreach ($phieus as $phieu) {
-            $phieu->doituong = ($phieu->loaiphieu == 'TCNKH' || $phieu->loaiphieu == 'DCCNKH') ? ($khachhangs[$phieu->doituong_id] ?? 'Chưa rõ') : ($doituongs[$phieu->doituong_id] ?? 'Chưa rõ');
+            $phieu->doituong = ($phieu->loaiphieu == 'TCNKH' || $phieu->loaiphieu == 'DCCNKH') ?
+                ($khachhangs[$phieu->doituong_id] ?? 'Chưa rõ') : ($_doituongs[$phieu->doituong_id] ?? 'Chưa rõ');
             $phieu->nhanvien = $nhanviens[$phieu->nhanvien_id] ?? 'Chưa rõ';
             $phieu->khoanmuc = $khoanmucs[$phieu->khoanmuc_id] ?? 'Chưa rõ';
         }

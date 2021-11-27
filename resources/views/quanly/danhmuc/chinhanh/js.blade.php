@@ -201,6 +201,21 @@
             }
             @endif
 
+            menus.push({
+                label: '<i class="fa fa-qrcode text-warning"></i> Lấy mã điểm danh',
+                action: (e, cell) => {
+                    Swal.fire({
+                        title: 'Qrcode điểm danh',
+                        text: cell.getData().ten,
+                        imageUrl: '/qrcode-diemdanh/' + cell.getData().id + '.png',
+                        imageWidth: 200,
+                        imageHeight: 200,
+                        imageAlt: 'Custom image',
+                        showConfirmButton: false,
+                    })
+                }
+            });
+
             return menus;
         }
 

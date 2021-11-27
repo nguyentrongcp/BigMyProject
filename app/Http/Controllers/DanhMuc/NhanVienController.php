@@ -174,7 +174,7 @@ class NhanVienController extends Controller
 
             return [
                 'succ' => 1,
-                'noti' => 'Cập nhật thông tin cửa hàng thành công.',
+                'noti' => 'Cập nhật thông tin nhân viên thành công.',
                 'data' => [
                     'model' => $model
                 ]
@@ -183,7 +183,7 @@ class NhanVienController extends Controller
         else {
             return [
                 'succ' => 0,
-                'noti' => 'Cập nhật thông tin cửa hàng thất bại. Vui lòng thử lại sau!'
+                'noti' => 'Cập nhật thông tin nhân viên thất bại. Vui lòng thử lại sau!'
             ];
         }
     }

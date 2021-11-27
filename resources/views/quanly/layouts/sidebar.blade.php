@@ -224,6 +224,14 @@
                         <p>Tìm Phiếu</p>
                     </a>
                 </li>
+                @if($info->id == '1000000000' || $info->dienthoai == '0339883047')
+                <li class="nav-item">
+                    <a href="{{ route('danhsach-diemdanh') }}" class="nav-link{{ url()->current() == route('danhsach-diemdanh') ? ' active' : '' }}">
+                        <i class="nav-icon fa fa-users"></i>
+                        <p>Danh Sách Điểm Danh</p>
+                    </a>
+                </li>
+                @endif
                 <li class="nav-item">
                     <a href="https://ui-banhang.hailua.center/index5.php" class="nav-link" target="_blank">
                         <i class="nav-icon fa fa-arrows-h"></i>

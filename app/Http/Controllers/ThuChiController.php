@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Functions\Funcs;
 use App\Models\DanhMuc\ChiNhanh;
+use App\Models\DanhMuc\DoiTuong;
 use App\Models\DanhMuc\HangHoa;
 use App\Models\DanhMuc\KhoanMuc;
 use App\Models\Phieu;
@@ -23,10 +24,12 @@ class ThuChiController extends Controller
             $chinhanhs = ChiNhanh::where('id',$info->chinhanh_id)->get(['id','ten as text']);
         }
         $khoanmucs = KhoanMuc::all(['id','ten as text','is_khoanthu']);
+        $doituongs = DoiTuong::all(['id','ten','dienthoai','diachi','slug']);
 
         return view('quanly.thuchi.index', [
             'chinhanhs' => $chinhanhs,
-            'khoanmucs' => $khoanmucs
+            'khoanmucs' => $khoanmucs,
+            'doituongs' => $doituongs
         ]);
     }
 
@@ -178,7 +181,16 @@ class ThuChiController extends Controller
             }
             $tongcuoi = $tongcuoi + $tongthu - $tongchi;
             if ($key == 'BHM' || $key == 'BHN') {
-                array_unshift($results, [
+//                array_unshift($results, [
+//                    'tenphieu' => $tenphieu,
+//                    'loaiphieu' => $key,
+//                    'congno' => $congno,
+//                    'tongthu' => $tongthu,
+//                    'tongchi' => $tongchi,
+//                    'tongcuoi' => $tongcuoi,
+//                    'dsphieu' => $danhsach
+//                ]);
+                $results[] = [
                     'tenphieu' => $tenphieu,
                     'loaiphieu' => $key,
                     'congno' => $congno,
@@ -186,7 +198,7 @@ class ThuChiController extends Controller
                     'tongchi' => $tongchi,
                     'tongcuoi' => $tongcuoi,
                     'dsphieu' => $danhsach
-                ]);
+                ];
             }
             else {
                 $results[] = [

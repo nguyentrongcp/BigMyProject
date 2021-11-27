@@ -73,7 +73,7 @@
                     mPhieu('/quan-ly/xem-phieu/' + cell.getValue() + '?deletable=1').xemphieu(cell.getTable());
                 }}
         ];
-        if (['XKNB','NKNB','DKHH'].indexOf(loaiphieu) === -1) {
+        if (['XKNB','NKNB','DKHH','KSCN'].indexOf(loaiphieu) === -1) {
             columns.push({title: 'Đối tượng', field: 'doituong', headerSort: false});
         }
         if (['PT','PC','DCCNKH','TCNKH','KTH','BH','CCNNCC','DCCNNCC'].indexOf(loaiphieu) !== -1) {

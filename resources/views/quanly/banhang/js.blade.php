@@ -383,7 +383,7 @@
             height: '100%',
             movableColumns: false,
             pagination: 'local',
-            paginationSize: 6,
+            paginationSize: 20,
             dataFiltered: function () {
                 if (isNull(tblHangHoa) || isUndefined(tblHangHoa)) {
                     return false;

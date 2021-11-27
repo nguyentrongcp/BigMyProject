@@ -57,6 +57,14 @@
                         </div>
                     </div>
                     <div class="item">
+                        <div data-href="{{ route('mobile.lichsu-diemdanh') }}"
+                             class="{{ url()->current() == route('mobile.lichsu-diemdanh') ? ' active' : '' }}"
+                             data-title="Lịch Sử Điểm Danh">
+                            <i class="fa fa-history text-success"></i>
+                            <span>Lịch Sử Điểm Danh</span>
+                        </div>
+                    </div>
+                    <div class="item">
                         <div data-href="{{ route('mobile.hang-hoa') }}"
                              class="{{ url()->current() == route('mobile.hang-hoa') ? ' active' : '' }}"
                              data-title="Danh Mục Hàng Hóa">

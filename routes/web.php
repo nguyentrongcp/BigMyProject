@@ -36,6 +36,8 @@ Route::prefix('mobile')->group(function() {
         });
         Route::get('thu-chi', [\App\Http\Controllers\ThuChiController::class, 'mobile_index'])
             ->name('mobile.thu-chi');
+        Route::get('lichsu-diemdanh', [\App\Http\Controllers\DiemDanhController::class, 'index_lichsu'])
+            ->name('mobile.lichsu-diemdanh');
     });
 });
 
@@ -97,6 +99,8 @@ Route::prefix('quan-ly')->group(function() {
         Route::get('thu-chi',[\App\Http\Controllers\ThuChiController::class, 'index'])->name('thu-chi');
 
         Route::get('tim-phieu',[\App\Http\Controllers\TimPhieuController::class, 'index'])->name('tim-phieu');
+
+        Route::get('danhsach-diemdanh',[\App\Http\Controllers\DiemDanhController::class, 'index_danhsach'])->name('danhsach-diemdanh');
 
         Route::get('xem-phieu/{maphieu}/{auto_print?}', [\App\Http\Controllers\XemPhieuController::class, 'xem_phieu'])
             ->name('xem-phieu');

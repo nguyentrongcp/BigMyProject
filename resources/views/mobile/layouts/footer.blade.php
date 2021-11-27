@@ -21,7 +21,7 @@
 
 <script src="/giaodien/my_plugins/autosize/autosize.min.js"></script>
 
-<script src="/giaodien/dist/js/function.js?version=1.0"></script>
+<script src="/giaodien/dist/js/function.js?version=1.4"></script>
 
 @yield('js-include')
 
@@ -29,6 +29,14 @@
     initInputNumeral($('input.numeral'));
 
     let info = JSON.parse('{!! json_encode($info) !!}');
+
+    let _location = null;
+
+    if ('geolocation' in navigator) {
+        navigator.geolocation.getCurrentPosition(function (position) {
+            _location = position.coords.latitude + ',' + position.coords.longitude;
+        });
+    }
 
     $.ajaxSetup({
         headers: {
@@ -133,6 +141,9 @@
             //     break;
             case 'hanghoa':
                 initTonKhoGiaBan(data.ma,data.chinhanh_id);
+                break;
+            case 'diemdanh':
+                initDiemDanh(data.chinhanh_id);
                 break;
             // case 'dangnhap':
             //     socket.emit('dang-nhap-qrcode',_token,data)

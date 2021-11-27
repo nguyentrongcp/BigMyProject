@@ -17,17 +17,17 @@
     <input type="password" name="password" autocomplete="new-password" class="d-none">
     <!-- /.content-wrapper -->
     <!-- Main Footer -->
-    <footer class="main-footer">
-        <div class="d-flex">
-            <div>
-                <strong>Template Copyright &copy; 2014-2021 by </strong>AdminLTE.io
-            </div>
-            <div class="ml-auto">
-                <strong>Project Copyright &copy; 2021 by </strong>
-                Nguyễn Đình Trọng - <strong>Version </strong>1.0.0
-            </div>
-        </div>
-    </footer>
+{{--    <footer class="main-footer">--}}
+{{--        <div class="d-flex">--}}
+{{--            <div>--}}
+{{--                <strong>Template Copyright &copy; 2014-2021 by </strong>AdminLTE.io--}}
+{{--            </div>--}}
+{{--            <div class="ml-auto">--}}
+{{--                <strong>Project Copyright &copy; 2021 by </strong>--}}
+{{--                Nguyễn Đình Trọng - <strong>Version </strong>1.0.0--}}
+{{--            </div>--}}
+{{--        </div>--}}
+{{--    </footer>--}}
 <!-- ./wrapper -->
 </div>
 
@@ -100,33 +100,33 @@
     </div>
 </div>
 
-<div class="modal fade" id="modalTonKhoGiaBan">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Danh Sách Tồn Kho & Giá Bán</h5>
-            </div>
-            <div class="modal-body">
-                <div class="font-weight-bolder ten text-muted" style="font-size: 15px">ĐẠM PHÚ MỸ PHÂN LẠNH</div>
-                <div class="divider my-3"></div>
-                <div class="form-row">
-                    <div class="col-6 d-flex justify-content-between">
-                        <span class="text-muted">ĐƠN GIÁ:</span>
-                        <span class="dongia font-weight-bolder text-danger"></span>
-                    </div>
-                    <div class="col-6 d-flex justify-content-between">
-                        <span class="text-muted">TỒN KHO:</span>
-                        <span class="tonkho font-weight-bolder text-info"></span>
-                    </div>
-                </div>
-                <div class="boxTonKho"></div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn bg-gradient-secondary" data-dismiss="modal">Thoát</button>
-            </div>
-        </div>
-    </div>
-</div>
+{{--<div class="modal fade" id="modalTonKhoGiaBan">--}}
+{{--    <div class="modal-dialog">--}}
+{{--        <div class="modal-content">--}}
+{{--            <div class="modal-header">--}}
+{{--                <h5 class="modal-title">Danh Sách Tồn Kho & Giá Bán</h5>--}}
+{{--            </div>--}}
+{{--            <div class="modal-body">--}}
+{{--                <div class="font-weight-bolder ten text-muted" style="font-size: 15px">ĐẠM PHÚ MỸ PHÂN LẠNH</div>--}}
+{{--                <div class="divider my-3"></div>--}}
+{{--                <div class="form-row">--}}
+{{--                    <div class="col-6 d-flex justify-content-between">--}}
+{{--                        <span class="text-muted">ĐƠN GIÁ:</span>--}}
+{{--                        <span class="dongia font-weight-bolder text-danger"></span>--}}
+{{--                    </div>--}}
+{{--                    <div class="col-6 d-flex justify-content-between">--}}
+{{--                        <span class="text-muted">TỒN KHO:</span>--}}
+{{--                        <span class="tonkho font-weight-bolder text-info"></span>--}}
+{{--                    </div>--}}
+{{--                </div>--}}
+{{--                <div class="boxTonKho"></div>--}}
+{{--            </div>--}}
+{{--            <div class="modal-footer">--}}
+{{--                <button type="button" class="btn bg-gradient-secondary" data-dismiss="modal">Thoát</button>--}}
+{{--            </div>--}}
+{{--        </div>--}}
+{{--    </div>--}}
+{{--</div>--}}
 
 {{--<div class="modal fade" id="modalDoiMatKhau">--}}
 {{--    <div class="modal-dialog modal-dialog-centered">--}}

@@ -21,7 +21,7 @@
 
 <script src="/giaodien/my_plugins/autosize/autosize.min.js"></script>
 
-<script src="/giaodien/dist/js/function.js?version=1.4"></script>
+<script src="/giaodien/dist/js/function.js?version=1.5"></script>
 
 <script src="/giaodien/dist/js/socket.io.js"></script>
 

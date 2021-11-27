@@ -781,6 +781,97 @@ function initTonKhoGiaBan(hanghoa_ma, chinhanh_id = '') {
     });
 }
 
+function initDiemDanh(chinhanh_id = '1000000000') {
+    sToast.loading('Đang lấy dữ liệu. Vui lòng chờ...');
+    $.ajax({
+        url: '/api/quan-ly/diem-danh/check-thong-tin',
+        type: 'get',
+        dataType: 'json'
+    }).done((result) => {
+        if (result.succ) {
+            let data = result.data;
+            let text_diemdanh = data.checked === 0 ? 'text-primary' : (data.checked === 1 ? 'text-danger' : 'text-info');
+            let modal = $('' +
+                '<div class="modal fade" id="modalDiemDanh">' +
+                '    <div class="modal-dialog modal-dialog-centered">' +
+                '        <div class="modal-content">' +
+                '            <div class="modal-header">' +
+                '                <h5 class="modal-title font-weight-bolder w-100">Điểm danh ngày ' + doi_ngay(result.data.today) + '</h5>' +
+                '            </div>' +
+                '            <div class="modal-body">' +
+                '               <h5 class="mb-3 font-weight-bolder text-center ' + text_diemdanh + ' title">' +
+                (data.checked === 0 ? 'Bạn chưa điểm danh bắt đầu' :
+                    (data.checked === 1 ? 'Bạn chưa điểm danh kết thúc' : 'Bạn đã hoàn thành điểm danh hôm nay'))+
+                '               </h5>' +
+                '               <div class="d-flex">' +
+                '                   <h6>Thời gian bắt đầu:</h6>' +
+                '                   <h6 class="ml-auto font-weight-bolder text-primary tg_batdau">' +
+                (data.checked > 0 ? data.result.tg_batdau : '---') +
+                '                   </h6>' +
+                '               </div>' +
+                '               <div class="d-flex">' +
+                '                   <h6>Thời gian kết thúc:</h6>' +
+                '                   <h6 class="ml-auto font-weight-bolder text-danger tg_ketthuc">' +
+                (data.checked === 2 ? data.result.tg_ketthuc : '---') +
+                '                   </h6>' +
+                '               </div>' +
+                '               <div class="d-flex">' +
+                '                   <h6>Ngày công:</h6>' +
+                '                   <h6 class="ml-auto font-weight-bolder text-info ngaycong">' +
+                (data.checked === 2 ? data.result.ngaycong : 0) +
+                '                   </h6>' +
+                '               </div>' +
+                '            </div>' +
+                '            <div class="modal-footer">' +
+                (data.checked < 2 ? '<button type="button" class="btn ' + (data.checked === 0 ? 'btn-primary' : 'btn-danger') + ' submit">' +
+                (data.checked === 0 ? 'Điểm Danh Bắt Đầu' : 'Điểm Danh Kết Thúc') + '</button>' : '') +
+                '                <button type="button" class="btn bg-gradient-secondary" data-dismiss="modal">Thoát</button>' +
+                '            </div>' +
+                '        </div>' +
+                '    </div>' +
+                '</div>');
+            if (data.checked < 2) {
+                modal.find('.submit').click(() => {
+                    initActionDiemDanh(chinhanh_id,data.checked === 0)
+                })
+            }
+            modal.on('hidden.bs.modal', () => {
+                modal.remove();
+            }).modal('show');
+        }
+    });
+}
+
+function initActionDiemDanh(chinhanh_id, is_batdau = true) {
+    sToast.confirm('Xác nhận điểm danh ' + (is_batdau ? 'bắt đầu' : 'kết thúc'),'',
+        (confirmed) => {
+            if (confirmed.isConfirmed) {
+                sToast.loading('Đang xử lý dữ liệu. Vui lòng chờ...');
+                $.ajax({
+                    url: '/api/quan-ly/diem-danh/' + (is_batdau ? 'bat-dau' : 'ket-thuc'),
+                    type: 'get',
+                    data: {
+                        chinhanh_id, toado: _location
+                    },
+                    dataType: 'json'
+                }).done((result) => {
+                    if (result.succ) {
+                        if (is_batdau) {
+                            $('#modalDiemDanh .tg_batdau').text(result.data.tg_batdau);
+                            $('#modalDiemDanh .title').removeClass('text-primary').addClass('text-danger').text('Bạn chưa điểm danh kết thúc');
+                        }
+                        else {
+                            $('#modalDiemDanh .tg_ketthuc').text(result.data.tg_ketthuc);
+                            $('#modalDiemDanh .ngaycong').text(result.data.ngaycong);
+                            $('#modalDiemDanh .title').removeClass('text-danger').addClass('text-info').text('Bạn đã hoàn thành điểm danh hôm nay');
+                        }
+                        $('#modalDiemDanh .submit').remove();
+                    }
+                });
+            }
+        })
+}
+
 function initThongBaoGia() {
     $('#boxThongBaoGia').empty();
     $.ajax({
