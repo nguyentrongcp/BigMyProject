@@ -62,6 +62,8 @@ Route::prefix('quan-ly')->group(function() {
                 ->name('danh-muc.doi-tuong');
             Route::get('phan-quyen', [\App\Http\Controllers\DanhMuc\PhanQuyenController::class, 'index'])
                 ->name('danh-muc.phan-quyen');
+            Route::get('chuc-vu', [\App\Http\Controllers\DanhMuc\ChucVuController::class, 'index'])
+                ->name('danh-muc.chuc-vu');
         });
 
         Route::get('ban-hang', [\App\Http\Controllers\BanHangController::class, 'index'])->name('ban-hang');

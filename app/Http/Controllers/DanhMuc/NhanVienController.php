@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Models\DanhMuc\ChiNhanh;
 use App\Models\DanhMuc\ChucVu;
 use App\Models\DanhMuc\NhanVien;
+use App\Models\DanhMuc\PhanQuyen;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -49,6 +50,55 @@ class NhanVienController extends Controller
         $nhanviens = NhanVien::orderBy('chucvu')->get(['id','ten','dienthoai','chucvu']);
 
         return $nhanviens;
+    }
+
+    public function danhsach_phanquyen(Request $request) {
+        $id = $request->id;
+        $results = PhanQuyen::orderBy('stt')->get(['id','stt','ten','chucnang','loai','ghichu']);
+        $phanquyens = NhanVien::find($id,'phanquyen');
+        if ($phanquyens == null) {
+            return [
+                'succ' => 0,
+                'noti' => 'Dữ liệu đầu vào không hợp lệ!'
+            ];
+        }
+        $phanquyens = json_decode($phanquyens->phanquyen) ?? [];
+        foreach($results as $result) {
+            if (in_array($result->id,$phanquyens) !== false) {
+                $result->checked = true;
+            }
+        }
+
+        return [
+            'succ' => 1,
+            'data' => $results
+        ];
+    }
+
+    public function phan_quyen(Request $request) {
+        $id = $request->id;
+        $phanquyens = json_decode($request->phanquyens);
+        $nhanvien = NhanVien::find($id,['id','phanquyen','quyendacbiet','quyenloaibo','chucvu']);
+        $chucvu = ChucVu::where('loai',$nhanvien->chucvu)->first('phanquyen');
+        $chucvu->phanquyen = json_decode($chucvu->phanquyen) ?? [];
+
+        $nhanvien->phanquyen = json_encode($phanquyens);
+        $nhanvien->quyenloaibo = json_encode(array_diff($chucvu->phanquyen,$phanquyens));
+        $nhanvien->quyendacbiet = json_encode(array_diff($phanquyens,$chucvu->phanquyen));
+
+        if ($nhanvien->update()) {
+            event(new Pusher('reload-info-'.$id,''));
+            return [
+                'succ' => 1,
+                'noti' => 'Cập nhật phân quyền nhân viên thành công.'
+            ];
+        }
+        else {
+            return [
+                'succ' => 0,
+                'noti' => 'Cập nhật phân quyền thất bại!'
+            ];
+        }
     }
 
     public function them_moi(Request $request) {
