@@ -12,16 +12,45 @@
         { id: 'Hạt', text: 'Hạt' }
     ]
     init();
-    @if($info->id == '1000000000')
-    initDonViTinh();
-    initNhom();
-    initDang();
-    actionThemMoi();
-    @endif
     initDanhSach();
     initTblQuyDoi();
 
     function init() {
+        $('#btnLamMoi').click(() => {
+            tblDanhSach.setData('/api/quan-ly/danh-muc/hang-hoa/danh-sach');
+        })
+        $('#modalQuyDoi .btnLamMoi').click(() => {
+            tblQuyDoi.setData('/api/quan-ly/danh-muc/hang-hoa/danhmuc-quydoi');
+        });
+
+        @if($info->id != '1000000000')
+        $('#modalXem .col-thongtin i').remove();
+        @endif
+    }
+
+    @if(in_array('danh-muc.hang-hoa.them-moi',$info->phanquyen) !== false)
+    function actionThemMoi() {
+        nhoms.forEach((value) => {
+            value.id = value.text;
+        })
+        $('#modalThemMoi .selNhom').select2({
+            data: nhoms
+        })
+
+        donvitinhs.forEach((value) => {
+            value.id = value.text;
+        });
+        $('#modalThemMoi .selDonViTinh, #modalThemQuyDoi .selDonViQuyDoi').select2({
+            data: donvitinhs
+        })
+
+        $('#modalThemMoi .selDang').select2({
+            data: dangs,
+            minimumResultsForSearch: -1,
+            allowClear: true,
+            placeholder: 'Dạng hàng hóa...'
+        }).val(null).trigger('change');
+
         $('#modalThemMoi input, #modalThemMoi textarea, #modalThemQuyDoi input').keypress(function(e) {
             let keyCode = e.keyCode || e.which;
             if (keyCode === 13) {
@@ -36,7 +65,7 @@
             }
         });
 
-        $('input').on('input', function () {
+        $('#modalThemMoi input').on('input', function () {
             if ($(this).hasClass('is-invalid')) {
                 $(this).removeClass('is-invalid');
             }
@@ -48,55 +77,8 @@
             $(this).find('.is-invalid').removeClass('is-invalid');
         })
 
-        $('#modalThemQuyDoi').on('shown.bs.modal', function() {
-            $(this).find('.inpTenQuyDoi').focus();
-        })
-
-        $('#btnLamMoi').click(() => {
-            tblDanhSach.setData('/api/quan-ly/danh-muc/hang-hoa/danh-sach');
-        })
-        $('#modalQuyDoi .btnLamMoi').click(() => {
-            tblQuyDoi.setData('/api/quan-ly/danh-muc/hang-hoa/danhmuc-quydoi');
-        });
-
         autosize($('#modalThemMoi textarea'));
 
-        @if($info->id != '1000000000')
-        $('#modalXem .col-thongtin i').remove();
-        @endif
-    }
-
-    @if($info->id == '1000000000')
-    function initDonViTinh() {
-        donvitinhs.forEach((value) => {
-            value.id = value.text;
-        });
-
-        $('#modalThemMoi .selDonViTinh, #modalThemQuyDoi .selDonViQuyDoi').select2({
-            data: donvitinhs
-        })
-    }
-
-    function initNhom() {
-        nhoms.forEach((value) => {
-            value.id = value.text;
-        })
-
-        $('#modalThemMoi .selNhom').select2({
-            data: nhoms
-        })
-    }
-
-    function initDang() {
-        $('#modalThemMoi .selDang').select2({
-            data: dangs,
-            minimumResultsForSearch: -1,
-            allowClear: true,
-            placeholder: 'Dạng hàng hóa...'
-        }).val(null).trigger('change');
-    }
-
-    function actionThemMoi() {
         $('#modalThemMoi .btnSubmit').click(() => {
             let ten = $('#modalThemMoi .inpTen').val().trim();
             let mamoi = $('#modalThemMoi .inpMa').val().trim();
@@ -371,6 +353,10 @@
     }
 
     function initTblQuyDoi() {
+        $('#modalThemQuyDoi').on('shown.bs.modal', function() {
+            $(this).find('.inpTenQuyDoi').focus();
+        })
+
         let contextMenu = (cell) => {
             @if($info->id == '1000000000')
             let menus = [

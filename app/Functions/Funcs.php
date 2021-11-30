@@ -3,6 +3,7 @@
 namespace App\Functions;
 
 use App\Models\DanhMuc\NhanVien;
+use App\Models\DanhMuc\PhanQuyen;
 use App\Models\DanhMuc\QuyDoi;
 use App\Models\HangHoaChiTiet;
 use App\Models\Phieu;
@@ -104,6 +105,32 @@ class Funcs
         $chinhanh = self::getNhanVienByToken($token,['chinhanh_id']);
 
         return $chinhanh == null ? null : $chinhanh->chinhanh_id;
+    }
+
+    public static function getPhanQuyenByIDPhanQuyen($ids) {
+        if (!is_array($ids)) {
+            $ids = json_decode($ids) ?? [];
+        }
+        return PhanQuyen::whereIn('id',$ids)->orderBy('stt')->pluck('ma')->toArray();
+    }
+
+    public static function getUrlPhanQuyenByIDPhanQuyen($ids) {
+        if (!is_array($ids)) {
+            $ids = json_decode($ids) ?? [];
+        }
+        return PhanQuyen::whereIn('id',$ids)->whereNotNull('url')->pluck('url')->toArray();
+    }
+
+    public static function getPhanQuyenByID($id) {
+        $phanquyens = NhanVien::find($id,'phanquyen');
+
+        return self::getPhanQuyenByIDPhanQuyen($phanquyens->phanquyen);
+    }
+
+    public static function getPhanQuyenByToken($token) {
+        $phanquyens = self::getNhanVienByToken($token,['phanquyen']);
+
+        return self::getPhanQuyenByIDPhanQuyen($phanquyens->phanquyen);
     }
 
     public static function checkRememberToken($token) {

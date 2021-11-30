@@ -183,7 +183,7 @@ class PhanQuyenController extends Controller
         if ($field == 'url') {
             $value = mb_strtolower($value);
         }
-        $model->$field = $value;
+        $model->$field = $value == '' ? null : $value;
 
         if ($model->save()) {
             return [

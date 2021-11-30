@@ -24,7 +24,15 @@ class RoleQuanLy
         }
 
         if (Funcs::checkRememberToken($token)) {
-            $info = Funcs::getNhanVienByToken($token,['chinhanh_id']);
+            $info = Funcs::getNhanVienByToken($token,['chinhanh_id','phanquyen']);
+            $urls = Funcs::getUrlPhanQuyenByIDPhanQuyen($info->phanquyen);
+            $currentUrl = str_replace(url()->to('/').'/','',url()->current());
+            if (strpos($currentUrl,'quan-ly/xem-phieu') !== false) {
+                $currentUrl = 'quan-ly/xem-phieu';
+            }
+            if (in_array($currentUrl,$urls) === false) {
+                abort(404);
+            }
 
             if (!$info->isChiNhanhAvailable()) {
                 abort(401);

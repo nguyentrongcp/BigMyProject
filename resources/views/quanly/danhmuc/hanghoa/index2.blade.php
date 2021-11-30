@@ -42,7 +42,7 @@
                         <span></span>
                     </div>
                 </div>
-                @if(url()->current() == route('danh-muc.hang-hoa') && $info->id == '1000000000')
+                @if(url()->current() == route('danh-muc.hang-hoa') && in_array('role.gia-nhap',$info->phanquyen) !== false)
                 <div class="divider my-3"></div>
                 <div class="col-thongtin" data-field="gianhap" data-title="Giá nhập">
                     <strong>Giá nhập <i class="fa fa-edit text-info edit"></i></strong>
@@ -66,7 +66,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                @if(url()->current() == route('danh-muc.hang-hoa') && $info->id == '1000000000')
+                @if(url()->current() == route('danh-muc.hang-hoa') && in_array('danh-muc.hang-hoa.action',$info->phanquyen) !== false)
                 <button type="button" class="btn bg-gradient-danger delete mr-auto">Xóa Thông Tin</button>
                 @endif
                 <button type="button" class="btn bg-gradient-secondary" data-dismiss="modal">Thoát</button>

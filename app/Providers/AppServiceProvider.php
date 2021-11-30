@@ -31,6 +31,8 @@ class AppServiceProvider extends ServiceProvider
             if ($info != null) {
                 $info->setTenChiNhanh();
                 $info->setChucVu();
+                $info->urls = Funcs::getUrlPhanQuyenByIDPhanQuyen($info->phanquyen);
+                $info->phanquyen = Funcs::getPhanQuyenByIDPhanQuyen($info->phanquyen);
                 View::share([
                     'info' => $info
                 ]);

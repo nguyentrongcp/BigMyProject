@@ -15,7 +15,7 @@ class DanhmucPhanquyen extends Migration
     {
         Schema::create('danhmuc_phanquyen', function (Blueprint $table) {
             $table->string('id',10)->primary();
-            $table->float('stt',4);
+            $table->float('stt',5);
             $table->string('ma');
             $table->string('ten');
             $table->string('loai');

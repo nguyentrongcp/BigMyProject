@@ -462,15 +462,15 @@
         let _data = JSON.parse(JSON.stringify(data));
         if (isChinhSua) {
             $('#modalPhanQuyen .btnChinhSua').off('click').addClass('d-none');
-            $('#modalPhanQuyen .btnCancel').removeClass('d-none').click(() => {
+            $('#modalPhanQuyen .btnCancel').off('click').removeClass('d-none').click(() => {
                 initDanhSachPhanQuyen(data,id);
             });
-            $('#modalPhanQuyen .btnSubmit').removeClass('d-none').click(() => {
+            $('#modalPhanQuyen .btnSubmit').off('click').removeClass('d-none').click(() => {
                 actionPhanQuyen(id);
             })
         }
         else {
-            $('#modalPhanQuyen .btnChinhSua').removeClass('d-none').click(() => {
+            $('#modalPhanQuyen .btnChinhSua').off('click').removeClass('d-none').click(() => {
                 initDanhSachPhanQuyen(_data,id,true);
             })
             $('#modalPhanQuyen .btnCancel, #modalPhanQuyen .btnSubmit').off('click').addClass('d-none');
@@ -579,7 +579,7 @@
                 setTimeout(() => {tblDanhSach.getColumns()[0].updateDefinition()},10);
             }
         });
-        initSearchTable(tblDanhSach,['ten','chucnang']);
+        initSearchTable(tblPhanQuyen,['ten','chucnang']);
 
         let soQuyen = 0;
         _data.forEach((value) => {

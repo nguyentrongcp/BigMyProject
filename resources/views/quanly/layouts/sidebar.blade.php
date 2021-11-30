@@ -35,6 +35,7 @@
                 <!-- Add icons to the links using the .nav-icon class
                      with font-awesome or any other icon font library -->
                 <li class="nav-header">DANH MỤC CHỨC NĂNG</li>
+                @if(in_array('ban-hang',$info->phanquyen) !== false)
                 <li class="nav-item">
                     <a href="{{ route('ban-hang') }}" class="nav-link{{ url()->current() == route('ban-hang') ? ' active' : '' }}">
                         <i class="nav-icon fa fa-shopping-cart"></i>
@@ -44,12 +45,19 @@
                         </p>
                     </a>
                 </li>
+                @endif
+                @if(in_array('khach-tra-hang',$info->phanquyen) !== false)
                 <li class="nav-item">
                     <a href="{{ route('khach-tra-hang') }}" class="nav-link{{ url()->current() == route('khach-tra-hang') ? ' active' : '' }}">
                         <i class="nav-icon fa fa-cart-arrow-down"></i>
                         <p>Khách Trả Hàng</p>
                     </a>
                 </li>
+                @endif
+                @if(in_array('danh-muc.hang-hoa',$info->phanquyen) !== false || in_array('danh-muc.chi-nhanh',$info->phanquyen) !== false ||
+                    in_array('danh-muc.nhan-vien',$info->phanquyen) !== false || in_array('danh-muc.khach-hang',$info->phanquyen) !== false ||
+                    in_array('danh-muc.nha-cung-cap',$info->phanquyen) !== false || in_array('danh-muc.doi-tuong',$info->phanquyen) !== false ||
+                    in_array('danh-muc.phan-quyen',$info->phanquyen) !== false || in_array('danh-muc.chuc-vu',$info->phanquyen) !== false)
                 <li class="nav-item has-treeview">
                     <a href="#" class="nav-link">
                         <i class="nav-icon fa fa-bars"></i>
@@ -59,31 +67,39 @@
                         </p>
                     </a>
                     <ul class="nav nav-treeview">
+                        @if(in_array('danh-muc.hang-hoa',$info->phanquyen) !== false)
                         <li class="nav-item">
                             <a href="{{ route('danh-muc.hang-hoa') }}" class="nav-link{{ url()->current() == route('danh-muc.hang-hoa') ? ' active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Hàng Hóa</p>
                             </a>
                         </li>
+                        @endif
+                        @if(in_array('danh-muc.chi-nhanh',$info->phanquyen) !== false)
                         <li class="nav-item">
                             <a href="{{ route('danh-muc.chi-nhanh') }}" class="nav-link{{ url()->current() == route('danh-muc.chi-nhanh') ? ' active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Cửa Hàng</p>
                             </a>
                         </li>
+                        @endif
+                        @if(in_array('danh-muc.nhan-vien',$info->phanquyen) !== false)
                         <li class="nav-item">
                             <a href="{{ route('danh-muc.nhan-vien') }}" class="nav-link{{ url()->current() == route('danh-muc.nhan-vien') ? ' active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Nhân Viên</p>
                             </a>
                         </li>
+                        @endif
+                        @if(in_array('danh-muc.khach-hang',$info->phanquyen) !== false)
                         <li class="nav-item">
                             <a href="{{ route('danh-muc.khach-hang') }}" class="nav-link{{ url()->current() == route('danh-muc.khach-hang') ? ' active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Khách Hàng</p>
                             </a>
                         </li>
-                        @if($info->id == '1000000000')
+                        @endif
+                        @if(in_array('danh-muc.nha-cung-cap',$info->phanquyen) !== false)
                         <li class="nav-item">
                             <a href="{{ route('danh-muc.nha-cung-cap') }}" class="nav-link{{ url()->current() == route('danh-muc.nha-cung-cap') ? ' active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
@@ -91,19 +107,15 @@
                             </a>
                         </li>
                         @endif
+                        @if(in_array('danh-muc.doi-tuong',$info->phanquyen) !== false)
                         <li class="nav-item">
                             <a href="{{ route('danh-muc.doi-tuong') }}" class="nav-link{{ url()->current() == route('danh-muc.doi-tuong') ? ' active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Đối Tượng</p>
                             </a>
                         </li>
-                        @if($info->id == '1000000000')
-{{--                            <li class="nav-item">--}}
-{{--                                <a href="{{ route('nhap-hang.danh-sach') }}" class="nav-link{{ url()->current() == route('nhap-hang.danh-sach') ? ' active' : '' }}">--}}
-{{--                                    <i class="far fa-circle nav-icon"></i>--}}
-{{--                                    <p>Danh Sách</p>--}}
-{{--                                </a>--}}
-{{--                            </li>--}}
+                        @endif
+                        @if(in_array('danh-muc.phan-quyen',$info->phanquyen) !== false)
                         <li class="nav-item">
                             <a href="{{ route('danh-muc.phan-quyen') }}" class="nav-link{{ url()->current() == route('danh-muc.phan-quyen') ? ' active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
@@ -111,27 +123,39 @@
                             </a>
                         </li>
                         @endif
+                        @if(in_array('danh-muc.chuc-vu',$info->phanquyen) !== false)
+                        <li class="nav-item">
+                            <a href="{{ route('danh-muc.chuc-vu') }}" class="nav-link{{ url()->current() == route('danh-muc.chuc-vu') ? ' active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Chức Vụ</p>
+                            </a>
+                        </li>
+                        @endif
                     </ul>
                 </li>
+                @endif
+                @if(in_array('nhap-hang',$info->phanquyen) !== false || in_array('nhap-hang.danh-sach',$info->phanquyen) !== false)
                 <li class="nav-item has-treeview">
                     <a href="#" class="nav-link">
                         <i class="nav-icon fa fa-plus"></i>
                         <p>
                             Nhập Hàng
                             <i class="right fas fa-angle-left"></i>
-                            @if($info->id == '1000000000')
+                            @if(in_array('nhap-hang',$info->phanquyen) !== false)
                             <span class="right badge badge-danger" id="lblSoPhieuNhap"></span>
                             @endif
                         </p>
                     </a>
                     <ul class="nav nav-treeview">
+                        @if(in_array('nhap-hang',$info->phanquyen) !== false)
                         <li class="nav-item">
                             <a href="{{ route('nhap-hang.tao-phieu') }}" class="nav-link{{ url()->current() == route('nhap-hang.tao-phieu') ? ' active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Tạo Phiếu</p>
                             </a>
                         </li>
-                        @if($info->id == '1000000000')
+                        @endif
+                        @if(in_array('nhap-hang.danh-sach',$info->phanquyen) !== false)
                         <li class="nav-item">
                             <a href="{{ route('nhap-hang.danh-sach') }}" class="nav-link{{ url()->current() == route('nhap-hang.danh-sach') ? ' active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
@@ -141,30 +165,42 @@
                         @endif
                     </ul>
                 </li>
+                @endif
+                @if(in_array('chuyenkho-noibo.xuat-kho',$info->phanquyen) !== false || in_array('chuyenkho-noibo.nhap-kho',$info->phanquyen) !== false)
                 <li class="nav-item has-treeview">
                     <a href="#" class="nav-link">
                         <i class="nav-icon fa fa-truck"></i>
                         <p>
                             Chuyển Kho Nội Bộ
                             <i class="right fas fa-angle-left"></i>
+                            @if(in_array('chuyenkho-noibo.nhap-kho',$info->phanquyen) !== false)
                             <span class="right badge badge-danger" id="lblSoPhieuXuatKho"></span>
+                            @endif
                         </p>
                     </a>
                     <ul class="nav nav-treeview">
+                        @if(in_array('chuyenkho-noibo.xuat-kho',$info->phanquyen) !== false)
                         <li class="nav-item">
                             <a href="{{ route('xuatkho-noibo') }}" class="nav-link{{ url()->current() == route('xuatkho-noibo') ? ' active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Xuất Kho</p>
                             </a>
                         </li>
+                        @endif
+                        @if(in_array('chuyenkho-noibo.nhap-kho',$info->phanquyen) !== false)
                         <li class="nav-item">
                             <a href="{{ route('nhapkho-noibo') }}" class="nav-link{{ url()->current() == route('nhapkho-noibo') ? ' active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Nhập Kho</p>
                             </a>
                         </li>
+                        @endif
                     </ul>
                 </li>
+                @endif
+                @if(in_array('hang-hoa.ton-kho',$info->phanquyen) !== false || in_array('chuyenkho-noibo.gia-ban',$info->phanquyen) !== false ||
+                    in_array('chuyenkho-noibo.phat-sinh-ton',$info->phanquyen) !== false || in_array('chuyenkho-noibo.so-luong-ban',$info->phanquyen) !== false ||
+                    in_array('chuyenkho-noibo.qrcode',$info->phanquyen) !== false)
                 <li class="nav-item has-treeview">
                     <a href="#" class="nav-link">
                         <i class="nav-icon fa fa-barcode"></i>
@@ -174,13 +210,15 @@
                         </p>
                     </a>
                     <ul class="nav nav-treeview">
+                        @if(in_array('hang-hoa.ton-kho',$info->phanquyen) !== false)
                         <li class="nav-item">
                             <a href="{{ route('hang-hoa.ton-kho') }}" class="nav-link{{ url()->current() == route('hang-hoa.ton-kho') ? ' active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Tồn Kho</p>
                             </a>
                         </li>
-                        @if($info->id == '1000000000')
+                        @endif
+                        @if(in_array('hang-hoa.gia-ban',$info->phanquyen) !== false)
                         <li class="nav-item">
                             <a href="{{ route('hang-hoa.gia-ban') }}"
                                class="nav-link{{ url()->current() == route('hang-hoa.gia-ban') ? ' active' : '' }}">
@@ -189,6 +227,7 @@
                             </a>
                         </li>
                         @endif
+                        @if(in_array('hang-hoa.phat-sinh-ton',$info->phanquyen) !== false)
                         <li class="nav-item">
                             <a href="{{ route('hang-hoa.phat-sinh-ton') }}"
                                class="nav-link{{ url()->current() == route('hang-hoa.phat-sinh-ton') ? ' active' : '' }}">
@@ -196,6 +235,8 @@
                                 <p>Phát Sinh Tồn</p>
                             </a>
                         </li>
+                        @endif
+                        @if(in_array('hang-hoa.so-luong-ban',$info->phanquyen) !== false)
                         <li class="nav-item">
                             <a href="{{ route('hang-hoa.so-luong-ban') }}"
                                class="nav-link{{ url()->current() == route('hang-hoa.so-luong-ban') ? ' active' : '' }}">
@@ -203,6 +244,8 @@
                                 <p>Số Lượng Bán</p>
                             </a>
                         </li>
+                        @endif
+                        @if(in_array('hang-hoa.qrcode',$info->phanquyen) !== false)
                         <li class="nav-item">
                             <a href="{{ route('hang-hoa.qrcode') }}"
                                class="nav-link{{ url()->current() == route('hang-hoa.qrcode') ? ' active' : '' }}">
@@ -210,21 +253,27 @@
                                 <p>In Qrocde</p>
                             </a>
                         </li>
+                        @endif
                     </ul>
                 </li>
+                @endif
+                @if(in_array('thu-chi',$info->phanquyen) !== false)
                 <li class="nav-item">
                     <a href="{{ route('thu-chi') }}" class="nav-link{{ url()->current() == route('thu-chi') ? ' active' : '' }}">
                         <i class="nav-icon fa fa-money-bill-alt"></i>
                         <p>Thu Chi</p>
                     </a>
                 </li>
+                @endif
+                @if(in_array('tim-phieu',$info->phanquyen) !== false)
                 <li class="nav-item">
                     <a href="{{ route('tim-phieu') }}" class="nav-link{{ url()->current() == route('tim-phieu') ? ' active' : '' }}">
                         <i class="nav-icon fa fa-search"></i>
                         <p>Tìm Phiếu</p>
                     </a>
                 </li>
-                @if($info->id == '1000000000' || $info->dienthoai == '0339883047')
+                @endif
+                @if(in_array('diem-danh.danh-sach',$info->phanquyen) !== false)
                 <li class="nav-item">
                     <a href="{{ route('danhsach-diemdanh') }}" class="nav-link{{ url()->current() == route('danhsach-diemdanh') ? ' active' : '' }}">
                         <i class="nav-icon fa fa-users"></i>

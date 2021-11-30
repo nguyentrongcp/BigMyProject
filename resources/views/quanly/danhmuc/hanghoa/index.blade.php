@@ -31,7 +31,7 @@
                                     <button class="btn bg-gradient-info font-weight-bolder ml-1" data-toggle="modal" data-target="#modalQuyDoi">
                                         Danh Mục Quy Đổi
                                     </button>
-                                    @if($info->id == '1000000000')
+                                    @if(in_array('danh-muc.hang-hoa.them-moi',$info->phanquyen) !== false)
                                     <button class="btn bg-gradient-primary font-weight-bolder ml-1" data-toggle="modal" data-target="#modalThemMoi">
                                         Thêm Mới
                                     </button>
@@ -46,7 +46,7 @@
         </section>
     </div>
 
-    @if($info->id == '1000000000')
+    @if(in_array('danh-muc.hang-hoa.them-moi',$info->phanquyen) !== false)
     <div class="modal fade" id="modalThemMoi">
         <div class="modal-dialog modal-dialog-scrollable">
             <div class="modal-content">
@@ -133,6 +133,8 @@
             </div>
         </div>
     </div>
+    @endif
+    @if(in_array('danh-muc.hang-hoa.quy-doi',$info->phanquyen) !== false)
     <div class="modal fade" id="modalThemQuyDoi">
         <div class="modal-dialog modal-dialog-scrollable">
             <div class="modal-content">
