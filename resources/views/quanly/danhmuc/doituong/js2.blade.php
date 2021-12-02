@@ -1,8 +1,7 @@
 <script>
-    init();
-    actionThemMoi();
-
-    function init() {
+    @if(in_array('danh-muc.doi-tuong.them-moi',$info->phanquyen) !== false)
+    initActionThemMoi();
+    function initActionThemMoi() {
         $('#modalThemMoi input, #modalThemMoi textarea').on('input', function () {
             if ($(this).hasClass('is-invalid')) {
                 $(this).removeClass('is-invalid');
@@ -28,9 +27,7 @@
         })
 
         initDiaChi($('#modalThemMoi .diachi-container'));
-    }
 
-    function actionThemMoi() {
         $('#modalThemMoi .btnSubmit').click(() => {
             let ten = $('#modalThemMoi .inpTen').val().trim();
             let dienthoai = $('#modalThemMoi .inpDienThoai').val().trim();
@@ -84,6 +81,7 @@
             });
         });
     }
+    @endif
 
     function showError(type, erro = '') {
         let inputs = {

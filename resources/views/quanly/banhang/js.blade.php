@@ -2,7 +2,7 @@
     let tblHangHoa;
     let tblDanhSachPhieu;
     let tblLichSu;
-    let nhanviens = JSON.parse('{!! $nhanviens !!}');
+    let nhanviens = JSON.parse('{!! str_replace("'","\'",json_encode($nhanviens)) !!}');
     let views = localStorage.getItem('banhang.views');
     views = isNull(views) ? {} : JSON.parse(views);
     init();
@@ -53,6 +53,11 @@
 
         $('#modalXemHH .col-thongtin i').remove();
 
+        @if(in_array('danh-muc.khach-hang.chinh-sua',$info->phanquyen) === false)
+        $('#modalXemKH .col-thongtin i').remove();
+        @endif
+
+        @if(in_array('danh-muc.khach-hang.thu-cong-no',$info->phanquyen) === false)
         $('#modalThuCongNo').on('shown.bs.modal', function() {
             $(this).find('.inpSoTien').focus();
         }).on('hidden.bs.modal', function() {
@@ -75,73 +80,52 @@
                 $(this).removeClass('is-invalid');
             }
         });
+        @endif
     }
 
-    function initSelHangHoa(isFirst = false) {
-        let action = (results) => {
-            let count = 0;
-            let length = results.length;
-            $('#selHangHoa').html(null).select2({
-                data: results,
-                dropdownCssClass : 'select2-hanghoa',
-                matcher: (params, data) => {
-                    let result = null;
-                    // If there are no search terms, return all of the data
-                    // if ($.trim(params.term) === '') {
-                    //     return data;
-                    // }
-                    if (count < 20 && (data.slug.indexOf(convertToSlug(params.term)) > -1 || data.ma.indexOf(convertToSlug(params.term)) > -1)) {
-                        result = data;
-                        count++;
-                    }
+    function initSelHangHoa() {
+        $('#selHangHoa').html(null).select2({
+            ajax: {
+                url: '/api/quan-ly/ban-hang/tim-kiem',
+                data: function (params) {
+                    let query = {
+                        q: params.term
+                    };
 
-                    if (--length === 0) {
-                        length = results.length;
-                        count = 0;
-                    }
-                    return result;
+                    // Query parameters will be ?search=[term]&type=public
+                    return query;
                 },
-                templateResult: (value) => {
-                    if (!isUndefined(value.ma)) {
-                        return $('' +
-                            '<div>' + value.ma + ' - ' + value.ten + '</div>' +
-                            '<div class="form-row">' +
-                            '   <div class="col-6">' +
-                            '       <div>Tồn kho: <strong class="float-right tonkho text-info">' + parseFloat(value.tonkho) + '</strong></div>' +
-                            '   </div>' +
-                            '   <div class="col-6">' +
-                            '       <div>Giá bán: <strong class="float-right giaban text-danger">' + numeral(value.dongia).format('0,0') + '</strong></div>' +
-                            '   </div>' +
-                            '</div>');
-                    }
-                    else {
-                        return value.text;
-                    }
-                },
-                templateSelection: (value) => {
-                    if (!isUndefined(value.ma)) {
-                        return value.ma + ' - ' + value.ten;
-                    }
-                    else {
-                        return value.text;
-                    }
-                },
-                allowClear: true,
-                placeholder: 'Chọn hàng hóa...'
-            }).val(null).trigger('change');
-        }
-        if (!isFirst) {
-            $.ajax({
-                url: '/api/quan-ly/ban-hang/danh-sach',
-                type: 'get',
-                dataType: 'json'
-            }).done((results) => {
-                action(results);
-            });
-        }
-        else {
-            action(JSON.parse('{!! $hanghoas !!}'));
-        }
+                delay: 250
+            },
+            dropdownCssClass : 'select2-hanghoa',
+            templateResult: (value) => {
+                if (!isUndefined(value.ma)) {
+                    return $('' +
+                        '<div>' + value.ma + ' - ' + value.ten + '</div>' +
+                        '<div class="form-row">' +
+                        '   <div class="col-6">' +
+                        '       <div>Tồn kho: <strong class="float-right tonkho text-info">' + parseFloat(value.tonkho) + '</strong></div>' +
+                        '   </div>' +
+                        '   <div class="col-6">' +
+                        '       <div>Giá bán: <strong class="float-right giaban text-danger">' + numeral(value.dongia).format('0,0') + '</strong></div>' +
+                        '   </div>' +
+                        '</div>');
+                }
+                else {
+                    return value.text;
+                }
+            },
+            templateSelection: (value) => {
+                if (!isUndefined(value.ma)) {
+                    return value.ma + ' - ' + value.ten;
+                }
+                else {
+                    return value.text;
+                }
+            },
+            allowClear: true,
+            placeholder: 'Chọn hàng hóa...'
+        });
     }
 
     function initActionThemHangHoa() {
@@ -173,14 +157,16 @@
                 giamgia, soluong,
                 thanhtien: soluong * (parseFloat(hanghoa.dongia) - giamgia)
             }
-            tblHangHoa.addData(dataTable, true);
+            tblHangHoa.addData(dataTable,true).then(() => {
+                tblHangHoa.getColumns()[0].updateDefinition()
+            });
 
             $('#boxHangHoa input').val('').trigger('input');
             $('#selHangHoa').val(null).trigger('change').focus().select2('open');
         })
     }
 
-    function initSelKhachHang(data = null) {
+    function initSelKhachHang() {
         $('#selKhachHang').html(null).select2({
             ajax: {
                 url: '/api/quan-ly/danh-muc/khach-hang/tim-kiem',
@@ -191,7 +177,8 @@
 
                     // Query parameters will be ?search=[term]&type=public
                     return query;
-                }
+                },
+                delay: 250
             },
             templateResult: (value) => {
                 if (!isUndefined(value.id)) {
@@ -222,11 +209,11 @@
     }
 
     function initSelNhanVien() {
-        $('#selNhanVienTuVan').select2({
-            data: nhanviens,
+        initSelect2($('#selNhanVienTuVan'),nhanviens,{
             allowClear: true,
-            placeholder: info.dienthoai + ' - ' + info.ten
-        }).val(null).trigger('change');
+            placeholder: info.dienthoai + ' - ' + info.ten,
+            defaultText: ['dienthoai','ten']
+        });
     }
 
     function initTblHangHoa() {
@@ -382,13 +369,8 @@
             ],
             height: '100%',
             movableColumns: false,
-            pagination: 'local',
-            paginationSize: 20,
-            dataFiltered: function () {
-                if (isNull(tblHangHoa) || isUndefined(tblHangHoa)) {
-                    return false;
-                }
-                setTimeout(() => {tblHangHoa.getColumns()[0].updateDefinition()},10);
+            dataChanged: () => {
+                tblHangHoa.getColumns()[0].updateDefinition();
                 actionTinhTien();
             }
         });
@@ -567,6 +549,7 @@
         })
     }
 
+    @if(in_array('danh-muc.khach-hang.thu-cong-no',$info->phanquyen) !== false)
     function actionThuCongNo(khachhang) {
         let modal = $('#modalThuCongNo');
         modal.find('.inpMa').val(khachhang.ma);
@@ -632,6 +615,7 @@
 
         modal.modal('show');
     }
+    @endif
 
     function actionTinhTien() {
         let tongthanhtien = 0;
@@ -755,9 +739,6 @@
         for (let col of $('#modalXemHH .col-thongtin')) {
             let field = $(col).attr('data-field');
             let value = data[field];
-            if (['gianhap'].indexOf(field) !== -1) {
-                value = numeral(value).format('0,0');
-            }
             $(col).find('span').text(value);
         }
         $('#modalXemHH').modal('show');
@@ -797,10 +778,12 @@
                 initClickXemThongTinKH(khachhang.id);
             })
         }
+        @if(in_array('danh-muc.khach-hang.thu-cong-no',$info->phanquyen) !== false)
         if (khachhang.congno > 0) {
             $('#boxKhachHang .btnThuCongNo').removeClass('d-none').off('click').click(() => {
                 actionThuCongNo(khachhang);
             });
         }
+        @endif
     }
 </script>

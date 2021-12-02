@@ -201,4 +201,29 @@ class PhanQuyenController extends Controller
             ];
         }
     }
+
+    public function xoa(Request $request) {
+        $id = $request->id;
+        $model = PhanQuyen::find($id);
+
+        if ($model == null) {
+            return [
+                'succ' => 0,
+                'noti' => 'Dữ liệu đầu vào không hợp lệ!'
+            ];
+        }
+
+        if ($model->forceDelete()) {
+            return [
+                'succ' => 1,
+                'noti' => 'Xóa thông tin phân quyền thành công.'
+            ];
+        }
+        else {
+            return [
+                'succ' => 0,
+                'noti' => 'Xóa thông tin phân quyền thất bại!'
+            ];
+        }
+    }
 }

@@ -4,8 +4,14 @@
     let tblQuyDoi;
     let views = localStorage.getItem('danhmuc.hanghoa.views');
     views = isNull(views) ? {} : JSON.parse(views);
-    let donvitinhs = JSON.parse('{!! $donvitinhs !!}');
-    let nhoms = JSON.parse('{!! $nhoms !!}');
+    let donvitinhs = JSON.parse('{!! str_replace("'","\'",json_encode($donvitinhs)) !!}');
+    let nhoms = JSON.parse('{!! str_replace("'","\'",json_encode($nhoms)) !!}');
+    nhoms.forEach((value) => {
+        value.id = value.text;
+    })
+    donvitinhs.forEach((value) => {
+        value.id = value.text;
+    })
     let dangs = [
         { id: 'Lỏng', text: 'Lỏng' },
         { id: 'Bột', text: 'Bột' },
@@ -23,33 +29,26 @@
             tblQuyDoi.setData('/api/quan-ly/danh-muc/hang-hoa/danhmuc-quydoi');
         });
 
-        @if($info->id != '1000000000')
+        @if(in_array('danh-muc.hang-hoa.chinh-sua',$info->phanquyen) === false)
         $('#modalXem .col-thongtin i').remove();
+        @endif
+
+        @if(in_array('danh-muc.hang-hoa.quy-doi',$info->phanquyen) !== false)
+        $('#modalThemQuyDoi input').on('input', function () {
+            if ($(this).hasClass('is-invalid')) {
+                $(this).removeClass('is-invalid');
+            }
+        });
+        initSelect2($('#modalThemQuyDoi .selDonViQuyDoi'),donvitinhs)
         @endif
     }
 
     @if(in_array('danh-muc.hang-hoa.them-moi',$info->phanquyen) !== false)
-    function actionThemMoi() {
-        nhoms.forEach((value) => {
-            value.id = value.text;
-        })
-        $('#modalThemMoi .selNhom').select2({
-            data: nhoms
-        })
-
-        donvitinhs.forEach((value) => {
-            value.id = value.text;
-        });
-        $('#modalThemMoi .selDonViTinh, #modalThemQuyDoi .selDonViQuyDoi').select2({
-            data: donvitinhs
-        })
-
-        $('#modalThemMoi .selDang').select2({
-            data: dangs,
-            minimumResultsForSearch: -1,
-            allowClear: true,
-            placeholder: 'Dạng hàng hóa...'
-        }).val(null).trigger('change');
+    initActionThemMoi();
+    function initActionThemMoi() {
+        initSelect2($('#modalThemMoi .selNhom'),nhoms)
+        initSelect2($('#modalThemMoi .selDonViTinh'),donvitinhs)
+        initSelect2($('#modalThemMoi .selDang'),dangs,{minimumResultsForSearch: -1, allowClear: true, placeholder: 'Dạng hàng hóa...'})
 
         $('#modalThemMoi input, #modalThemMoi textarea, #modalThemQuyDoi input').keypress(function(e) {
             let keyCode = e.keyCode || e.which;
@@ -63,9 +62,7 @@
                 e.preventDefault();
                 return false;
             }
-        });
-
-        $('#modalThemMoi input').on('input', function () {
+        }).on('input', function () {
             if ($(this).hasClass('is-invalid')) {
                 $(this).removeClass('is-invalid');
             }
@@ -147,7 +144,7 @@
             $.each($('#modalXem .col-thongtin'), function(key, col) {
                 clickXemThongTin(data,col);
             })
-            @if($info->id == '1000000000')
+            @if(in_array('danh-muc.hang-hoa.action',$info->phanquyen) !== false)
             if (isNull(data.deleted_at)) {
                 $('#modalXem button.delete').attr('class','btn bg-gradient-danger delete')
                     .text('Xóa thông tin').off('click').click(() => {
@@ -192,7 +189,7 @@
                     label: '<i class="fa fa-info-circle text-info"></i> Chi tiết',
                     action: xemThongTin
                 },
-                @if($info->id == '1000000000')
+                @if(in_array('danh-muc.hang-hoa.action',$info->phanquyen) !== false)
                 {
                     label: '<i class="fas ' + (isNull(data.deleted_at) ? 'fa-trash-alt text-danger' : 'fa-trash-restore-alt text-success')
                         + '"></i> ' + (isNull(data.deleted_at) ? 'Xóa' : 'Phục hồi'),
@@ -211,7 +208,7 @@
                     menu: subMenus
                 }
             ];
-            @if($info->id == '1000000000')
+            @if(in_array('danh-muc.hang-hoa.chinh-sua',$info->phanquyen) !== false)
             if ($('#modalXem .col-thongtin[data-field=' + cell.getField() + '] i.edit').length > 0) {
                 menus.unshift({
                     label: '<i class="fa fa-edit text-primary"></i> Chỉnh sửa',
@@ -224,6 +221,8 @@
                     }
                 });
             }
+            @endif
+            @if(in_array('danh-muc.hang-hoa.quy-doi',$info->phanquyen) !== false)
             if (!data.is_quydoi && isNull(data.deleted_at)) {
                 menus.unshift({
                     label: '<i class="fa fa-plus text-success"></i> Quy đổi',
@@ -271,6 +270,9 @@
                                     tblDanhSach.addData(result.data.model,true);
                                 }
                                 else if (!isUndefined(result.type)) {
+                                    if (result.type === 'ten') {
+                                        result.type = 'tenquydoi';
+                                    }
                                     if (!isUndefined(result.erro)) {
                                         showError(result.type,result.erro)
                                     }
@@ -304,7 +306,7 @@
                     visible: isNull(views) ? true : views.nhom},
                 {title: "Quy cách", field: "quycach", vertAlign: 'middle', headerSort: false, hozAlign: 'right', contextMenu,
                     visible: isNull(views) ? true : views.quycach},
-                @if($info->id == '1000000000')
+                @if(in_array('role.gia-nhap',$info->phanquyen) !== false)
                 {title: "Giá nhập", field: "gianhap", hozAlign: 'right', vertAlign: 'middle', headerSort: false,
                     contextMenu, visible: isNull(views) ? true : views.gianhap,
                     formatter: (cell) => {
@@ -320,6 +322,7 @@
                 {title: "Ghi chú", field: "ghichu", vertAlign: 'middle', headerSort: false, contextMenu,
                     visible: isNull(views) ? true : views.ghichu}
             ],
+            @if(in_array('danh-muc.hang-hoa.action',$info->phanquyen) !== false)
             rowFormatter: (row) => {
                 if (!isNull(row.getData().deleted_at)) {
                     $(row.getElement()).addClass('text-danger');
@@ -328,6 +331,7 @@
                     $(row.getElement()).removeClass('text-danger');
                 }
             },
+            @endif
             dataSorted: () => {
                 if (isNull(tblDanhSach) || isUndefined(tblDanhSach)) {
                     return false;
@@ -358,7 +362,7 @@
         })
 
         let contextMenu = (cell) => {
-            @if($info->id == '1000000000')
+            @if(in_array('danh-muc.hang-hoa.quy-doi',$info->phanquyen) !== false)
             let menus = [
                 {
                     label: '<i class="fa fa-trash-alt text-danger"></i> Xóa',
@@ -468,7 +472,7 @@
             value = numeral(value).format('0,0');
         }
         $(col).find('span').text(value);
-        @if($info->id == '1000000000')
+        @if(in_array('danh-muc.hang-hoa.chinh-sua',$info->phanquyen) !== false)
         let edit = $(col).find('i.edit');
         if (edit.length > 0) {
             edit.off('click').click(() => {
@@ -478,7 +482,7 @@
         @endif
     }
 
-    @if($info->id == '1000000000')
+    @if(in_array('danh-muc.hang-hoa.chinh-sua',$info->phanquyen) !== false)
     function clickSuaThongTin(field, value, ten, data, col = null) {
         let onSubmit = () => {
             let value = $('#modalInput .value').val();
@@ -539,7 +543,9 @@
             mInput(data.ten,value).select2(ten,'',field === 'nhom' ? nhoms : (field === 'dang' ? dangs : donvitinhs),true,onSubmit);
         }
     }
+    @endif
 
+    @if(in_array('danh-muc.hang-hoa.action',$info->phanquyen) !== false)
     function clickXoaThongTin(cell) {
         sToast.confirm('Xác nhận xóa thông tin hàng hóa?',cell.getData().ten,
             (result) => {
@@ -623,6 +629,7 @@
                     });
             })
     }
+    @endif
 
     function showError(type, erro = '') {
         let inputs = {
@@ -639,6 +646,5 @@
         inputs[type].addClass('is-invalid');
         inputs[type].focus();
     }
-    @endif
 </script>
 @stop

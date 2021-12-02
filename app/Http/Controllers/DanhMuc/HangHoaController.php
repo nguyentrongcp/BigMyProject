@@ -59,8 +59,13 @@ class HangHoaController extends Controller
     }
 
     public function danh_sach(Request $request) {
-        $models = HangHoa::withTrashed()->orderBy('deleted_at')->orderBy('updated_at','desc')->get();
-        if (Funcs::getNhanVienIDByToken($request->cookie('token')) != '1000000000') {
+        if (Funcs::isPhanQuyenByToken('danh-muc.hang-hoa.action',$request->cookie('token'))) {
+            $models = HangHoa::withTrashed()->orderBy('deleted_at')->orderBy('updated_at','desc')->get();
+        }
+        else {
+            $models = HangHoa::orderBy('updated_at','desc')->get();
+        }
+        if (Funcs::isPhanQuyenByToken('role.gia-nhap',$request->cookie('token'))) {
             foreach($models as $model) {
                 unset($model->gianhap);
             }

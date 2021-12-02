@@ -22,14 +22,19 @@ class KhachHangController extends Controller
         $info = Funcs::getNhanVienByToken($request->cookie('token'),['id','chinhanh_id']);
         if (isset($request->is_congno)) {
             $results = KhachHang::where('congno','!=',0);
-            if ($info->id != '1000000000') {
+            if(!Funcs::isPhanQuyenByToken('role.chi-nhanh.tat-ca',$request->cookie('token'))) {
                 $results = $results->where('chinhanh_id',$info->chinhanh_id);
             }
             $results = $results->orderByDesc('congno')->get();
         }
         else {
-            $results = KhachHang::withTrashed()->where('id','!=','1000000000');
-            if ($info->id != '1000000000') {
+            if (Funcs::isPhanQuyenByToken('danh-muc.khach-hang.action',$request->cookie('token'))) {
+                $results = KhachHang::withTrashed()->where('id','!=','1000000000');
+            }
+            else {
+                $results = KhachHang::where('id','!=','1000000000');
+            }
+            if(!Funcs::isPhanQuyenByToken('role.chi-nhanh.tat-ca',$request->cookie('token'))) {
                 $results = $results->where('chinhanh_id',$info->chinhanh_id);
             }
             $results = $results->orderBy('deleted_at')

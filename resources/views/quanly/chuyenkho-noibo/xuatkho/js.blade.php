@@ -1,7 +1,7 @@
 <script>
     let tblHangHoa;
-    let chinhanhs = JSON.parse('{!! $chinhanhs !!}');
-    let nhanviens = JSON.parse('{!! $nhanviens !!}');
+    let chinhanhs = JSON.parse('{!! str_replace("'","\'",json_encode($chinhanhs)) !!}');
+    let nhanviens = JSON.parse('{!! str_replace("'","\'",json_encode($nhanviens)) !!}');
     init();
     initSelHangHoa();
     initSelChiNhanh();

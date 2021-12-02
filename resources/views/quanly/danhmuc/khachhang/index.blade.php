@@ -38,9 +38,11 @@
                                     <button class="btn btn-default ml-1" id="btnLamMoi">
                                         <i class="fa fa-refresh"></i>
                                     </button>
+                                    @if(in_array('danh-muc.khach-hang.them-moi',$info->phanquyen) !== false)
                                     <button class="btn bg-gradient-primary font-weight-bolder ml-1" data-toggle="modal" data-target="#modalThemMoi">
                                         Thêm Mới
                                     </button>
+                                    @endif
                                 </div>
                             </div>
                             <div id="tblDanhSach"></div>
@@ -51,6 +53,7 @@
         </section>
     </div>
 
+    @if(in_array('danh-muc.khach-hang.thu-cong-no',$info->phanquyen) !== false || in_array('danh-muc.khach-hang.dieuchinh-congno',$info->phanquyen) !== false)
     <div class="modal fade" id="modalActionCongNo">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -91,6 +94,7 @@
             </div>
         </div>
     </div>
+    @endif
 
     @include('quanly.danhmuc.khachhang.index2')
 

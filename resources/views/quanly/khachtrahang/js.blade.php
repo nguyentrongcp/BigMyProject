@@ -2,7 +2,7 @@
     let tblHangHoa = null;
     let tblLichSu;
     let tblDanhSachPhieu;
-    let caytrongs = JSON.parse('{!! $caytrongs !!}');
+    let caytrongs = JSON.parse('{!! str_replace("'","\'",json_encode($caytrongs)) !!}');
     let danhxungs = [
         { id: 'Anh', text: 'Anh' },
         { id: 'Chị', text: 'Chị' },

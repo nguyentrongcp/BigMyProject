@@ -1,6 +1,6 @@
 <script>
     let tblDanhSach;
-    let chinhanhs = JSON.parse('{!! $chinhanhs !!}');
+    let chinhanhs = JSON.parse('{!! str_replace("'","\'",json_encode($chinhanhs)) !!}');
     let loaiphieus = [
         { id: 'BH', text: 'PHIẾU BÁN HÀNG' },
         { id: 'KTH', text: 'PHIẾU KHÁCH TRẢ HÀNG' },

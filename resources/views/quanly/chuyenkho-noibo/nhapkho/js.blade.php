@@ -2,7 +2,7 @@
     let tblHangHoa;
     let tblPhieuXuat;
     let tblDanhSachPhieu;
-    let nhanviens = JSON.parse('{!! $nhanviens !!}');
+    let nhanviens = JSON.parse('{!! str_replace("'","\'",json_encode($nhanviens)) !!}');
     init();
     initSelNhanVien();
     initTblHangHoa();

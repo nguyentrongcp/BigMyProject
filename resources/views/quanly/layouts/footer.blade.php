@@ -96,11 +96,11 @@
     initThongBaoGia();
 
 {{--    @if(in_array('nhapkho-noibo',$dsquyen) !== false)--}}
-    initSoPhieuXuat();
+//     initSoPhieuXuat();
 {{--    @endif--}}
 
 {{--    @if(in_array('nhap-hang.danh-sach',$dsquyen) !== false)--}}
-    initSoPhieuNhap();
+//     initSoPhieuNhap();
 {{--    @endif--}}
 
 {{--    @if(in_array('role.chi-nhanh.tat-ca',$dsquyen) !== false)--}}
@@ -140,7 +140,7 @@
     });
 {{--    @endif--}}
 
-    checkMatKhauMacDinh();
+    // checkMatKhauMacDinh();
 
     $('#btnDoiMatKhau').click(() => {
         initDoiMatKhau();

@@ -1,5 +1,8 @@
 <script>
-    let caytrongs = JSON.parse('{!! $caytrongs !!}');
+    let caytrongs = JSON.parse('{!! str_replace("'","\'",json_encode($caytrongs)) !!}');
+    caytrongs.forEach((value) => {
+        value.id = value.text;
+    })
     let danhxungs = [
         { id: 'Anh', text: 'Anh' },
         { id: 'Chị', text: 'Chị' },
@@ -11,12 +14,10 @@
         { id: 'Ông', text: 'Ông' },
         { id: 'Bà', text: 'Bà' },
     ];
-    init();
-    initCayTrong();
-    initDanhXung();
-    actionThemMoi();
 
-    function init() {
+    @if(in_array('danh-muc.khach-hang.them-moi',$info->phanquyen) !== false)
+    initActionThemMoi();
+    function initActionThemMoi() {
         $('#modalThemMoi input, #modalThemMoi textarea').keypress(function(e) {
             let keyCode = e.keyCode || e.which;
             if (keyCode === 13) {
@@ -29,33 +30,21 @@
                 e.preventDefault();
                 return false;
             }
+        }).on('input', function () {
+            if ($(this).hasClass('is-invalid')) {
+                $(this).removeClass('is-invalid');
+            }
         });
-    }
-
-    function initCayTrong() {
-        caytrongs.forEach((value) => {
-            value.id = value.text;
-        })
 
         $('#modalThemMoi .selCayTrong').select2({
             data: caytrongs,
             placeholder: 'Chọn cây trồng...',
             allowClear: true
         }).val(null).trigger('change');
-    }
 
-    function initDanhXung() {
         $('#modalThemMoi .selDanhXung').select2({
             data: danhxungs,
             minimumResultsForSearch: -1
-        });
-    }
-
-    function actionThemMoi() {
-        $('#modalThemMoi input, #modalThemMoi textarea').on('input', function () {
-            if ($(this).hasClass('is-invalid')) {
-                $(this).removeClass('is-invalid');
-            }
         });
 
         $('#modalThemMoi').on('shown.bs.modal', function () {
@@ -130,6 +119,7 @@
             });
         });
     }
+    @endif
 
     function showError(type, erro = '') {
         let inputs = {

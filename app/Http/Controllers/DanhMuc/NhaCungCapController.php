@@ -12,15 +12,16 @@ use Illuminate\Http\Request;
 class NhaCungCapController extends Controller
 {
     public function index() {
-        if(Funcs::getNhanVienIDByToken($_COOKIE['token']) != '1000000000') {
-            abort(404);
-        }
-
         return view('quanly.danhmuc.nhacungcap.index');
     }
 
-    public function danh_sach() {
-        return NhaCungCap::withTrashed()->orderBy('deleted_at')->orderBy('updated_at','desc')->get();
+    public function danh_sach(Request $request) {
+        if(Funcs::isPhanQuyenByToken('danh-muc.nha-cung-cap.action',$request->cookie('token'))) {
+            return NhaCungCap::withTrashed()->orderBy('deleted_at')->orderBy('updated_at','desc')->get();
+        }
+        else {
+            return NhaCungCap::orderBy('deleted_at')->orderBy('updated_at','desc')->get();
+        }
     }
 
     public function them_moi(Request $request) {

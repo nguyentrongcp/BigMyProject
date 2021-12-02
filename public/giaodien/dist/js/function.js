@@ -1134,3 +1134,62 @@ function initDoiMatKhau() {
         checkMatKhauMacDinh();
     }).modal('show');
 }
+
+function initSelect2 (element, data, option = {}) {
+    if (!isUndefined(option.defaultText)) {
+        data.forEach((value) => {
+            value.text = typeof(option.defaultText) === 'string' ? value[option.defaultText] :
+                (value[option.defaultText[0]] + ' - ' + value[option.defaultText[1]]);
+        })
+    }
+    let count = 0;
+    let length = data.length;
+    let _option = {
+        data
+    }
+
+    if (!isUndefined(option.allowClear)) {
+        _option.allowClear = option.allowClear;
+    }
+    if (!isUndefined(option.placeholder)) {
+        _option.placeholder = option.placeholder;
+    }
+    if (!isUndefined(option.templateResult)) {
+        _option.templateResult = option.templateResult;
+    }
+    if (!isUndefined(option.templateSelection)) {
+        _option.templateSelection = option.templateSelection;
+    }
+    if (!isUndefined(option.minimumResultsForSearch)) {
+        _option.minimumResultsForSearch = option.minimumResultsForSearch;
+    }
+    if (!isUndefined(option.matcher)) {
+        _option.matcher = (params, _data) => {
+            let result = null;
+            if (count < 20) {
+                $.each(option.matcher, function (key, value) {
+                    if (convertToSlug(_data[value]).indexOf(convertToSlug(params.term)) > -1) {
+                        result = _data;
+                        count++;
+                        return false;
+                    }
+                })
+            }
+
+            if (--length === 0) {
+                length = data.length;
+                count = 0;
+            }
+            return result;
+        }
+    }
+
+    element.html(null).select2(_option);
+
+    if (!isUndefined(option.onChange)) {
+        element.change(option.onChange);
+    }
+    if (!isUndefined(option.allowClear)) {
+        element.val(null).trigger('change');
+    }
+}

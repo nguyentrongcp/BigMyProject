@@ -1,17 +1,13 @@
 <script>
     let tblDanhSach;
     let tblPhanQuyen;
-    init();
     initDanhSach();
-
-    function init() {
-
-    }
 
     function initDanhSach() {
         let contextMenu = (cell) => {
             let data = cell.getData();
             let menus = [
+                @if(in_array('danh-muc.chuc-vu.phan-quyen',$info->phanquyen) !== false)
                 {
                     label: '<i class="fa fa-user text-dark"></i> Phân quyền',
                     action: () => {
@@ -32,7 +28,9 @@
                         });
                     }
                 }
+                @endif
             ];
+            @if(in_array('danh-muc.chuc-vu.chinh-sua',$info->phanquyen) !== false)
             if (cell.getField() === 'ten') {
                 menus.unshift({
                     label: '<i class="fa fa-edit text-primary"></i> Chỉnh sửa',
@@ -72,6 +70,7 @@
                     }
                 });
             }
+            @endif
 
             return menus;
         }
@@ -101,6 +100,7 @@
         initSearchTable(tblDanhSach,['ten']);
     }
 
+    @if(in_array('danh-muc.chuc-vu.phan-quyen',$info->phanquyen) !== false)
     function initDanhSachPhanQuyen(data, id, isChinhSua = false) {
         let _data = JSON.parse(JSON.stringify(data));
         if (isChinhSua) {
@@ -260,4 +260,5 @@
                 }
             })
     }
+    @endif
 </script>

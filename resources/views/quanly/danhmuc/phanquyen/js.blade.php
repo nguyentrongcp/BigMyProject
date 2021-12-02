@@ -2,25 +2,28 @@
 <script>
     let tblDanhSach;
     init();
-    initLoai();
     initDanhSach();
-    actionThemMoi();
 
     function init() {
         $('#btnLamMoi').click(() => {
             tblDanhSach.setData('/api/quan-ly/danh-muc/phan-quyen/danh-sach');
         })
+    }
 
-        $('input, textarea').keypress(function (e) {
+    @if(in_array('danh-muc.phan-quyen.them-moi',$info->phanquyen) !== false)
+    initActionThemMoi();
+    function initActionThemMoi() {
+        $('#modalThemMoi .selLoai').select2({
+            minimumResultsForSearch: -1
+        })
+        $('#modalThemMoi input, #modalThemMoi textarea').keypress(function (e) {
             let keyCode = e.keyCode || e.which;
             if (keyCode === 13) {
                 $('#modalThemMoi .btnSubmit').click();
                 e.preventDefault();
                 return false;
             }
-        });
-
-        $('input').on('input', function () {
+        }).on('input', function () {
             if ($(this).hasClass('is-invalid')) {
                 $(this).removeClass('is-invalid');
             }
@@ -33,15 +36,7 @@
         })
 
         autosize($('#modalThemMoi .inpGhiChu'));
-    }
 
-    function initLoai() {
-        $('#modalThemMoi .selLoai').select2({
-            minimumResultsForSearch: -1
-        })
-    }
-
-    function actionThemMoi() {
         $('#modalThemMoi .btnSubmit').click(() => {
             let stt = $('#modalThemMoi .inpSTT').val();
             let ma = $('#modalThemMoi .inpMa').val().trim();
@@ -100,9 +95,11 @@
             });
         });
     }
+    @endif
 
     function initDanhSach() {
         let contextMenu = () => {
+            @if(in_array('danh-muc.phan-quyen.chinh-sua',$info->phanquyen) !== false)
             return [
                 {
                     label: '<i class="fa fa-edit text-primary"></i> Chỉnh sửa',
@@ -122,6 +119,9 @@
                     }
                 }
             ];
+            @else
+            return [];
+            @endif
         }
 
         tblDanhSach = new Tabulator("#tblDanhSach", {
@@ -156,6 +156,7 @@
         initSearchTable(tblDanhSach,['ma','ten','chucnang']);
     }
 
+    @if(in_array('danh-muc.phan-quyen.chinh-sua',$info->phanquyen) !== false)
     function clickSuaThongTin(field, value, ten, data) {
         let onSubmit = () => {
             let value = $('#modalInput .value').val().trim();
@@ -205,30 +206,30 @@
             mInput(data.ten,value).number(ten,ten + '...',onSubmit);
         }
     }
+    @endif
 
-    // function clickXoaThongTin(cell) {
-    //     sToast.confirm('Xác nhận xóa thông tin phân quyền?','',
-    //         (result) => {
-    //             if (result.isConfirmed) {
-    //                 sToast.loading('Đang xóa dữ liệu. Vui lòng chờ...')
-    //                 $.ajax({
-    //                     url: '/api/quan-ly/danh-muc/phan-quyen/xoa',
-    //                     type: 'get',
-    //                     dataType: 'json',
-    //                     data: {
-    //                         id: cell.getData().id
-    //                     }
-    //                 }).done((result) => {
-    //                     if (result.succ) {
-    //                         cell.getTable().updateData([{
-    //                             id: cell.getData().id,
-    //                             deleted_at: result.data.deleted_at
-    //                         }])
-    //                     }
-    //                 });
-    //             }
-    //         });
-    // }
+    @if(in_array('danh-muc.phan-quyen.xoa',$info->phanquyen) !== false)
+    function clickXoaThongTin(cell) {
+        sToast.confirm('Xác nhận xóa thông tin phân quyền?','',
+            (result) => {
+                if (result.isConfirmed) {
+                    sToast.loading('Đang xóa dữ liệu. Vui lòng chờ...')
+                    $.ajax({
+                        url: '/api/quan-ly/danh-muc/phan-quyen/xoa',
+                        type: 'get',
+                        dataType: 'json',
+                        data: {
+                            id: cell.getData().id
+                        }
+                    }).done((result) => {
+                        if (result.succ) {
+                            cell.getRow().delete();
+                        }
+                    });
+                }
+            });
+    }
+    @endif
 
     function showError(type, erro = '') {
         let inputs = {

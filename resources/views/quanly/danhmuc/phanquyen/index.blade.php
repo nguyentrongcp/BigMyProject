@@ -28,7 +28,7 @@
                                     <button class="btn btn-default" id="btnLamMoi">
                                         <i class="fa fa-refresh"></i>
                                     </button>
-                                    @if($info->id == '1000000000')
+                                    @if(in_array('danh-muc.phan-quyen.them-moi',$info->phanquyen) !== false)
                                     <button class="btn bg-gradient-primary font-weight-bolder ml-1" data-toggle="modal" data-target="#modalThemMoi">
                                         Thêm Mới
                                     </button>
@@ -43,7 +43,7 @@
         </section>
     </div>
 
-    @if($info->id == '1000000000')
+    @if(in_array('danh-muc.phan-quyen.them-moi',$info->phanquyen) !== false)
     <div class="modal fade" id="modalThemMoi">
         <div class="modal-dialog modal-dialog-scrollable">
             <div class="modal-content">

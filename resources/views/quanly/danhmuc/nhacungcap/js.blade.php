@@ -3,11 +3,22 @@
     let views = localStorage.getItem('danhmuc.nhacungcap.views');
     views = isNull(views) ? {} : JSON.parse(views);
     init();
-    actionThemMoi();
     initDanhSach();
 
     function init() {
-        $('#modalThemMoi input, #modalThemMoi textarea, #modalThemQuyDoi input').keypress(function(e) {
+        $('#btnLamMoi').click(() => {
+            tblDanhSach.setData('/api/quan-ly/danh-muc/nha-cung-cap/danh-sach');
+        })
+
+        @if(in_array('danh-muc.nha-cung-cap.chinh-sua',$info->phanquyen) === false)
+        $('#modalXem .col-thongtin i').remove();
+        @endif
+    }
+
+    @if(in_array('danh-muc.nha-cung-cap.them-moi',$info->phanquyen) !== false)
+    initActionThemMoi();
+    function initActionThemMoi() {
+        $('#modalThemMoi input, #modalThemMoi textarea').keypress(function(e) {
             let keyCode = e.keyCode || e.which;
             if (keyCode === 13) {
                 if ($('#modalThemMoi').hasClass('show')) {
@@ -19,15 +30,7 @@
                 e.preventDefault();
                 return false;
             }
-        });
-
-        $('#btnLamMoi').click(() => {
-            tblDanhSach.setData('/api/quan-ly/danh-muc/nha-cung-cap/danh-sach');
-        })
-    }
-
-    function actionThemMoi() {
-        $('#modalThemMoi input, #modalThemMoi textarea').on('input', function () {
+        }).on('input', function () {
             if ($(this).hasClass('is-invalid')) {
                 $(this).removeClass('is-invalid');
             }
@@ -91,6 +94,7 @@
             });
         });
     }
+    @endif
 
     function initDanhSach() {
         let xemThongTin = (e, cell) => {
@@ -98,6 +102,7 @@
             $.each($('#modalXem .col-thongtin'), function(key, col) {
                 clickXemThongTin(data,col);
             })
+            @if(in_array('danh-muc.nha-cung-cap.action',$info->phanquyen) !== false)
             if (isNull(data.deleted_at)) {
                 $('#modalXem button.delete').attr('class','btn bg-gradient-danger delete')
                     .text('Xóa thông tin').off('click').click(() => {
@@ -110,6 +115,7 @@
                     clickPhucHoiThongTin(cell);
                 })
             }
+            @endif
             $('#modalXem').modal('show');
         }
         let contextMenu = (cell) => {
@@ -141,6 +147,7 @@
                     label: '<i class="fa fa-info-circle text-info"></i> Chi tiết',
                     action: xemThongTin
                 },
+                @if(in_array('danh-muc.nha-cung-cap.action',$info->phanquyen) !== false)
                 {
                     label: '<i class="fas ' + (isNull(data.deleted_at) ? 'fa-trash-alt text-danger' : 'fa-trash-restore-alt text-success')
                         + '"></i> ' + (isNull(data.deleted_at) ? 'Xóa' : 'Phục hồi'),
@@ -153,11 +160,13 @@
                         }
                     }
                 },
+                @endif
                 {
                     label: '<i class="fa fa-eye"></i> Hiển thị',
                     menu: subMenus
                 }
             ];
+            @if(in_array('danh-muc.nha-cung-cap.chinh-sua',$info->phanquyen) !== false)
             if ($('#modalXem .col-thongtin[data-field=' + cell.getField() + '] i.edit').length > 0) {
                 menus.unshift({
                     label: '<i class="fa fa-edit text-primary"></i> Chỉnh sửa',
@@ -170,6 +179,7 @@
                     }
                 });
             }
+            @endif
 
             return menus;
         }
@@ -204,6 +214,7 @@
                 {title: "Ghi chú", field: "ghichu", vertAlign: 'middle', headerSort: false, contextMenu,
                     visible: isNull(views) ? true : views.ghichu},
             ],
+            @if(in_array('danh-muc.nha-cung-cap.action',$info->phanquyen) !== false)
             rowFormatter: (row) => {
                 if (!isNull(row.getData().deleted_at)) {
                     $(row.getElement()).addClass('text-danger');
@@ -212,6 +223,7 @@
                     $(row.getElement()).removeClass('text-danger');
                 }
             },
+            @endif
             ajaxURL: '/api/quan-ly/danh-muc/nha-cung-cap/danh-sach',
             height: '450px',
             movableColumns: false,
@@ -238,18 +250,21 @@
             value = numeral(value).format(0,0);
         }
         $(col).find('span').text(value);
+        @if(in_array('danh-muc.nha-cung-cap.chinh-sua',$info->phanquyen) !== false)
         let edit = $(col).find('i.edit');
         if (edit.length > 0) {
             edit.off('click').click(() => {
                 clickSuaThongTin(field,data[field],ten,data,col);
             })
         }
+        @endif
     }
 
+    @if(in_array('danh-muc.nha-cung-cap.chinh-sua',$info->phanquyen) !== false)
     function clickSuaThongTin(field, value, ten, data, col = null) {
         let onSubmit = () => {
             let value = $('#modalInput .value').val().trim();
-            if (field === 'ten' || field === 'dienthoai') {
+            if ((field === 'ten' || field === 'dienthoai') && value === '') {
                 showErrorModalInput(ten + ' không được bỏ trống!');
                 return false;
             }
@@ -285,7 +300,9 @@
             mInput(data.ten,value).textarea(ten,ten + '...',onSubmit);
         }
     }
+    @endif
 
+    @if(in_array('danh-muc.nha-cung-cap.action',$info->phanquyen) !== false)
     function clickXoaThongTin(cell) {
         sToast.confirm('Xác nhận xóa thông tin nhà cung cấp?','',
             (result) => {
@@ -345,6 +362,7 @@
                 }
             });
     }
+    @endif
 
     function showError(type, erro = '') {
         let inputs = {

@@ -1,6 +1,6 @@
 <script>
     let tblDanhSach;
-    let chinhanhs = JSON.parse('{!! $chinhanhs !!}');
+    let chinhanhs = JSON.parse('{!! str_replace("'","\'",json_encode($chinhanhs)) !!}');
     chinhanhs.unshift({id: 'all', text: 'Toàn hệ thống'});
     initChiNhanh();
     // initHangHoa();

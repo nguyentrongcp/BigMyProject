@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Functions\Funcs;
 use App\Models\DanhMuc\CayTrong;
 use App\Models\DanhMuc\HangHoa;
+use App\Models\DanhMuc\KhachHang;
 use App\Models\DanhMuc\NhanVien;
 use App\Models\DanhMuc\QuyDoi;
 use App\Models\HangHoaChiTiet;
@@ -19,9 +20,6 @@ class BanHangController extends Controller
     public function index() {
         $caytrongs = CayTrong::all('ten as text');
         $nhanviens = NhanVien::all(['id','ma','ten','dienthoai']);
-        foreach($nhanviens as $nhanvien) {
-            $nhanvien->text = $nhanvien->dienthoai.' - '.$nhanvien->ten;
-        }
 
         $chinhanh_id = Funcs::getChiNhanhByToken($_COOKIE['token']);
         $dongias = HangHoaChiTiet::where('chinhanh_id',$chinhanh_id)->pluck('dongia','hanghoa_ma');
@@ -39,6 +37,10 @@ class BanHangController extends Controller
             'nhanviens' => $nhanviens,
             'hanghoas' => $models
         ]);
+    }
+
+    public function danhsach_khachhang() {
+        return KhachHang::all(['id','ma','ten','dienthoai','diachi','congno']);
     }
 
     public function tim_kiem(Request $request) {

@@ -76,7 +76,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                @if(url()->current() == route('danh-muc.khach-hang') && $info == '1000000000')
+                @if(url()->current() == route('danh-muc.khach-hang') && in_array('danh-muc.khach-hang.action',$info->phanquyen) !== false)
                 <button type="button" class="btn bg-gradient-danger delete mr-auto">Xóa Thông Tin</button>
                 @endif
                 <button type="button" class="btn bg-gradient-secondary" data-dismiss="modal">Thoát</button>

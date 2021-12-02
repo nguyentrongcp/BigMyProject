@@ -3,6 +3,8 @@
 namespace App\Providers;
 
 use App\Functions\Funcs;
+use App\Models\Phieu;
+use App\Models\PhieuChiTiet;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
@@ -33,8 +35,20 @@ class AppServiceProvider extends ServiceProvider
                 $info->setChucVu();
                 $info->urls = Funcs::getUrlPhanQuyenByIDPhanQuyen($info->phanquyen);
                 $info->phanquyen = Funcs::getPhanQuyenByIDPhanQuyen($info->phanquyen);
+                unset($info->quyendacbiet);
+                unset($info->quyenloaibo);
+                $so_phieunhap = Phieu::where([
+                    'loaiphieu' => 'NH',
+                    'status' => 0
+                ])->count();
+                $so_phieuxuat = PhieuChiTiet::whereIn('phieu_id',Phieu::where([
+                    'doituong_id' => $info->chinhanh_id,
+                    'loaiphieu' => 'XKNB'
+                ])->pluck('id'))->where('status',0)->groupBy('phieu_id')->selectRaw('count(*) as sophieu')->get()->count();
                 View::share([
-                    'info' => $info
+                    'info' => $info,
+                    'so_phieunhap' => $so_phieunhap,
+                    'so_phieuxuat' => $so_phieuxuat
                 ]);
             }
         }

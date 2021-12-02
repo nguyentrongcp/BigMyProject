@@ -72,7 +72,9 @@
                             <div class="form-group mb-0" id="boxKhachHang">
                                 <label class="w-100">
                                     Chọn khách hàng
+                                    @if(in_array('danh-muc.khach-hang.them-moi',$info->phanquyen) !== false)
                                     <span class="float-right text-primary c-pointer" data-toggle="modal" data-target="#modalThemMoi">Thêm mới</span>
+                                    @endif
                                 </label>
                                 <select class="form-control" id="selKhachHang"></select>
                                 <div class="divider my-1"></div>
@@ -100,7 +102,9 @@
                                 </div>
                                 <div class="d-flex justify-content-between mt-1">
                                     <button class="btn-sm btn bg-gradient-success btnThongTin">Thông Tin</button>
+                                    @if(in_array('danh-muc.khach-hang.thu-cong-no',$info->phanquyen) !== false)
                                     <button class="btn-sm btn bg-gradient-danger btnThuCongNo d-none">Thu Công Nợ</button>
+                                    @endif
                                     <button class="btn-sm btn bg-gradient-info btnLichSu" data-toggle="modal" data-target="#modalLichSu">L.Sử Mua Hàng</button>
                                 </div>
                             </div>
@@ -236,6 +240,7 @@
         <!-- /.modal-dialog -->
     </div>
 
+    @if(in_array('danh-muc.khach-hang.thu-cong-no',$info->phanquyen) !== false)
     <div class="modal fade" id="modalThuCongNo">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -276,6 +281,7 @@
             </div>
         </div>
     </div>
+    @endif
 
     @include('quanly.danhmuc.hanghoa.index2')
 

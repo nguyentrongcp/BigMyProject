@@ -107,6 +107,11 @@ class Funcs
         return $chinhanh == null ? null : $chinhanh->chinhanh_id;
     }
 
+    public static function isPhanQuyenByToken($phanquyen,$token) {
+        $id_phanquyen = PhanQuyen::where('ma',$phanquyen)->first('id');
+        return $id_phanquyen == null ? false : (NhanVien::where('remember_token',$token)->where('phanquyen','like',"%$id_phanquyen->id%")->count() > 0);
+    }
+
     public static function getPhanQuyenByIDPhanQuyen($ids) {
         if (!is_array($ids)) {
             $ids = json_decode($ids) ?? [];

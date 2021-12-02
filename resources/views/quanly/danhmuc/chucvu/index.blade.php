@@ -33,6 +33,7 @@
         </section>
     </div>
 
+    @if(in_array('danh-muc.chuc-vu.phan-quyen',$info->phanquyen) !== false)
     <div class="modal fade" id="modalPhanQuyen">
         <div class="modal-dialog modal-xl">
             <div class="modal-content">
@@ -69,6 +70,7 @@
         </div>
         <!-- /.modal-dialog -->
     </div>
+    @endif
 @stop
 
 @section('js-custom')

@@ -2,8 +2,8 @@
     let tblDanhSach;
     let tblDanhSachPhieu;
     let tblDanhSachPhieu2;
-    let chinhanhs = JSON.parse('{!! $chinhanhs !!}');
-    let khoanmucs = JSON.parse('{!! $khoanmucs !!}');
+    let chinhanhs = JSON.parse('{!! str_replace("'","\'",json_encode($chinhanhs)) !!}');
+    let khoanmucs = JSON.parse('{!! str_replace("'","\'",json_encode($khoanmucs)) !!}');
     init();
     initSelDoiTuong();
     initChiNhanh();

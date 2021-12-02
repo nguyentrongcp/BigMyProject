@@ -1,6 +1,6 @@
 <script>
     let tblHangHoa;
-    let nhacungcaps = JSON.parse('{!! $nhacungcaps !!}');
+    let nhacungcaps = JSON.parse('{!! str_replace("'","\'",json_encode($nhacungcaps)) !!}');
     init();
     initSelHangHoa();
     initSelNhaCungCap();
@@ -44,7 +44,8 @@
 
                     // Query parameters will be ?search=[term]&type=public
                     return query;
-                }
+                },
+                delay: 250
             },
             allowClear: true,
             placeholder: 'Chọn hàng hóa...'

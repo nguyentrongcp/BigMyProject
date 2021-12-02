@@ -14,14 +14,13 @@ class DoiTuongController extends Controller
     }
 
     public function danh_sach(Request $request) {
-        $info = Funcs::getNhanVienByToken($request->cookie('token'),['id','chinhanh_id']);
-        if ($info->id != '1000000000') {
-            $results = DoiTuong::withTrashed()->where('chinhanh_id',$info->chinhanh_id)
+        if(Funcs::isPhanQuyenByToken('danh-muc.doi-tuong.action',$request->cookie('token'))) {
+            $results = DoiTuong::withTrashed()
                 ->orderBy('deleted_at')
                 ->orderBy('updated_at','desc')->get();
         }
         else {
-            $results = DoiTuong::withTrashed()->orderBy('deleted_at')
+            $results = DoiTuong::orderBy('deleted_at')
                 ->orderBy('updated_at','desc')->get();
         }
 

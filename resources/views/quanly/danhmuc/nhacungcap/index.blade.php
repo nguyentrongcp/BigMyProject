@@ -28,9 +28,11 @@
                                     <button class="btn btn-default" id="btnLamMoi">
                                         <i class="fa fa-refresh"></i>
                                     </button>
+                                    @if(in_array('danh-muc.nha-cung-cap.them-moi',$info->phanquyen) !== false)
                                     <button class="btn bg-gradient-primary font-weight-bolder ml-1" data-toggle="modal" data-target="#modalThemMoi">
                                         Thêm Mới
                                     </button>
+                                    @endif
                                 </div>
                             </div>
                             <div id="tblDanhSach"></div>
@@ -41,6 +43,7 @@
         </section>
     </div>
 
+    @if(in_array('danh-muc.nha-cung-cap.them-moi',$info->phanquyen) !== false)
     <div class="modal fade" id="modalThemMoi">
         <div class="modal-dialog modal-dialog-scrollable">
             <div class="modal-content">
@@ -106,6 +109,7 @@
             </div>
         </div>
     </div>
+    @endif
 
     <div class="modal fade" id="modalXem">
         <div class="modal-dialog modal-dialog-scrollable">
@@ -190,7 +194,9 @@
                     </div>
                 </div>
                 <div class="modal-footer">
+                    @if(in_array('danh-muc.nha-cung-cap.action',$info->phanquyen) !== false)
                     <button type="button" class="btn bg-gradient-danger delete mr-auto">Xóa Thông Tin</button>
+                    @endif
                     <button type="button" class="btn bg-gradient-secondary" data-dismiss="modal">Thoát</button>
                 </div>
             </div>

@@ -9,6 +9,9 @@
         $('#btnLamMoi').click(() => {
             tblDanhSach.setData('/api/quan-ly/danh-muc/doi-tuong/danh-sach');
         })
+        @if(in_array('danh-muc.doi-tuong.chinh-sua',$info->phanquyen) === false)
+        $('#modalXem .col-thongtin i').remove();
+        @endif
     }
 
     function initDanhSach() {
@@ -17,7 +20,7 @@
             $.each($('#modalXem .col-thongtin'), function(key, col) {
                 clickXemThongTin(data,col);
             })
-            @if($info->id == '1000000000')
+            @if(in_array('danh-muc.doi-tuong.action',$info->phanquyen) !== false)
             if (isNull(data.deleted_at)) {
                 $('#modalXem button.delete').attr('class','btn bg-gradient-danger delete')
                     .text('Xóa thông tin').off('click').click(() => {
@@ -62,7 +65,7 @@
                     label: '<i class="fa fa-info-circle text-info"></i> Chi tiết',
                     action: xemThongTin
                 },
-                @if($info->id == '1000000000')
+                @if(in_array('danh-muc.doi-tuong.action',$info->phanquyen) !== false)
                 {
                     label: '<i class="fas ' + (isNull(data.deleted_at) ? 'fa-trash-alt text-danger' : 'fa-trash-restore-alt text-success')
                         + '"></i> ' + (isNull(data.deleted_at) ? 'Xóa' : 'Phục hồi'),
@@ -81,6 +84,7 @@
                     menu: subMenus
                 }
             ];
+            @if(in_array('danh-muc.doi-tuong.chinh-sua',$info->phanquyen) !== false)
             if ($('#modalXem .col-thongtin[data-field=' + cell.getField() + '] i.edit').length > 0) {
                 menus.unshift({
                     label: '<i class="fa fa-edit text-primary"></i> Chỉnh sửa',
@@ -93,6 +97,7 @@
                     }
                 });
             }
+            @endif
 
             return menus;
         }
@@ -112,6 +117,7 @@
                 {title: "Ghi chú", field: "ghichu", vertAlign: 'middle', headerSort: false, contextMenu,
                     visible: isNull(views) ? true : views.ghichu},
             ],
+            @if(in_array('danh-muc.doi-tuong.action',$info->phanquyen) !== false)
             rowFormatter: (row) => {
                 if (!isNull(row.getData().deleted_at)) {
                     $(row.getElement()).addClass('text-danger');
@@ -120,6 +126,7 @@
                     $(row.getElement()).removeClass('text-danger');
                 }
             },
+            @endif
             ajaxURL: '/api/quan-ly/danh-muc/doi-tuong/danh-sach',
             height: '450px',
             movableColumns: false,
@@ -143,14 +150,17 @@
         let ten = $(col).attr('data-title');
         let value = data[field];
         $(col).find('span').text(value);
+        @if(in_array('danh-muc.doi-tuong.chinh-sua',$info->phanquyen) !== false)
         let edit = $(col).find('i.edit');
         if (edit.length > 0) {
             edit.off('click').click(() => {
                 clickSuaThongTin(field,data[field],ten,data,col);
             })
         }
+        @endif
     }
 
+    @if(in_array('danh-muc.doi-tuong.chinh-sua',$info->phanquyen) !== false)
     function clickSuaThongTin(field, value, ten, data, col = null) {
         let onSubmit = () => {
             let value = $('#modalInput .value').val();
@@ -202,8 +212,9 @@
             mInput(data.ten,data._diachi).diachi(onSubmit);
         }
     }
+    @endif
 
-    @if($info->id == '1000000000')
+    @if(in_array('danh-muc.doi-tuong.action',$info->phanquyen) !== false)
     function clickXoaThongTin(cell) {
         sToast.confirm('Xác nhận xóa thông tin đối tượng?','',
             (result) => {

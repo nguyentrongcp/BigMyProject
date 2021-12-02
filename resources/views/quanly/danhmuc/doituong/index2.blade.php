@@ -1,3 +1,4 @@
+@if(in_array('danh-muc.doi-tuong.them-moi',$info->phanquyen) !== false)
 <div class="modal fade" id="modalThemMoi">
     <div class="modal-dialog modal-dialog-scrollable">
         <div class="modal-content">
@@ -51,3 +52,4 @@
         </div>
     </div>
 </div>
+@endif

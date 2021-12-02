@@ -3,18 +3,37 @@
     let tblDanhSach;
     let views = localStorage.getItem('danhmuc.nhanvien.views');
     views = isNull(views) ? {} : JSON.parse(views);
-    let chucvus = JSON.parse('{!! $chucvus !!}');
-    let chinhanhs = JSON.parse('{!! $chinhanhs !!}');
+    let chucvus = JSON.parse('{!! str_replace("'","\'",json_encode($chucvus)) !!}');
+    let chinhanhs = JSON.parse('{!! str_replace("'","\'",json_encode($chinhanhs)) !!}');
     init();
-    @if($info->id == '1000000000')
-    initChucVu();
-    initChiNhanh();
-    actionThemMoi();
-    @endif
     initDanhSach();
 
     function init() {
-        $('#modalThemMoi input, #modalThemMoi textarea, #modalThemQuyDoi input').keypress(function(e) {
+        $('#btnLamMoi').click(() => {
+            tblDanhSach.setData('/api/quan-ly/danh-muc/nhan-vien/danh-sach');
+        })
+
+        @if(in_array('danh-muc.nhan-vien.chinh-sua',$info->phanquyen) === false)
+        $('#modalXem .col-thongtin i').remove();
+        @endif
+    }
+
+    @if(in_array('danh-muc.nhan-vien.them-moi',$info->phanquyen) !== false)
+    initActionThemMoi();
+    function initActionThemMoi() {
+        initSelect2($('#modalThemMoi .selLoai'),chucvus,{minimumResultsForSearch: -1});
+        initSelect2($('#modalThemMoi .selChiNhanh'),chucvus,{minimumResultsForSearch: -1});
+
+        $('#boxNgaySinh').datetimepicker({
+            format: 'DD/MM/YYYY',
+            keepOpen: false
+        });
+        $('#boxNgaySinh .inpNgaySinh').focus(() => {
+            $('#boxNgaySinh').datetimepicker('show');
+            $('#modalThemMoi .errorNgaySinh').removeClass('d-block');
+        })
+
+        $('#modalThemMoi input, #modalThemMoi textarea').keypress(function(e) {
             let keyCode = e.keyCode || e.which;
             if (keyCode === 13) {
                 if ($('#modalThemMoi').hasClass('show')) {
@@ -26,20 +45,7 @@
                 e.preventDefault();
                 return false;
             }
-        });
-
-        @if($info->id == '1000000000')
-        $('#boxNgaySinh').datetimepicker({
-            format: 'DD/MM/YYYY',
-            keepOpen: false
-        });
-        $('#boxNgaySinh .inpNgaySinh').focus(() => {
-            $('#boxNgaySinh').datetimepicker('show');
-            $('#modalThemMoi .errorNgaySinh').removeClass('d-block');
-        })
-        @endif
-
-        $('input, textarea').on('input', function () {
+        }).on('input', function () {
             if ($(this).hasClass('is-invalid')) {
                 $(this).removeClass('is-invalid');
             }
@@ -49,31 +55,7 @@
         }).on('hidden.bs.modal', function() {
             $(this).find('.is-invalid').removeClass('is-invalid');
         })
-        $('#btnLamMoi').click(() => {
-            tblDanhSach.setData('/api/quan-ly/danh-muc/nhan-vien/danh-sach');
-        })
 
-        @if($info->id != '1000000000')
-        $('#modalXem .col-thongtin i').remove();
-        @endif
-    }
-
-    @if($info->id == '1000000000')
-    function initChucVu() {
-        $('#modalThemMoi .selLoai').select2({
-            data: chucvus,
-            minimumResultsForSearch: -1
-        });
-    }
-
-    function initChiNhanh() {
-        $('#modalThemMoi .selChiNhanh').select2({
-            data: chinhanhs,
-            minimumResultsForSearch: -1
-        })
-    }
-
-    function actionThemMoi() {
         $('#modalThemMoi .btnSubmit').click(() => {
             let ten = $('#modalThemMoi .inpTen').val().trim();
             let dienthoai = $('#modalThemMoi .inpDienThoai').val().trim();
@@ -135,7 +117,7 @@
             $.each($('#modalXem .col-thongtin'), function(key, col) {
                 clickXemThongTin(data,col);
             })
-            @if($info->id == '1000000000')
+            @if(in_array('danh-muc.nhan-vien.action',$info->phanquyen) !== false)
             if (isNull(data.deleted_at)) {
                 $('#modalXem button.delete').attr('class','btn bg-gradient-danger delete')
                     .text('Xóa thông tin').off('click').click(() => {
@@ -180,7 +162,7 @@
                     label: '<i class="fa fa-info-circle text-info"></i> Chi tiết',
                     action: xemThongTin
                 },
-                @if($info->id == '1000000000')
+                @if(in_array('danh-muc.nhan-vien.action',$info->phanquyen) !== false)
                 {
                     label: '<i class="fas ' + (isNull(data.deleted_at) ? 'fa-trash-alt text-danger' : 'fa-trash-restore-alt text-success')
                         + '"></i> ' + (isNull(data.deleted_at) ? 'Xóa' : 'Phục hồi'),
@@ -193,12 +175,16 @@
                         }
                     }
                 },
+                @endif
+                @if(in_array('danh-muc.nhan-vien.reset-matkhau',$info->phanquyen) !== false)
                 {
                     label: '<i class="fa fa-lock text-warning"></i> Reset mật khẩu',
                     action: () => {
                         resetMatKhau(data.id)
                     }
                 },
+                @endif
+                @if(in_array('danh-muc.nhan-vien.phan-quyen',$info->phanquyen) !== false)
                 {
                     label: '<i class="fa fa-user text-dark"></i> Phân quyền',
                     action: () => {
@@ -225,7 +211,7 @@
                     menu: subMenus
                 }
             ];
-            @if($info->id == '1000000000')
+            @if(in_array('danh-muc.nhan-vien.chinh-sua',$info->phanquyen) !== false)
             if ($('#modalXem .col-thongtin[data-field=' + cell.getField() + '] i.edit').length > 0) {
                 menus.unshift({
                     label: '<i class="fa fa-edit text-primary"></i> Chỉnh sửa',
@@ -273,6 +259,7 @@
                 {title: "Ghi chú", field: "ghichu", vertAlign: 'middle', headerSort: false, contextMenu,
                     visible: isNull(views) ? true : views.ghichu},
             ],
+            @if(in_array('danh-muc.nhan-vien.action',$info->phanquyen) !== false)
             rowFormatter: (row) => {
                 if (!isNull(row.getData().deleted_at)) {
                     $(row.getElement()).addClass('text-danger');
@@ -281,6 +268,7 @@
                     $(row.getElement()).removeClass('text-danger');
                 }
             },
+            @endif
             ajaxURL: '/api/quan-ly/danh-muc/nhan-vien/danh-sach',
             height: '450px',
             movableColumns: false,
@@ -304,7 +292,7 @@
         let ten = $(col).attr('data-title');
         let value = data[field];
         $(col).find('span').text(field === 'chucvu' ? getChucVu(value) : (field === 'chinhanh_id' ? getChiNhanh(value) : value));
-        @if($info->id == '1000000000')
+        @if(in_array('danh-muc.nhan-vien.chinh-sua',$info->phanquyen) !== false)
         let edit = $(col).find('i.edit');
         if (edit.length > 0) {
             edit.off('click').click(() => {
@@ -314,7 +302,7 @@
         @endif
     }
 
-    @if($info->id == '1000000000')
+    @if(in_array('danh-muc.nhan-vien.chinh-sua',$info->phanquyen) !== false)
     function clickSuaThongTin(field, value, ten, data, col = null) {
         let onSubmit = () => {
             let value = $('#modalInput .value').val().trim();
@@ -367,7 +355,9 @@
             mInput(data.ten,value,true).date(ten,ten + '...',onSubmit,'Ngày sinh không được bỏ trống!');
         }
     }
+    @endif
 
+    @if(in_array('danh-muc.nhan-vien.action',$info->phanquyen) !== false)
     function clickXoaThongTin(cell) {
         sToast.confirm('Xác nhận xóa thông tin nhân viên?','',
             (result) => {
@@ -428,7 +418,9 @@
                 }
             });
     }
+    @endif
 
+    @if(in_array('danh-muc.nhan-vien.reset-matkhau',$info->phanquyen) !== false)
     function resetMatKhau(id) {
         mInput('Reset mật khẩu nhân viên','',true).password('Mật khẩu mới','Nhập mật khẩu mới...',
             () => {
@@ -457,7 +449,9 @@
                 });
             },'Mật khẩu mới không được bỏ trống!');
     }
+    @endif
 
+    @if(in_array('danh-muc.nhan-vien.phan-quyen',$info->phanquyen) !== false)
     function initDanhSachPhanQuyen(data, id, isChinhSua = false) {
         let _data = JSON.parse(JSON.stringify(data));
         if (isChinhSua) {
@@ -475,7 +469,7 @@
             })
             $('#modalPhanQuyen .btnCancel, #modalPhanQuyen .btnSubmit').off('click').addClass('d-none');
         }
-        let contextMenu = () => {
+        let contextMenu = (cell) => {
             let menus;
             if (isChinhSua) {
                 let isTatCa = true;
@@ -530,6 +524,29 @@
             else {
                 menus = [
                     {
+                        label: cell.getData().checked ? '<i class="fa fa-times text-danger"></i> Hủy quyền' : '<i class="fa fa-check text-success"></i> Chọn quyền',
+                        action: () => {
+                            sToast.loading('Đang cập nhật dữ liệu. Vui lòng chờ...')
+                            $.ajax({
+                                url: '/api/quan-ly/danh-muc/nhan-vien/chon-quyen',
+                                type: 'get',
+                                dataType: 'json',
+                                data: {
+                                    id,
+                                    quyen: cell.getData().id
+                                }
+                            }).done((result) => {
+                                if (result.succ) {
+                                    cell.getTable().updateData([{
+                                        id: cell.getData().id,
+                                        checked: !cell.getData().checked
+                                    }])
+                                    initSoQuyen();
+                                }
+                            });
+                        }
+                    },
+                    {
                         label: '<i class="fa fa-edit text-primary"></i> Chỉnh sửa',
                         action: () => {
                             initDanhSachPhanQuyen(_data,id,true);
@@ -567,28 +584,27 @@
                     $('#modalPhanQuyen .lblSoQuyen').text(checked ? --soQuyen : ++soQuyen);
                 }
             },
-            pagination: 'local',
-            paginationSize: 10,
             pageLoaded: () => {
-                tblDanhSach.getColumns()[0].updateDefinition();
-            },
-            dataFiltered: function () {
                 if (isNull(tblDanhSach) || isUndefined(tblDanhSach)) {
                     return false;
                 }
                 setTimeout(() => {tblDanhSach.getColumns()[0].updateDefinition()},10);
-            }
+            },
         });
         initSearchTable(tblPhanQuyen,['ten','chucnang']);
 
+        tblPhanQuyen.setData(_data);
+        initSoQuyen();
+    }
+
+    function initSoQuyen() {
         let soQuyen = 0;
-        _data.forEach((value) => {
+        tblPhanQuyen.getData().forEach((value) => {
             if (value.checked) {
                 soQuyen++;
             }
         });
         $('#modalPhanQuyen .lblSoQuyen').text(soQuyen);
-        tblPhanQuyen.setData(_data);
     }
 
     function actionPhanQuyen(id) {
@@ -617,6 +633,7 @@
                 }
             })
     }
+    @endif
 
     function showError(type, erro = '') {
         let inputs = {
@@ -634,7 +651,6 @@
             inputs[type].focus();
         }
     }
-    @endif
 
     function getChucVu(chucvu) {
         let result = 'Không có';

@@ -29,8 +29,13 @@ class ChiNhanhController extends Controller
         ]);
     }
 
-    public function danh_sach() {
-        return ChiNhanh::withTrashed()->orderBy('deleted_at')->orderBy('updated_at','desc')->get();
+    public function danh_sach(Request $request) {
+        if (Funcs::isPhanQuyenByToken('danh-muc.chi-nhanh.action',$request->cookie('token'))) {
+            return ChiNhanh::withTrashed()->orderBy('deleted_at')->orderBy('updated_at','desc')->get();
+        }
+        else {
+            return ChiNhanh::orderBy('updated_at','desc')->get();
+        }
     }
 
     public function them_moi(Request $request) {

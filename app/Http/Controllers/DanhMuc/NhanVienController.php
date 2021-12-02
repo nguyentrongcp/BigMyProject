@@ -34,13 +34,12 @@ class NhanVienController extends Controller
     }
 
     public function danh_sach(Request $request) {
-        if(Funcs::getNhanVienIDByToken($request->cookie('token')) == '1000000000') {
+        if(Funcs::isPhanQuyenByToken('danh-muc.nhan-vien.action',$request->cookie('token'))) {
             $nhanviens = NhanVien::withTrashed()->orderBy('deleted_at')
                 ->orderBy('updated_at','desc')->get();
         }
         else {
-            $nhanviens = NhanVien::orderBy('deleted_at')
-                ->orderBy('updated_at','desc')->get();
+            $nhanviens = NhanVien::orderBy('updated_at','desc')->get();
         }
 
         return $nhanviens;
@@ -97,6 +96,72 @@ class NhanVienController extends Controller
             return [
                 'succ' => 0,
                 'noti' => 'Cập nhật phân quyền thất bại!'
+            ];
+        }
+    }
+
+    public function chon_quyen(Request $request) {
+        $id = $request->id;
+        $quyen = $request->quyen;
+        $nhanvien = NhanVien::find($id,['id','phanquyen','quyendacbiet','quyenloaibo','chucvu']);
+        $chucvu = ChucVu::where('loai',$nhanvien->chucvu)->first('phanquyen');
+        $chucvu->phanquyen = json_decode($chucvu->phanquyen) ?? [];
+        $phanquyen = json_decode($nhanvien->phanquyen) ?? [];
+        $quyendacbiet = json_decode($nhanvien->quyendacbiet) ?? [];
+        $quyenloaibo = json_decode($nhanvien->quyenloaibo) ?? [];
+
+        if (in_array($quyen,$phanquyen) === false) {
+            $phanquyen[] = $quyen;
+            if (in_array($quyen,$chucvu->phanquyen) === false) {
+                $quyendacbiet[] = $quyen;
+            }
+            else {
+                $quyenloaibo_new = [];
+                foreach($quyenloaibo as $value) {
+                    if ($value !== $quyen) {
+                        $quyenloaibo_new[] = $value;
+                    }
+                }
+                $quyenloaibo = $quyenloaibo_new;
+            }
+        }
+        else {
+            $phanquyen_new = [];
+            foreach($phanquyen as $value) {
+                if ($value !== $quyen) {
+                    $phanquyen_new[] = $value;
+                }
+            }
+            $phanquyen = $phanquyen_new;
+            if (in_array($quyen,$chucvu->phanquyen) !== false) {
+                $quyenloaibo[] = $quyen;
+            }
+            else {
+                $quyendacbiet_new = [];
+                foreach($quyendacbiet as $value) {
+                    if ($quyen !== $value) {
+                        $quyendacbiet_new[] = $value;
+                    }
+                }
+                $quyendacbiet = $quyendacbiet_new;
+            }
+        }
+
+        $nhanvien->quyendacbiet = json_encode($quyendacbiet);
+        $nhanvien->quyenloaibo = json_encode($quyenloaibo);
+        $nhanvien->phanquyen = json_encode($phanquyen);
+
+        if ($nhanvien->update()) {
+            event(new Pusher('reload-info-'.$id,''));
+            return [
+                'succ' => 1,
+                'noti' => 'Cập nhật phân quyền nhân viên thành công.'
+            ];
+        }
+        else {
+            return [
+                'succ' => 0,
+                'noti' => 'Cập nhật phân quyền nhân viên thất bại!'
             ];
         }
     }
@@ -217,6 +282,13 @@ class NhanVienController extends Controller
             if ($field === 'ten') {
                 $model->slug = Funcs::convertToSlug($value);
             }
+        }
+
+        if ($field == 'chucvu') {
+            $model->quyendacbiet = null;
+            $model->quyenloaibo = null;
+            $phanquyen = ChucVu::where('loai',$value)->first('phanquyen');
+            $model->phanquyen = $phanquyen->phanquyen ?? null;
         }
 
         if ($model->save()) {

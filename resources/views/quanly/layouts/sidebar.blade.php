@@ -141,8 +141,8 @@
                         <p>
                             Nhập Hàng
                             <i class="right fas fa-angle-left"></i>
-                            @if(in_array('nhap-hang',$info->phanquyen) !== false)
-                            <span class="right badge badge-danger" id="lblSoPhieuNhap"></span>
+                            @if(in_array('nhap-hang.danh-sach',$info->phanquyen) !== false)
+                            <span class="right badge badge-danger" id="lblSoPhieuNhap">{{ $so_phieunhap > 0 ? $so_phieunhap : '' }}</span>
                             @endif
                         </p>
                     </a>
@@ -174,7 +174,7 @@
                             Chuyển Kho Nội Bộ
                             <i class="right fas fa-angle-left"></i>
                             @if(in_array('chuyenkho-noibo.nhap-kho',$info->phanquyen) !== false)
-                            <span class="right badge badge-danger" id="lblSoPhieuXuatKho"></span>
+                            <span class="right badge badge-danger" id="lblSoPhieuXuatKho">{{ $so_phieuxuat > 0 ? $so_phieuxuat : '' }}</span>
                             @endif
                         </p>
                     </a>

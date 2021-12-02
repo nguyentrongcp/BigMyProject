@@ -28,7 +28,7 @@
                                     <button class="btn btn-default" id="btnLamMoi">
                                         <i class="fa fa-refresh"></i>
                                     </button>
-                                    @if($info->id == '1000000000')
+                                    @if(in_array('danh-muc.nhan-vien.them-moi',$info->phanquyen) !== false)
                                     <button class="btn bg-gradient-primary font-weight-bolder ml-1" data-toggle="modal" data-target="#modalThemMoi">
                                         Thêm Mới
                                     </button>
@@ -43,7 +43,7 @@
         </section>
     </div>
 
-    @if($info->id == '1000000000')
+    @if(in_array('danh-muc.nhan-vien.them-moi',$info->phanquyen) !== false)
     <div class="modal fade" id="modalThemMoi">
         <div class="modal-dialog modal-dialog-scrollable">
             <div class="modal-content">
@@ -168,7 +168,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    @if($info->id == '1000000000')
+                    @if(in_array('danh-muc.nhan-vien.action',$info->phanquyen) !== false)
                     <button type="button" class="btn bg-gradient-danger delete mr-auto">Xóa Thông Tin</button>
                     @endif
                     <button type="button" class="btn bg-gradient-secondary" data-dismiss="modal">Thoát</button>
@@ -177,6 +177,7 @@
         </div>
     </div>
 
+    @if(in_array('danh-muc.nhan-vien.phan-quyen',$info->phanquyen) !== false)
     <div class="modal fade" id="modalPhanQuyen">
         <div class="modal-dialog modal-xl">
             <div class="modal-content">
@@ -213,6 +214,7 @@
         </div>
         <!-- /.modal-dialog -->
     </div>
+    @endif
 @stop
 
 @include('quanly.danhmuc.nhanvien.js')

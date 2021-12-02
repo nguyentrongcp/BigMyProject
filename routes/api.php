@@ -75,6 +75,7 @@ Route::prefix('quan-ly')->group(function() {
                 Route::get('them-moi',[NhanVienController::class, 'them_moi']);
                 Route::get('cap-nhat',[NhanVienController::class, 'cap_nhat']);
                 Route::get('phan-quyen',[NhanVienController::class, 'phan_quyen']);
+                Route::get('chon-quyen',[NhanVienController::class, 'chon_quyen']);
                 Route::get('xoa',[NhanVienController::class, 'xoa']);
                 Route::get('phuc-hoi',[NhanVienController::class, 'phuc_hoi']);
                 Route::get('danh-sach',[NhanVienController::class, 'danh_sach']);
@@ -140,6 +141,7 @@ Route::prefix('quan-ly')->group(function() {
             Route::get('tim-kiem',[BanHangController::class, 'tim_kiem']);
             Route::post('luu-phieu',[BanHangController::class, 'luu_phieu']);
             Route::get('danh-sach',[BanHangController::class, 'danh_sach']);
+            Route::get('danhsach-khachhang',[BanHangController::class, 'danhsach_khachhang']);
         });
 
         Route::prefix('khach-tra-hang')->group(function() {

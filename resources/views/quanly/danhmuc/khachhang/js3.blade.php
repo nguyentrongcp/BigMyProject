@@ -10,14 +10,17 @@
             value = doi_ngay(value);
         }
         $(col).find('span').text(value);
+        @if(in_array('danh-muc.khach-hang.chinh-sua',$info->phanquyen) !== false)
         let edit = $(col).find('i.edit');
         if (edit.length > 0) {
             edit.off('click').click(() => {
                 clickSuaThongTin(field,data[field],ten,data,col);
             })
         }
+        @endif
     }
 
+    @if(in_array('danh-muc.khach-hang.chinh-sua',$info->phanquyen) !== false)
     function clickSuaThongTin(field, value, ten, data, col = null) {
         let onSubmit = () => {
             let value = $('#modalInput .value').val();
@@ -90,4 +93,5 @@
             mInput(data.ten,value).select2(ten,'',caytrongs,true,onSubmit,'',true);
         }
     }
+    @endif
 </script>

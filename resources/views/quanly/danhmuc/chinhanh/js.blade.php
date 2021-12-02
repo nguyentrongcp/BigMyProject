@@ -9,57 +9,46 @@
         khohanghong: 'Kho hàng hỏng'
     }
     init();
-    initLoai();
     initDanhSach();
-    @if($info->id == '1000000000')
-    actionThemMoi();
-    @endif
 
     function init() {
         $('#btnLamMoi').click(() => {
             tblDanhSach.setData('/api/quan-ly/danh-muc/chi-nhanh/danh-sach');
         })
 
-        $('input, textarea').keypress(function (e) {
+        @if(in_array('danh-muc.chi-nhanh.chinh-sua',$info->phanquyen) === false)
+        $('#modalXem .col-thongtin i').remove();
+        @endif
+    }
+
+    @if(in_array('danh-muc.chi-nhanh.them-moi',$info->phanquyen) !== false)
+    initActionThemMoi();
+    function initActionThemMoi() {
+        $('#modalThemMoi').on('shown.bs.modal', function () {
+            $(this).find('.inpTen').focus();
+            initSelect2($('#modalThemMoi .selCopyGia'),getChiNhanhs(),{
+                minimumResultsForSearch: -1
+            })
+        }).on('hidden.bs.modal', function() {
+            $(this).find('.is-invalid').removeClass('is-invalid');
+        })
+        $('#modalThemMoi .selLoai').select2({
+            minimumResultsForSearch: -1
+        });
+        $('#modalThemMoi input, #modalThemMoi textarea').keypress(function (e) {
             let keyCode = e.keyCode || e.which;
             if (keyCode === 13) {
                 $('#modalThemMoi .btnSubmit').click();
                 e.preventDefault();
                 return false;
             }
-        });
-
-        $('input, textarea').on('input', function () {
+        }).on('input', function () {
             if ($(this).hasClass('is-invalid')) {
                 $(this).removeClass('is-invalid');
             }
         });
-
-        $('#modalThemMoi').on('shown.bs.modal', function () {
-            $(this).find('.inpTen').focus();
-            $('#modalThemMoi .selCopyGia').html(null).trigger('change').select2({
-                data: getChiNhanhs(),
-                minimumResultsForSearch: -1
-            })
-        }).on('hidden.bs.modal', function() {
-            $(this).find('.is-invalid').removeClass('is-invalid');
-        })
-
         autosize($('#modalThemMoi .inpGhiChu'));
 
-        @if($info->id !== '1000000000')
-        $('#modalXem .col-thongtin i').remove();
-        @endif
-    }
-
-    function initLoai() {
-        $('#modalThemMoi .selLoai').select2({
-            minimumResultsForSearch: -1
-        });
-    }
-
-    @if($info->id == '1000000000')
-    function actionThemMoi() {
         $('#modalThemMoi .btnSubmit').click(() => {
             let ten = $('#modalThemMoi .inpTen').val().trim();
             let dienthoai = $('#modalThemMoi .inpDienThoai').val().trim();
@@ -122,7 +111,7 @@
             $.each($('#modalXem .col-thongtin'), function(key, col) {
                 clickXemThongTin(data,col);
             })
-            @if($info->id == '1000000000')
+            @if(in_array('danh-muc.chi-nhanh.action',$info->phanquyen) !== false)
             if (isNull(data.deleted_at)) {
                 $('#modalXem button.delete').attr('class','btn bg-gradient-danger delete')
                     .text('Xóa thông tin').off('click').click(() => {
@@ -167,7 +156,7 @@
                     label: '<i class="fa fa-info-circle text-info"></i> Chi tiết',
                     action: xemThongTin
                 },
-                @if($info->id == '1000000000')
+                @if(in_array('danh-muc.chi-nhanh.action',$info->phanquyen) !== false)
                 {
                     label: '<i class="fas ' + (isNull(data.deleted_at) ? 'fa-trash-alt text-danger' : 'fa-trash-restore-alt text-success')
                         + '"></i> ' + (isNull(data.deleted_at) ? 'Xóa' : 'Phục hồi'),
@@ -186,7 +175,7 @@
                     menu: subMenus
                 }
             ];
-            @if($info->id == '1000000000')
+            @if(in_array('danh-muc.chi-nhanh.chinh-sua',$info->phanquyen) !== false)
             if ($('#modalXem .col-thongtin[data-field=' + cell.getField() + '] i.edit').length > 0) {
                 menus.unshift({
                     label: '<i class="fa fa-edit text-primary"></i> Chỉnh sửa',
@@ -239,6 +228,7 @@
                 {title: "Ghi chú", field: "ghichu", vertAlign: 'middle', headerSort: false, contextMenu,
                     visible: isNull(views) ? true : views.ghichu},
             ],
+            @if(in_array('danh-muc.chi-nhanh.action',$info->phanquyen) !== false)
             rowFormatter: (row) => {
                 if (!isNull(row.getData().deleted_at)) {
                     $(row.getElement()).addClass('text-danger');
@@ -247,6 +237,7 @@
                     $(row.getElement()).removeClass('text-danger');
                 }
             },
+            @endif
             ajaxURL: '/api/quan-ly/danh-muc/chi-nhanh/danh-sach',
             height: '450px',
             movableColumns: false,
@@ -270,7 +261,7 @@
         let ten = $(col).attr('data-title');
         let value = data[field];
         $(col).find('span').text(field === 'loai' ? loais[value] : value);
-        @if($info->id == '1000000000')
+        @if(in_array('danh-muc.chi-nhanh.chinh-sua',$info->phanquyen) !== false)
         let edit = $(col).find('i.edit');
         if (edit.length > 0) {
             edit.off('click').click(() => {
@@ -280,7 +271,7 @@
         @endif
     }
 
-    @if($info->id == '1000000000')
+    @if(in_array('danh-muc.chi-nhanh.chinh-sua',$info->phanquyen) !== false)
     function clickSuaThongTin(field, value, ten, data, col = null) {
         let onSubmit = () => {
             let value = $('#modalInput .value').val().trim();
@@ -328,7 +319,9 @@
             mInput(data.ten,value).select2(ten,'',_loais,true,onSubmit);
         }
     }
+    @endif
 
+    @if(in_array('danh-muc.chi-nhanh.action',$info->phanquyen) !== false)
     function clickXoaThongTin(cell) {
         sToast.confirm('Xác nhận xóa thông tin cửa hàng?',
             '<div>' + cell.getData().ten + '</div>' +
@@ -405,6 +398,7 @@
                     });
             })
     }
+    @endif
 
     function showError(type, erro = '') {
         let inputs = {
@@ -419,7 +413,6 @@
         inputs[type].addClass('is-invalid');
         inputs[type].focus();
     }
-    @endif
 
     function getChiNhanhs() {
         let chinhanhs = [];

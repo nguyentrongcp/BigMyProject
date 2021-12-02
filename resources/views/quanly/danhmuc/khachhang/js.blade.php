@@ -14,6 +14,7 @@
                 tblDanhSach.setData('/api/quan-ly/danh-muc/khach-hang/danh-sach' + $(this).attr('data-value'));
             }
         })
+        @if(in_array('danh-muc.khach-hang.thu-cong-no',$info->phanquyen) !== false || in_array('danh-muc.khach-hang.dieuchinh-congno',$info->phanquyen) !== false)
         $('#modalActionCongNo').on('shown.bs.modal', function() {
             $(this).find('.inpSoTien').focus();
         }).on('hidden.bs.modal', function() {
@@ -33,6 +34,11 @@
                 $(this).removeClass('is-invalid');
             }
         });
+        @endif
+
+        @if(in_array('danh-muc.khach-hang.chinh-sua',$info->phanquyen) === false)
+        $('#modalXem .col-thongtin i').remove();
+        @endif
     }
 
     function initDanhSach() {
@@ -41,7 +47,7 @@
             $.each($('#modalXem .col-thongtin'), function(key, col) {
                 clickXemThongTin(data,col);
             })
-            @if($info->id == '1000000000')
+            @if(in_array('danh-muc.khach-hang.action',$info->phanquyen) !== false)
             if (isNull(data.deleted_at)) {
                 $('#modalXem button.delete').attr('class','btn bg-gradient-danger delete')
                     .text('Xóa thông tin').off('click').click(() => {
@@ -86,7 +92,7 @@
                     label: '<i class="fa fa-info-circle text-info"></i> Chi tiết',
                     action: xemThongTin
                 },
-                @if($info->id == '1000000000')
+                @if(in_array('danh-muc.khach-hang.action',$info->phanquyen) !== false)
                 {
                     label: '<i class="fas ' + (isNull(data.deleted_at) ? 'fa-trash-alt text-danger' : 'fa-trash-restore-alt text-success')
                         + '"></i> ' + (isNull(data.deleted_at) ? 'Xóa' : 'Phục hồi'),
@@ -106,7 +112,7 @@
                 }
             ];
             let menuCongNo = [];
-            @if($info->id == '1000000000')
+            @if(in_array('danh-muc.khach-hang.dieuchinh-congno',$info->phanquyen) !== false)
                 menuCongNo.push({
                     label: '<i class="fa fa-edit"></i> Điều chỉnh công nợ',
                     action: () => {
@@ -114,6 +120,7 @@
                     }
                 });
             @endif
+            @if(in_array('danh-muc.khach-hang.thu-cong-no',$info->phanquyen) !== false)
             if (cell.getData().congno > 0) {
                 menuCongNo.unshift({
                     label: '<i class="fa fa-plus"></i> Thu công nợ',
@@ -122,12 +129,14 @@
                     }
                 })
             }
+            @endif
             if (menuCongNo.length > 0) {
                 menus.unshift({
                     label: '<i class="fa fa-usd text-secondary"></i> Công nợ',
                     menu: menuCongNo
                 });
             }
+            @if(in_array('danh-muc.khach-hang.chinh-sua',$info->phanquyen) !== false)
             if ($('#modalXem .col-thongtin[data-field=' + cell.getField() + '] i.edit').length > 0) {
                 menus.unshift({
                     label: '<i class="fa fa-edit text-primary"></i> Chỉnh sửa',
@@ -140,6 +149,7 @@
                     }
                 });
             }
+            @endif
 
             return menus;
         }
@@ -177,6 +187,7 @@
                 {title: "Ghi chú", field: "ghichu", vertAlign: 'middle', headerSort: false, contextMenu,
                     visible: isNull(views) ? true : views.ghichu},
             ],
+            @if(in_array('danh-muc.khach-hang.action',$info->phanquyen) !== false)
             rowFormatter: (row) => {
                 if (!isNull(row.getData().deleted_at)) {
                     $(row.getElement()).addClass('text-danger');
@@ -185,6 +196,7 @@
                     $(row.getElement()).removeClass('text-danger');
                 }
             },
+            @endif
             ajaxURL: '/api/quan-ly/danh-muc/khach-hang/danh-sach',
             height: '450px',
             movableColumns: false,
@@ -209,7 +221,7 @@
         initSearchTable(tblDanhSach,['ma','dienthoai','dienthoai2','ten']);
     }
 
-    @if($info->id == '1000000000')
+    @if(in_array('danh-muc.khach-hang.action',$info->phanquyen) !== false)
     function clickXoaThongTin(cell) {
         sToast.confirm('Xác nhận xóa thông tin khách hàng?','',
             (result) => {
@@ -271,8 +283,7 @@
     }
     @endif
 
-
-
+    @if(in_array('danh-muc.khach-hang.thu-cong-no',$info->phanquyen) !== false || in_array('danh-muc.khach-hang.dieuchinh-congno',$info->phanquyen) !== false)
     function actionCongNo(khachhang, is_dieuchinh = true) {
         let modal = $('#modalActionCongNo');
         modal.find('.inpMa').val(khachhang.ma);
@@ -349,4 +360,5 @@
         $('#modalActionCongNo').modal('show').find('.modal-title')
             .text((is_dieuchinh ? 'Điều Chỉnh' : 'Thu') + ' Công Nợ Khách Hàng');
     }
+    @endif
 </script>
