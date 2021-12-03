@@ -13,7 +13,7 @@ class TonKhoController extends Controller
 {
     public function index() {
         $info = Funcs::getNhanVienByToken($_COOKIE['token'],['id','chinhanh_id']);
-        if ($info->id == '1000000000') {
+        if (Funcs::isPhanQuyenByToken('role.chi-nhanh.tat-ca',$_COOKIE['token'])) {
             $chinhanhs = ChiNhanh::whereIn('loai',['cuahang','khohanghong'])->get(['id','ten as text']);
         }
         else {

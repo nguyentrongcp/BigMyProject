@@ -17,7 +17,7 @@ class ThuChiController extends Controller
 {
     public function index() {
         $info = Funcs::getNhanVienByToken($_COOKIE['token'],['id','chinhanh_id']);
-        if ($info->id == '1000000000') {
+        if (Funcs::isPhanQuyenByToken('role.chi-nhanh.tat-ca',$_COOKIE['token'])) {
             $chinhanhs = ChiNhanh::where('loai','cuahang')->orWhere('id',$info->chinhanh_id)->get(['id','ten as text']);
         }
         else {

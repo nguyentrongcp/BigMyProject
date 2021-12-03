@@ -95,7 +95,7 @@
                     // Query parameters will be ?search=[term]&type=public
                     return query;
                 },
-                delay: 250
+                delay: 300
             },
             dropdownCssClass : 'select2-hanghoa',
             templateResult: (value) => {
@@ -178,7 +178,7 @@
                     // Query parameters will be ?search=[term]&type=public
                     return query;
                 },
-                delay: 250
+                delay: 300
             },
             templateResult: (value) => {
                 if (!isUndefined(value.id)) {
@@ -338,7 +338,6 @@
                                     thanhtien: data.soluong * (data.dongia - value)
                                 }]);
                                 $('#modalInput').modal('hide');
-                                actionTinhTien();
                             }, 'Giảm giá không hợp lệ!');
                     }},
                 {title: "Số lượng", field: "soluong", headerSort: false, hozAlign: 'right', vertAlign: 'middle', contextMenu,
@@ -359,7 +358,6 @@
                                     thanhtien: value * (data.dongia - data.giamgia)
                                 }]);
                                 $('#modalInput').modal('hide');
-                                actionTinhTien();
                             }, 'Số lượng không hợp lệ!');
                     }},
                 {title: "Thành tiền", field: "thanhtien", headerSort: false, hozAlign: 'right', vertAlign: 'middle', contextMenu,

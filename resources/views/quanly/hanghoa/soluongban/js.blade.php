@@ -1,7 +1,7 @@
 <script>
     let tblDanhSach;
     let chinhanhs = JSON.parse('{!! str_replace("'","\'",json_encode($chinhanhs)) !!}');
-    @if($info->id == '1000000000')
+    @if(in_array('role.chi-nhanh.tat-ca',$info->phanquyen) !== false)
     chinhanhs.unshift({id: 'all', text: 'Toàn hệ thống'});
     @endif
     init();
@@ -24,7 +24,7 @@
         $('#selChiNhanh').select2({
             data: chinhanhs,
             minimumResultsForSearch: -1
-        })
+        }).val(info.chinhanh_id).trigger('change')
     }
 
     function initSelHangHoa() {
@@ -38,7 +38,8 @@
 
                     // Query parameters will be ?search=[term]&type=public
                     return query;
-                }
+                },
+                delay: 300
             },
             allowClear: true,
             placeholder: 'Tất cả hàng hóa'

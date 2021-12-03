@@ -100,12 +100,6 @@
                                     LỌC DỮ LIỆU
                                 </button>
                             </div>
-{{--                            <div>--}}
-{{--                                <button class="btn bg-gradient-primary btn-block font-weight-bolder" disabled id="btnKetSo">--}}
-{{--                                    <i class="fa fa-book mr-1"></i>--}}
-{{--                                    KẾT SỔ  --}}
-{{--                                </button>--}}
-{{--                            </div>--}}
                         </div>
                     </div>
                 </div>

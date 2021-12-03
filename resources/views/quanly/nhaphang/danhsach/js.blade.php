@@ -5,7 +5,6 @@
     init();
     initTblHangHoa();
     initActionChonPhieu();
-    // initActionXemPhieu();
     initTblDanhSachPhieuNhap();
     initTblDanhSachPhieu();
 
@@ -87,80 +86,6 @@
             }
         });
     }
-
-    // function initActionXemPhieu() {
-    //     $('#btnXemPhieu').off('click').click(() => {
-    //         let dshanghoa = [];
-    //         tblHangHoa.getData().forEach((value) => {
-    //             dshanghoa.push({
-    //                 hanghoa: {
-    //                     id: value.hanghoa_id,
-    //                     ma: value.ma,
-    //                     ten: value.ten,
-    //                     donvitinh: value.donvitinh,
-    //                     quycach: value.quycach
-    //                 },
-    //                 soluong: value.soluong,
-    //                 hansudung: value.hansudung
-    //             })
-    //         })
-    //         if (dshanghoa.length === 0) {
-    //             sToast.toast(0,'Bạn chưa chọn hàng hóa!');
-    //             return false;
-    //         }
-    //         let doituong = $('#selNhaCungCap').select2('data');
-    //         if (doituong.length === 0) {
-    //             sToast.toast(0,'Bạn chưa chọn nhà cung cấp!');
-    //             return false;
-    //         }
-    //         doituong = {
-    //             id: doituong[0].id,
-    //             ma: doituong[0].ma,
-    //             ten: doituong[0].ten
-    //         }
-    //
-    //         sToast.loading('Đang lấy thông tin phiếu. Vui lòng chờ...');
-    //
-    //         let data = {
-    //             dshanghoa, doituong,
-    //             ghichu: $('#inpGhiChu').val().trim()
-    //         }
-    //         $.ajax({
-    //             url: '/api/quan-ly/phieu/tao-phieu/NH',
-    //             type: 'get',
-    //             dataType: 'json',
-    //             data: {
-    //                 phieu: JSON.stringify(data)
-    //             }
-    //         }).done((result) => {
-    //             if (result.succ) {
-    //                 mPhieu('/quan-ly/xem-phieu/' + result.data.maphieu).taophieu(() => {
-    //                     sToast.confirm('Xác nhận tạo phiếu nhập hàng?','',
-    //                         (confirmed) => {
-    //                             if (confirmed.isConfirmed) {
-    //                                 sToast.loading('Đang tạo phiếu. Vui lòng chờ...');
-    //                                 $.ajax({
-    //                                     url: '/api/quan-ly/nhap-hang/luu-phieu',
-    //                                     type: 'post',
-    //                                     dataType: 'json',
-    //                                     data: {
-    //                                         phieu: JSON.stringify(data)
-    //                                     }
-    //                                 }).done((result) => {
-    //                                     if (result.succ) {
-    //                                         mPhieu('/quan-ly/xem-phieu/' + result.data.maphieu + '?deletable=1').xemphieu();
-    //                                         $('#selNhaCungCap').val(null).trigger('change');
-    //                                         $('#inpGhiChu').val('').css('height','unset');
-    //                                         tblHangHoa.clearData();
-    //                                     }
-    //                                 });
-    //                             }
-    //                         })
-    //                 })
-    //             }
-    //         });
-    //     })
-    // }
 
     function initTblDanhSachPhieuNhap() {
         let cellClick = (e, cell) => {
@@ -266,11 +191,8 @@
                     }, cellClick: (e, cell) => {
                         mPhieu('/quan-ly/xem-phieu/' + cell.getValue() + '?deletable=1').xemphieu(cell.getTable());
                     }},
-                @if($info->id == '1000000000')
                 {title: 'Cửa hàng', field: 'chinhanh', headerSort: false},
-                @endif
                 {title: 'Nhà cung cấp', field: 'doituong', headerSort: false},
-                @if($info->id == '1000000000')
                 {title: 'Tiền thanh toán', field: 'tienthanhtoan', headerHozAlign: 'right',
                     hozAlign: 'right', headerSort: false, vertAlign: 'middle',
                     formatter: function(cell) {
@@ -286,7 +208,6 @@
                     }, bottomCalcFormatter: (cell) => {
                         return '<span class="text-tienthanhtoan font-weight-bolder">' + cell.getValue() + '</span>';
                     }},
-                @endif
                 {title: 'Số phiếu', field: 'sophieu', headerHozAlign: 'right', headerSort: false, hozAlign: 'right', vertAlign: 'middle'},
                 {title: 'NV lập phiếu', field: 'nhanvien', headerSort: false}
             ],

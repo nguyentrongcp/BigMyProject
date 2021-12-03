@@ -15,7 +15,8 @@
 
                     // Query parameters will be ?search=[term]&type=public
                     return query;
-                }
+                },
+                delay: 250
             },
             allowClear: true,
             placeholder: 'Chọn hàng hóa...'
@@ -43,7 +44,9 @@
                 {title: "Giá bán", field: "dongia", vertAlign: 'middle', hozAlign: 'right', sorter: 'number',
                     formatter: (cell) => {
                         return '<span class="text-danger font-weight-bolder">' + numeral(cell.getValue()).format('0,0') + '</span>';
-                    }, cellClick: (e, cell) => {
+                    },
+                    @if(in_array('hang-hoa.gia-ban.dieu-chinh',$info->phanquyen) !== false)
+                    cellClick: (e, cell) => {
                         mInput(cell.getData().ten,'',true).numeral('Nhập đơn giá mới','Nhập đơn giá mới...',
                             () => {
                                 let value = parseFloat($('#modalInput .value').attr('data-value'));
@@ -79,23 +82,15 @@
                                         }
                                     })
                             },'Đơn giá không hợp lệ!')
-                    }},
+                    }
+                    @endif
+                },
+
             ],
             height: '450px',
             movableColumns: false,
-            pagination: 'local',
-            paginationSize: 10,
-            pageLoaded: () => {
-                if (isNull(tblDanhSach) || isUndefined(tblDanhSach)) {
-                    return false;
-                }
+            dataChanged: () => {
                 tblDanhSach.getColumns()[0].updateDefinition();
-            },
-            dataFiltered: function () {
-                if (isNull(tblDanhSach) || isUndefined(tblDanhSach)) {
-                    return false;
-                }
-                setTimeout(() => {tblDanhSach.getColumns()[0].updateDefinition()},10);
             }
         });
         initSearchTable(tblDanhSach,['ten']);
@@ -112,7 +107,7 @@
             setThongTin(hanghoa);
             tblDanhSach.setData('/api/quan-ly/hang-hoa/gia-ban/danh-sach', {
                 hanghoa_id
-            });
+            }).then(() => {tblDanhSach.getColumns()[0].updateDefinition()});
         })
     }
 
@@ -130,6 +125,7 @@
         $('#boxThongTin .quycach').text(hanghoa.quycach);
         $('#boxThongTin .nhom').text(hanghoa.nhom);
 
+        @if(in_array('hang-hoa.gia-ban.dieu-chinh',$info->phanquyen) !== false)
         $('#btnDongBo').attr('disabled',null).off('click').click(() => {
             mInput('Đồng Bộ Giá Bán','',true).numeral('Nhập đơn giá','Nhập đơn giá...',
                 () => {
@@ -169,5 +165,6 @@
                         })
                 },'Đơn giá không hợp lệ!')
         })
+        @endif
     }
 </script>

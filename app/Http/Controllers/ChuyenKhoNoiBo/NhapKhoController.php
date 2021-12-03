@@ -16,9 +16,6 @@ class NhapKhoController extends Controller
     public function index() {
         $nhanvien_id = Funcs::getNhanVienIDByToken($_COOKIE['token']);
         $nhanviens = NhanVien::where('id','!=',$nhanvien_id)->get(['id','ma','ten','dienthoai']);
-        foreach($nhanviens as $nhanvien) {
-            $nhanvien->text = $nhanvien->dienthoai.' - '.$nhanvien->ten;
-        }
         return view('quanly.chuyenkho-noibo.nhapkho.index', [
             'nhanviens' => $nhanviens
         ]);

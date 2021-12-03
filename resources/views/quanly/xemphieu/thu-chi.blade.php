@@ -68,19 +68,19 @@
 </head>
 <body class="overflow-hidden">
 <div class="p-4">
-    @if($controls !== false && $phieu->ngay == date('Y-m-d'))
-        <div class="text-center pb-3">
-            <button id="btnInPhieu" class="btn btn-info btn-sm">In Phiếu</button>
-            {{--        Nếu is_xoaphieu chức năng xóa phiếu --}}
-            @if($controls->deletable)
-                @if($phieu->trashed())
-                    <button id="btnPhucHoi" class="btn btn-success btn-sm">Phục Hồi</button>
-                @else
-                    <button id="btnXoaPhieu" class="btn btn-danger btn-sm">Xóa Phiếu</button>
-                @endif
+    <div class="text-center pb-3">
+        @if($controls->printable)
+        <button id="btnInPhieu" class="btn btn-info btn-sm">In Phiếu</button>
+        @endif
+        {{--        Nếu is_xoaphieu chức năng xóa phiếu --}}
+        @if($controls->deletable)
+            @if($phieu->trashed())
+                <button id="btnPhucHoi" class="btn btn-success btn-sm">Phục Hồi</button>
+            @else
+                <button id="btnXoaPhieu" class="btn btn-danger btn-sm">Xóa Phiếu</button>
             @endif
-        </div>
-    @endif
+        @endif
+    </div>
     <div class="d-flex justify-content-center" style="flex-wrap: wrap">
         <div style="width: 568px; height: fit-content" class="position-relative">
             <div class="print-hidden fw-bolder d-flex justify-content-center
@@ -198,7 +198,7 @@
         }
     }, 10);
 
-    @if($controls !== false)
+    @if($controls->deletable)
     @if(!$phieu->trashed())
     $('#btnXoaPhieu').click(() => {
         sToast.confirm('Xác nhận xóa phiếu ' + '{{ $phieu->tenphieu }}'.toLowerCase() + '?','',

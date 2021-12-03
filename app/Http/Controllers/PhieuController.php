@@ -198,17 +198,19 @@ class PhieuController extends Controller
     private function getNH($request, $begin, $end) {
         $wheres = ['loaiphieu' => $request->loaiphieu];
         $options = ['id','chinhanh_id','maphieu','doituong_id','nhanvien_id','sophieu','created_at','deleted_at','status'];
-        $info = Funcs::getNhanVienByToken($request->cookie('token'),['chinhanh_id','id']);
+        $allChiNhanh = Funcs::isPhanQuyenByToken('role.chi-nhanh.tat-ca',$request->cookie('token'));
+        $isDSNhaphang = Funcs::isPhanQuyenByToken('nhap-hang.danh-sach',$request->cookie('token'));
         $chinhanh_id = $request->chinhanh_id ?? null;
-        if ($info->id == '1000000000') {
-            $options[] = 'tienthanhtoan';
-            if ($chinhanh_id != null) {
-                $wheres['chinhanh_id'] = $chinhanh_id;
-            }
+        if (!$allChiNhanh && !$isDSNhaphang) {
+            $chinhanh_id = Funcs::getChiNhanhByToken($request->cookie('token'));
         }
-//        else {
-//            $wheres['chinhanh_id'] = $chinhanh_id ?? $info->chinhanh_id;
-//        }
+        if ($chinhanh_id != null) {
+            $wheres['chinhanh_id'] = $chinhanh_id;
+        }
+        if (Funcs::isPhanQuyenByToken('role.gia-nhap',$request->cookie('token')) ||
+            Funcs::isPhanQuyenByToken('nhap-hang.danh-sach',$request->cookie('token'))) {
+            $options[] = 'tienthanhtoan';
+        }
         $phieus = Phieu::withTrashed()->where($wheres)
             ->whereBetween('created_at',[$begin,$end])->orderByDesc('created_at')
             ->get($options);

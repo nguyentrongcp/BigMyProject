@@ -68,19 +68,19 @@
 </head>
 <body class="overflow-hidden">
 <div class="p-4">
-    @if($controls !== false)
-        <div class="text-center pb-3">
-            <button id="btnInPhieu" class="btn btn-info btn-sm">In Phiếu</button>
-            {{--        Nếu is_xoaphieu chức năng xóa phiếu --}}
-            @if($controls->deletable)
-                @if($phieu->trashed())
-                    <button id="btnPhucHoi" class="btn btn-success btn-sm">Phục Hồi</button>
-                @else
-                    <button id="btnXoaPhieu" class="btn btn-danger btn-sm">Xóa Phiếu</button>
-                @endif
+    <div class="text-center pb-3">
+        @if($controls->printable)
+        <button id="btnInPhieu" class="btn btn-info btn-sm">In Phiếu</button>
+        @endif
+        {{--        Nếu is_xoaphieu chức năng xóa phiếu --}}
+        @if($controls->deletable)
+            @if($phieu->trashed())
+                <button id="btnPhucHoi" class="btn btn-success btn-sm">Phục Hồi</button>
+            @else
+                <button id="btnXoaPhieu" class="btn btn-danger btn-sm">Xóa Phiếu</button>
             @endif
-        </div>
-    @endif
+        @endif
+    </div>
     <div class="d-flex justify-content-center" style="flex-wrap: wrap">
         <div style="width: 568px; height: fit-content" class="position-relative">
             <div class="print-hidden fw-bolder d-flex justify-content-center
@@ -150,7 +150,9 @@
                                     <th class="text-end">Q.Cách</th>
                                     <th>H.S.Dụng</th>
                                     <th class="text-end">SL</th>
-                                    @if($info->id == '1000000000' && isset($phieu->dshanghoa[0]->dongia))
+                                    @if((in_array('role.gia-nhap',$info->phanquyen) !== false ||
+                                        in_array('nhap-hang.danh-sach',$info->phanquyen) !== false) &&
+                                        isset($phieu->dshanghoa[0]->dongia))
                                     <th class="text-end">Giá</th>
                                     <th class="text-end">T.Tiền</th>
                                     @endif
@@ -168,21 +170,24 @@
                                         <td class="text-end">{{ $value->hanghoa->quycach }}</td>
                                         <td class="text-nowrap">{{ date('d-m-Y',strtotime($value->hansudung)) }}</td>
                                         <td class="text-end">{{ $value->soluong }}</td>
-                                        @if($info->id == '1000000000' && isset($value->dongia))
+                                        @if((in_array('role.gia-nhap',$info->phanquyen) !== false ||
+                                        in_array('nhap-hang.danh-sach',$info->phanquyen) !== false) && isset($value->dongia))
                                         <td class="text-end">{{ number_format($value->dongia) }}</td>
                                         <td class="text-end">{{ number_format($value->thanhtien) }}</td>
                                         @endif
                                     </tr>
                                 @endforeach
                                 </tbody>
-                                @if($info->id == '1000000000' && isset($phieu->dshanghoa[0]->dongia))
+                                @if((in_array('role.gia-nhap',$info->phanquyen) !== false ||
+                                        in_array('nhap-hang.danh-sach',$info->phanquyen)) && isset($phieu->dshanghoa[0]->dongia))
                                 <tfoot>
                                 <th colspan="7" class="text-end">TỔNG</th>
                                 <th class="text-end">{{ number_format($phieu->tongthanhtien) }}</th>
                                 </tfoot>
                                 @endif
                             </table>
-                            @if(isset($phieu->giamgia) && $info->id == '1000000000')
+                            @if(isset($phieu->giamgia) && (in_array('role.gia-nhap',$info->phanquyen) !== false ||
+                                        in_array('nhap-hang.danh-sach',$info->phanquyen)))
                             <div class="mt-2 d-flex justify-content-end fw-bolder">
                                 <div class="w-50">
                                     <div class="d-flex">
@@ -241,7 +246,7 @@
         }
     }, 10);
 
-    @if($controls !== false)
+    @if($controls->deletable)
     @if(!$phieu->trashed())
         @if($phieu->status == 0)
         $('#btnXoaPhieu').text('Hủy Phiếu').click(() => {

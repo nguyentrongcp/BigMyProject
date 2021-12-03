@@ -8,6 +8,7 @@
     initActionLoc();
 
     function init() {
+        @if(in_array('hang-hoa.phat-sinh-ton.dau-ky',$info->phanquyen) !== false)
         autosize($('#modalDauKy .inpGhiChu'));
         $('#modalDauKy').on('shown.bs.modal', function () {
             $(this).find('.inpSoLuong').focus();
@@ -23,6 +24,7 @@
                 return false;
             }
         })
+        @endif
         $('#fromToDate').daterangepicker({
             locale: {
                 format: 'DD/MM/YYYY'
@@ -46,30 +48,18 @@
     }
 
     function initSelHangHoa() {
-        let results = JSON.parse('{!! $hanghoas !!}');
-        results.forEach((value) => {
-            value.text = value.ma + ' - ' + value.ten;
-        })
-        let count = 0;
-        let length = results.length;
-        $('#selHangHoa').select2({
-            data: results,
-            matcher: (params, data) => {
-                let result = null;
-                // If there are no search terms, return all of the data
-                // if ($.trim(params.term) === '') {
-                //     return data;
-                // }
-                if (count < 20 && (data.slug.indexOf(convertToSlug(params.term)) > -1 || data.ma.indexOf(convertToSlug(params.term)) > -1)) {
-                    result = data;
-                    count++;
-                }
+        $('#selHangHoa').html(null).select2({
+            ajax: {
+                url: '/api/quan-ly/danh-muc/hang-hoa/tim-kiem',
+                data: function (params) {
+                    let query = {
+                        q: params.term
+                    };
 
-                if (--length === 0) {
-                    length = results.length;
-                    count = 0;
-                }
-                return result;
+                    // Query parameters will be ?search=[term]&type=public
+                    return query;
+                },
+                delay: 300
             },
             allowClear: true,
             placeholder: 'Chọn hàng hóa...'
@@ -79,7 +69,9 @@
                 if (!isUndefined(tblDanhSach)) {
                     tblDanhSach.clearData();
                 }
+                @if(in_array('hang-hoa.phat-sinh-ton.dau-ky',$info->phanquyen) !== false)
                 $('#btnDauKy').off('click').attr('disabled','');
+                @endif
             }
         }).val(null).trigger('change');
     }
@@ -128,21 +120,7 @@
                 return response.results;
             },
             height: '450px',
-            movableColumns: false,
-            pagination: 'local',
-            paginationSize: 10,
-            pageLoaded: () => {
-                if (isNull(tblDanhSach) || isUndefined(tblDanhSach)) {
-                    return false;
-                }
-                tblDanhSach.getColumns()[0].updateDefinition();
-            },
-            dataFiltered: function () {
-                if (isNull(tblDanhSach) || isUndefined(tblDanhSach)) {
-                    return false;
-                }
-                setTimeout(() => {tblDanhSach.getColumns()[0].updateDefinition()},10);
-            }
+            movableColumns: false
         });
         initSearchTable(tblDanhSach,['maphieu','loaiphieu']);
     }
@@ -159,11 +137,12 @@
                 begin: getDateRangePicker($('#fromToDate')),
                 end: getDateRangePicker($('#fromToDate'),false),
                 chinhanh_id, hanghoa_id
-            });
+            }).then(() => {tblDanhSach.getColumns()[0].updateDefinition()});
         })
     }
 
     function setThongTin(hanghoa = null, result = null) {
+        @if(in_array('hang-hoa.phat-sinh-ton.dau-ky',$info->phanquyen) !== false)
         if (!isNull(result)) {
             $('#btnDauKy').attr('disabled',null).off('click').click(() => {
                 let modal = $('#modalDauKy');
@@ -182,6 +161,7 @@
                     sToast.confirm('Xác nhận đầu kỳ hàng hóa!','',
                         (confirmed) => {
                             if (confirmed.isConfirmed) {
+                                sToast.loading('Đang xử lý dữ liệu. Vui lòng chờ...');
                                 $.ajax({
                                     url: '/api/quan-ly/hang-hoa/phat-sinh-ton/dau-ky',
                                     type: 'get',
@@ -211,6 +191,7 @@
                 modal.modal('show');
             })
         }
+        @endif
         let empty = '---------------';
         let thongtins = ['ma','ten','donvitinh','quycach','nhom','tonkho','tangtk','giamtk','cuoiky','dauky'];
         hanghoa = hanghoa == null ? {

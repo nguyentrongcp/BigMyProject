@@ -79,6 +79,7 @@ class DiemDanhController extends Controller
             ."group by nhanvien_id
         ");
         foreach($danhsach as $item) {
+            $item->id = rand(1000000000,9999999999);
             $item->tennhanvien = $nhanviens[$item->nhanvien_id]->ten ?? 'Chưa rõ';
             $item->tenchucvu = $nhanviens[$item->nhanvien_id]->tenchucvu ?? 'Chưa rõ';
             $item->tenchinhanh = $chinhanhs[$nhanviens[$item->nhanvien_id]->chinhanh_id ?? '---'] ?? 'Chưa rõ';
@@ -163,7 +164,7 @@ class DiemDanhController extends Controller
     public function ket_thuc(Request $request) {
         $token = $request->cookie('token');
         $nhanvien_id = $request->nhanvien_id ?? Funcs::getNhanVienIDByToken($token);
-        $nhanvien = NhanVien::find($nhanvien_id,['id','chinhanh_id']);
+        $nhanvien = NhanVien::find($nhanvien_id,['id','chinhanh_id','is_parttime']);
         $chinhanh_id = $request->chinhanh_id ?? $nhanvien->chinhanh_id;
         $toado = $request->toado ?? null;
 //        $ngay = $this->ngay;
@@ -195,7 +196,7 @@ class DiemDanhController extends Controller
         $model->chinhanh_ketthuc = $chinhanh_id;
         $model->tg_ketthuc = $time;
         $model->toado_ketthuc = $toado;
-        $model->ngaycong = ($ngaycong >= 4 && $ngaycong < 8) ? 0.5 : ($ngaycong >= 8 ? 1 : 0);
+        $model->ngaycong = $nhanvien->is_parttime ? $ngaycong : (($ngaycong >= 4 && $ngaycong < 8) ? 0.5 : ($ngaycong >= 8 ? 1 : 0));
 
         if ($model->update()) {
             return [

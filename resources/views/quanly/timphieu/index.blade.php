@@ -55,63 +55,6 @@
             </div>
         </section>
     </div>
-
-    <div class="modal fade" id="modalDauKy">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Đầu Kỳ Hàng Hóa</h5>
-                </div>
-                <div class="modal-body">
-                    <div class="form-group">
-                        <label>Mã hàng hóa</label>
-                        <input type="text" class="form-control inpMa" readonly>
-                    </div>
-                    <div class="form-group">
-                        <label>Tên hàng hóa</label>
-                        <input type="text" class="form-control inpTen" readonly>
-                    </div>
-                    <div class="form-row">
-                        <div class="col-6">
-                            <div class="form-group">
-                                <label>Đơn vị tính</label>
-                                <input type="text" class="form-control inpDonViTinh" readonly>
-                            </div>
-                        </div>
-                        <div class="col-6">
-                            <div class="form-group">
-                                <label>Quy cách</label>
-                                <input type="text" class="form-control inpQuyCach" readonly>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="col-6">
-                            <div class="form-group">
-                                <label>Tồn kho hiện tại</label>
-                                <input type="text" class="form-control inpTonKho text-info font-weight-bolder" readonly>
-                                <span class="error invalid-feedback">Số lượng không hợp lệ!</span>
-                            </div>
-                        </div>
-                        <div class="col-6">
-                            <div class="form-group required">
-                                <label>Nhập tồn kho thực tế</label>
-                                <input type="number" class="form-control inpSoLuong" placeholder="Nhập tồn kho thực tế...">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-group mb-0">
-                        <label>Ghi chú</label>
-                        <textarea rows="2" class="form-control inpGhiChu" placeholder="Nhập ghi chú..."></textarea>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn bg-gradient-primary btnSubmit">Tạo Phiếu</button>
-                    <button type="button" class="btn bg-gradient-secondary" data-dismiss="modal">Thoát</button>
-                </div>
-            </div>
-        </div>
-    </div>
 @stop
 
 @section('js-custom')

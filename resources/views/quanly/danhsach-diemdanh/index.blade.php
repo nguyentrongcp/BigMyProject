@@ -23,7 +23,7 @@
                                     <i class="fas fa-download mr-1"></i>
                                     Xuất Excel
                                 </button>
-                                @if($info->dienthoai == '0339883047')
+                                @if(in_array('diem-danh.tool',$info->phanquyen) !== false)
                                     <button class="btn ml-auto bg-gradient-primary font-weight-bolder"
                                             data-toggle="modal" data-target="#modalDiemDanh">
                                         <i class="fas fa-qrcode mr-1"></i>
@@ -89,7 +89,7 @@
         </section>
     </div>
 
-    @if($info->dienthoai == '0339883047')
+    @if(in_array('diem-danh.tool',$info->phanquyen) !== false)
     <div class="modal fade" id="modalDiemDanh">
         <div class="modal-dialog">
             <div class="modal-content">

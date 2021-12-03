@@ -113,10 +113,12 @@
                                 <select class="form-control" id="selHangHoa"></select>
                             </div>
                             <div class="form-group mb-0">
+                                @if(in_array('hang-hoa.phat-sinh-ton.dau-ky',$info->phanquyen) !== false)
                                 <button class="btn bg-gradient-primary font-weight-bolder" disabled id="btnDauKy">
                                     <i class="fa fa-refresh mr-1"></i>
                                     ĐẦU KỲ HÀNG HÓA
                                 </button>
+                                @endif
                                 <button class="btn bg-gradient-success float-right font-weight-bolder" id="btnLoc">
                                     <i class="fa fa-filter mr-1"></i>
                                     LỌC DỮ LIỆU
@@ -129,6 +131,7 @@
         </section>
     </div>
 
+    @if(in_array('hang-hoa.phat-sinh-ton.dau-ky',$info->phanquyen) !== false)
     <div class="modal fade" id="modalDauKy">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -185,6 +188,7 @@
             </div>
         </div>
     </div>
+    @endif
 @stop
 
 @section('js-custom')

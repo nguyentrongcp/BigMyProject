@@ -18,12 +18,8 @@ class XuatKhoController extends Controller
 {
     public function index() {
         $info = Funcs::getNhanVienByToken($_COOKIE['token'],['chinhanh_id','id']);
-        $chinhanhs = ChiNhanh::where('id','!=',$info->chinhanh_id)
-            ->whereIn('loai',['cuahang','khohanghong','congty'])->orderBy('loai')->get(['id','ten','ten as text']);
+        $chinhanhs = ChiNhanh::where('id','!=',$info->chinhanh_id)->orderBy('loai')->get(['id','ten','ten as text']);
         $nhanviens = NhanVien::where('id','!=',$info->id)->get(['id','ma','ten','dienthoai']);
-        foreach($nhanviens as $nhanvien) {
-            $nhanvien->text = $nhanvien->dienthoai.' - '.$nhanvien->ten;
-        }
         return view('quanly.chuyenkho-noibo.xuatkho.index', [
             'chinhanhs' => $chinhanhs,
             'nhanviens' => $nhanviens

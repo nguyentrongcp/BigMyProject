@@ -17,17 +17,15 @@ class PhatSinhTonController extends Controller
 {
     public function index() {
         $info = Funcs::getNhanVienByToken($_COOKIE['token'],['id','chinhanh_id']);
-        if ($info->id == '1000000000') {
+        if (Funcs::isPhanQuyenByToken('role.chi-nhanh.tat-ca',$_COOKIE['token'])) {
             $chinhanhs = ChiNhanh::whereIn('loai',['cuahang','khohanghong'])->get(['id','ten as text']);
         }
         else {
             $chinhanhs = ChiNhanh::where('id',$info->chinhanh_id)->get(['id','ten as text']);
         }
-        $hanghoas = HangHoa::all(['id','ma','slug','ten','donvitinh','nhom','quycach','ghichu','hoatchat','congdung','dang']);
 
         return view('quanly.hanghoa.phatsinhton.index', [
-            'chinhanhs' => $chinhanhs,
-            'hanghoas' => $hanghoas
+            'chinhanhs' => $chinhanhs
         ]);
     }
 

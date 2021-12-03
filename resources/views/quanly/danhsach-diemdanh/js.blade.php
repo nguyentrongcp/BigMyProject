@@ -5,7 +5,7 @@
     initTblDanhSach();
     initTblChiTiet();
     initActionLoc();
-    @if($info->dienthoai == '0339883047')
+    @if(in_array('diem-danh.tool',$info->phanquyen) !== false)
     initActionDiemDanh();
     @endif
 
@@ -19,12 +19,12 @@
         $('#selChucVu').select2({
             minimumResultsForSearch: -1,
             allowClear: true,
-            placeholder: 'Toàn hệ thống'
+            placeholder: 'Tất cả chức vụ'
         }).val(null).trigger('change');
         $('#selChiNhanh').select2({
             minimumResultsForSearch: -1,
             allowClear: true,
-            placeholder: 'Tất cả chức vụ'
+            placeholder: 'Toàn hệ thống'
         }).val(null).trigger('change');
 
         $('#modalChiTiet').on('hidden.bs.modal', () => {
@@ -35,7 +35,7 @@
     function initTblDanhSach() {
         tblDanhSach = new Tabulator("#tblDanhSach", {
             columns: [
-                {title: 'STT', field: 'stt', headerHozAlign: 'center', formatter: 'rownum', width: 30,
+                {title: 'STT', field: 'stt', headerHozAlign: 'center', width: 30,
                     hozAlign: 'center', headerSort: false, vertAlign: 'middle'},
                 {title: 'Tên', field: 'tennhanvien', headerSort: false, vertAlign: 'middle'},
                 {title: 'Chức vụ', field: 'tenchucvu', headerSort: false, vertAlign: 'middle'},
@@ -60,13 +60,16 @@
                 }
             ],
             height: '450px',
-            pagination: 'local',
-            paginationSize: 10,
-            dataFiltered: function () {
+            dataGrouped: () => {
                 if (isNull(tblDanhSach) || isUndefined(tblDanhSach)) {
                     return false;
                 }
-                setTimeout(() => {tblDanhSach.getColumns()[0].updateDefinition()},10);
+                tblDanhSach.getData().forEach((value, key) => {
+                    tblDanhSach.updateData([{
+                        id: value.id,
+                        stt: key+1
+                    }])
+                })
             }
         });
 
@@ -75,7 +78,7 @@
 
     function initTblChiTiet() {
         let contextMenu = (cell) => {
-            @if($info->dienthoai == '0339883047')
+            @if(in_array('diem-danh.tool',$info->phanquyen) !== false)
             let data = cell.getData();
             let menus = [
                 {
@@ -162,16 +165,16 @@
 
             tblDanhSach.setData('/api/quan-ly/diem-danh/danh-sach', {
                 thang, nam, chucvus: JSON.stringify(chucvus), chinhanhs: JSON.stringify(chinhanhs)
-            })
+            }).then(() => {tblDanhSach.getColumns()[0].updateDefinition()})
         })
     }
 
-    @if($info->dienthoai == '0339883047')
+    @if(in_array('diem-danh.tool',$info->phanquyen) !== false)
     function initActionDiemDanh() {
         $('#modalDiemDanh .selChucVu, #modalDiemDanh .selLoai').change(() => {
             initThoiGian();
         }).trigger('change');
-        let nhanviens = JSON.parse('{!! $nhanviens !!}');
+        let nhanviens = JSON.parse('{!! str_replace("'","\'",$nhanviens) !!}');
         $('#modalDiemDanh .selNhanVien').select2({
             data: nhanviens
         });

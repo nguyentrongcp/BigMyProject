@@ -21,21 +21,9 @@ class BanHangController extends Controller
         $caytrongs = CayTrong::all('ten as text');
         $nhanviens = NhanVien::all(['id','ma','ten','dienthoai']);
 
-        $chinhanh_id = Funcs::getChiNhanhByToken($_COOKIE['token']);
-        $dongias = HangHoaChiTiet::where('chinhanh_id',$chinhanh_id)->pluck('dongia','hanghoa_ma');
-        $tonkhos = HangHoaChiTiet::where('chinhanh_id',$chinhanh_id)->pluck('tonkho','hanghoa_ma');
-
-        $models = HangHoa::all(['id','ma','slug','ten','donvitinh','nhom','quycach','ghichu','hoatchat','congdung','dang']);
-
-        foreach($models as $model) {
-            $model->tonkho = $tonkhos[$model->ma] ?? 0;
-            $model->dongia = $dongias[$model->ma] ?? 'Chưa có';
-        }
-
         return view('quanly.banhang.index', [
             'caytrongs' => $caytrongs,
             'nhanviens' => $nhanviens,
-            'hanghoas' => $models
         ]);
     }
 

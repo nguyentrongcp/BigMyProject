@@ -4,8 +4,6 @@
     let nhanviens = JSON.parse('{!! str_replace("'","\'",json_encode($nhanviens)) !!}');
     init();
     initSelHangHoa();
-    initSelChiNhanh();
-    initSelNhanVien();
     initTblHangHoa();
     initActionThemHangHoa();
     initActionXemPhieu();
@@ -25,6 +23,13 @@
             }
         });
         autosize($('#inpGhiChu'));
+        initSelect2($('#selChiNhanh'),chinhanhs,{minimumResultsForSearch: -1});
+        initSelect2($('#selNhanVien'),nhanviens,{
+            allowClear: true,
+            placeholder: info.dienthoai + ' - ' + info.ten,
+            defaultText: ['dienthoai','ten'],
+            matcher: ['dienthoai','ten']
+        })
     }
 
     function initSelHangHoa() {
@@ -38,7 +43,8 @@
 
                     // Query parameters will be ?search=[term]&type=public
                     return query;
-                }
+                },
+                delay: 250
             },
             allowClear: true,
             placeholder: 'Chọn hàng hóa...'
@@ -52,21 +58,6 @@
         }).val(null).trigger('change').on('select2:unselect',function(){
             $(this).html(null);
         });
-    }
-
-    function initSelChiNhanh() {
-        $('#selChiNhanh').select2({
-            data: chinhanhs,
-            minimumResultsForSearch: -1
-        });
-    }
-
-    function initSelNhanVien() {
-        $('#selNhanVien').select2({
-            data: nhanviens,
-            allowClear: true,
-            placeholder: info.dienthoai + ' - ' + info.ten
-        }).val(null).trigger('change');
     }
 
     function initTblHangHoa() {
@@ -113,13 +104,8 @@
             ],
             height: '450px',
             movableColumns: false,
-            pagination: 'local',
-            paginationSize: 10,
-            dataFiltered: function () {
-                if (isNull(tblHangHoa) || isUndefined(tblHangHoa)) {
-                    return false;
-                }
-                setTimeout(() => {tblHangHoa.getColumns()[0].updateDefinition()},10);
+            dataChanged: () => {
+                tblHangHoa.getColumns()[0].updateDefinition();
             }
         });
     }
@@ -154,7 +140,7 @@
                     quycach: hanghoa.quycach,
                     soluong,
                 }
-                tblHangHoa.addData(dataTable, true);
+                tblHangHoa.addData(dataTable, true).then(() => {tblHangHoa.getColumns()[0].updateDefinition()});
             }
 
             $('#boxHangHoa .soluong').val('');

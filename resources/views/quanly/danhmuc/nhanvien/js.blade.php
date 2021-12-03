@@ -22,7 +22,7 @@
     initActionThemMoi();
     function initActionThemMoi() {
         initSelect2($('#modalThemMoi .selLoai'),chucvus,{minimumResultsForSearch: -1});
-        initSelect2($('#modalThemMoi .selChiNhanh'),chucvus,{minimumResultsForSearch: -1});
+        initSelect2($('#modalThemMoi .selChiNhanh'),chinhanhs,{minimumResultsForSearch: -1});
 
         $('#boxNgaySinh').datetimepicker({
             format: 'DD/MM/YYYY',

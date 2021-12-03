@@ -48,6 +48,7 @@
             <div class="modal-body overflow-auto px-1 pb-1" style="max-height: 100%; background: #edf2f7">
                 <p class="text-center">Xin chào, <strong class="title">NGUYỄN ĐÌNH TRỌNG</strong></p>
                 <div class="box-menu">
+                    @if(in_array('danh-muc.nhan-vien.mobile',$info->phanquyen) !== false)
                     <div class="item">
                         <div data-href="{{ route('mobile.nhan-vien') }}"
                              class="{{ url()->current() == route('mobile.nhan-vien') ? ' active' : '' }}"
@@ -56,6 +57,7 @@
                             <span>Nhân Viên</span>
                         </div>
                     </div>
+                    @endif
                     <div class="item">
                         <div data-href="{{ route('mobile.lichsu-diemdanh') }}"
                              class="{{ url()->current() == route('mobile.lichsu-diemdanh') ? ' active' : '' }}"
@@ -64,6 +66,7 @@
                             <span>Lịch Sử Điểm Danh</span>
                         </div>
                     </div>
+                    @if(in_array('danh-muc.hang-hoa.mobile',$info->phanquyen) !== false)
                     <div class="item">
                         <div data-href="{{ route('mobile.hang-hoa') }}"
                              class="{{ url()->current() == route('mobile.hang-hoa') ? ' active' : '' }}"
@@ -72,6 +75,7 @@
                             <span>Hàng Hóa</span>
                         </div>
                     </div>
+                    @endif
 {{--                    <div class="item">--}}
 {{--                        <div data-href="{{ route('mobile.hang-hoa.quy-doi') }}"--}}
 {{--                             class="{{ url()->current() == route('mobile.hang-hoa.quy-doi') ? ' active' : '' }}"--}}
@@ -80,6 +84,7 @@
 {{--                            <span>Q.Đổi Hàng Hóa</span>--}}
 {{--                        </div>--}}
 {{--                    </div>--}}
+                    @if(in_array('danh-muc.chi-nhanh.mobile',$info->phanquyen) !== false)
                     <div class="item">
                         <div data-href="{{ route('mobile.chi-nhanh') }}" class="{{ url()->current() == route('mobile.chi-nhanh') ? ' active' : '' }}"
                              data-title="Danh Mục Cửa Hàng">
@@ -87,6 +92,7 @@
                             <span>Cửa Hàng</span>
                         </div>
                     </div>
+                    @endif
 {{--                    <div class="item">--}}
 {{--                        <div data-href="{{ route('mobile.khach-hang') }}"--}}
 {{--                             class="{{ url()->current() == route('mobile.khach-hang') ? ' active' : '' }}"--}}
@@ -103,6 +109,7 @@
 {{--                            <span>Danh Sách Nhập Hàng</span>--}}
 {{--                        </div>--}}
 {{--                    </div>--}}
+                    @if(in_array('danh-muc.thu-chi.mobile',$info->phanquyen) !== false)
                     <div class="item">
                         <div data-href="{{ route('mobile.thu-chi') }}"
                              class="{{ url()->current() == route('mobile.thu-chi') ? ' active' : '' }}"
@@ -111,6 +118,7 @@
                             <span>Thu Chi</span>
                         </div>
                     </div>
+                    @endif
 {{--                    <div class="item">--}}
 {{--                        <div data-href="{{ route('mobile.lich-nghi') }}"--}}
 {{--                             class="{{ url()->current() == route('mobile.lich-nghi') ? ' active' : '' }}"--}}

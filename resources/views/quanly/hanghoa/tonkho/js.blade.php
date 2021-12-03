@@ -6,17 +6,14 @@
     // initHangHoa();
     initLoai();
     initDanhSach();
-    @if($info->id == '1000000000')
+    @if(in_array('role.chi-nhanh.tat-ca',$info->phanquyen) !== false)
     initActionLoc();
     initHangHoa();
     @endif
 
     function initChiNhanh() {
-        $('#selChiNhanh').select2({
-            data: chinhanhs,
-            minimumResultsForSearch: -1
-        })
-        @if($info->id != '1000000000')
+        initSelect2($('#selChiNhanh'),chinhanhs,{minimumResultsForSearch: -1})
+        @if(in_array('role.chi-nhanh.tat-ca',$info->phanquyen) === false)
         $('#selChiNhanh').change(function () {
             if ($(this).val() === 'all') {
                 initActionLoc('all');
@@ -41,7 +38,8 @@
 
                     // Query parameters will be ?search=[term]&type=public
                     return query;
-                }
+                },
+                delay: 250
             },
             allowClear: true,
             placeholder: type === 'all' ? 'Chọn hàng hóa...' : 'Tất cả hàng hóa'
@@ -93,7 +91,7 @@
         $('#btnLoc').off('click').click(() => {
             let chinhanh_id = $('#selChiNhanh').val();
             let hanghoas = $('#selHangHoa').val();
-            @if($info->id != '1000000000')
+            @if(in_array('role.chi-nhanh.tat-ca',$info->phanquyen) === false)
             if (type === 'all' && hanghoas.length === 0) {
                 sToast.toast(0,'Để xem tồn kho tất cả cửa hàng. Bạn phải chọn hàng hóa cần tra!');
                 return false;

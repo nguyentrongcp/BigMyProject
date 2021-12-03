@@ -70,10 +70,12 @@
                                 <select class="form-control" id="selHangHoa"></select>
                             </div>
                             <div class="form-group mb-0">
+                                @if(in_array('hang-hoa.gia-ban.dieu-chinh',$info->phanquyen) !== false)
                                 <button class="btn bg-gradient-primary font-weight-bolder" disabled id="btnDongBo">
                                     <i class="fa fa-refresh mr-1"></i>
                                     ĐỒNG BỘ GIÁ
                                 </button>
+                                @endif
                                 <button class="btn bg-gradient-success float-right font-weight-bolder" id="btnLoc">
                                     <i class="fa fa-filter mr-1"></i>
                                     LỌC DỮ LIỆU

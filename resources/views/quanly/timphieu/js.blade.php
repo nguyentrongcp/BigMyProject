@@ -86,7 +86,6 @@
                 columns.push({title: 'Nội dung', field: 'noidung', headerSort: false});
             }
         }
-        @if($info->id == '1000000000')
         if (loaiphieu === 'NH' || loaiphieu === 'THNCC') {
             columns.push({title: 'Tiền thanh toán', field: 'tienthanhtoan', headerHozAlign: 'right',
                 hozAlign: 'right', headerSort: false, vertAlign: 'middle',
@@ -94,7 +93,6 @@
                     return '<span class="text-tienthanhtoan">' + numeral(cell.getValue()).format('0,0') + '</span>';
                 }});
         }
-        @endif
         if (loaiphieu === 'XKNB' || loaiphieu === 'NKNB') {
             columns.push({title: loaiphieu === 'XKNB' ? 'Cửa hàng nhận' : 'Cửa hàng chuyển', field: 'doituong', headerSort: false});
         }

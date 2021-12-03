@@ -24,33 +24,28 @@ class XemPhieuController extends Controller
             $phieu = json_decode(str_replace('\n','',$phieu));
             switch ($phieu->loaiphieu) {
                 case 'BH':
-                    return view('quanly.xemphieu.ban-hang',
-                        ['phieu' => $phieu, 'controls' => false, 'auto_print' => false]);
+                    $view = 'quanly.xemphieu.ban-hang'; break;
                 case 'KTH':
-                    return view('quanly.xemphieu.khach-tra-hang',
-                        ['phieu' => $phieu, 'controls' => false, 'auto_print' => false]);
+                    $view = 'quanly.xemphieu.khach-tra-hang'; break;
                 case 'NH':
-                    return view('quanly.xemphieu.nhap-hang',
-                        ['phieu' => $phieu, 'controls' => false, 'auto_print' => false]);
+                    $view = 'quanly.xemphieu.nhap-hang'; break;
                 case 'XKNB':
-                    return view('quanly.xemphieu.xuatkho-noibo',
-                        ['phieu' => $phieu, 'controls' => false, 'auto_print' => false]);
+                    $view = 'quanly.xemphieu.xuatkho-noibo'; break;
                 case 'NKNB':
-                    return view('quanly.xemphieu.nhapkho-noibo',
-                        ['phieu' => $phieu, 'controls' => false, 'auto_print' => false]);
+                    $view = 'quanly.xemphieu.nhapkho-noibo'; break;
                 default:
-                    return view('quanly.xemphieu.thu-chi',
-                        ['phieu' => $phieu, 'controls' => false, 'auto_print' => false]);
+                    $view = 'quanly.xemphieu.thu-chi'; break;
             }
+
+            return view($view,[
+                'phieu' => $phieu, 'controls' => (object) ['printable' => false, 'deletable' => false], 'auto_print' => false
+            ]);
         }
         else {
             $controls = (object) [
                 'printable' => !isset($request->printable) || $request->printable == 0,
                 'deletable' => isset($request->deletable) || $request->deletable == 1
             ];
-            if (!$controls->printable && !$controls->deletable) {
-                $controls = false;
-            }
             $auto_print = isset($request->autoprint) || $request->autoprint == 1;
             $loaiphieu = Phieu::withTrashed()->where('maphieu',$maphieu)->first('loaiphieu');
             if ($loaiphieu == null) {
@@ -62,48 +57,57 @@ class XemPhieuController extends Controller
             switch ($loaiphieu) {
                 case 'BH':
                     $phieu = $this->getBH($maphieu);
-                    return view('quanly.xemphieu.ban-hang',
-                        ['phieu' => $phieu, 'controls' => $controls, 'auto_print' => $auto_print]);
+                    $view = 'quanly.xemphieu.ban-hang';
+                    break;
                 case 'KTH':
                     $phieu = $this->getKTH($maphieu);
-                    return view('quanly.xemphieu.khach-tra-hang',
-                        ['phieu' => $phieu, 'controls' => $controls, 'auto_print' => $auto_print]);
+                    $view = 'quanly.xemphieu.khach-tra-hang';
+                    break;
                 case 'NH':
                     $phieu = $this->getNH($maphieu);
-                    if ($controls->deletable) {
-                        $nhanvien_id = Funcs::getNhanVienIDByToken($_COOKIE['token']);
-                        if ($nhanvien_id != '1000000000') {
-                            if ($phieu->status == 1) {
-                                $controls->deletable = false;
-                            }
-                            elseif ($nhanvien_id != $phieu->nhanvien_id) {
-                                $controls->deletable = false;
-                            }
-                        }
-                    }
-                    return view('quanly.xemphieu.nhap-hang',
-                        ['phieu' => $phieu, 'controls' => $controls, 'auto_print' => $auto_print]);
+                    $view = 'quanly.xemphieu.nhap-hang';
+                    break;
                 case 'XKNB':
                     $phieu = $this->getXKNB($maphieu);
-                    return view('quanly.xemphieu.xuatkho-noibo',
-                        ['phieu' => $phieu, 'controls' => $controls, 'auto_print' => $auto_print]);
+                    $view = 'quanly.xemphieu.xuatkho-noibo';
+                    break;
                 case 'NKNB':
                     $phieu = $this->getNKNB($maphieu);
-                    return view('quanly.xemphieu.nhapkho-noibo',
-                        ['phieu' => $phieu, 'controls' => $controls, 'auto_print' => $auto_print]);
+                    $view = 'quanly.xemphieu.nhapkho-noibo';
+                    break;
                 case 'DKHH':
                     $phieu = $this->getDKHH($maphieu);
-                    return view('quanly.xemphieu.dauky-hanghoa',
-                        ['phieu' => $phieu, 'controls' => $controls, 'auto_print' => $auto_print]);
+                    $view = 'quanly.xemphieu.dauky-hanghoa';
+                    break;
                 case 'KSCN':
                     $phieu = $this->getKSCN($maphieu);
-                    return view('quanly.xemphieu.ketso-cuoingay',
-                        ['phieu' => $phieu, 'controls' => $controls, 'auto_print' => $auto_print]);
+                    $view = 'quanly.xemphieu.ketso-cuoingay';
+                    break;
                 default:
                     $phieu = $this->getThuChi($maphieu);
-                    return view('quanly.xemphieu.thu-chi',
-                        ['phieu' => $phieu, 'controls' => $controls, 'auto_print' => $auto_print]);
+                    $view = 'quanly.xemphieu.thu-chi';
+                    break;
             }
+
+            if ($controls->deletable) {
+                if (!Funcs::isPhanQuyenByToken('role.phieu.action',$_COOKIE['token'])) {
+                    $nhanvien = Funcs::getNhanVienByToken($_COOKIE['token'],['id','chinhanh_id']);
+                    if ($nhanvien->id != $phieu->nhanvien_id && $phieu->chinhanh_id != $nhanvien->chinhanh_id) {
+                        $controls->deletable = false;
+                    }
+                    elseif ($phieu->loaiphieu == 'NH') {
+                        if ($phieu->status == 1) {
+                            $controls->deletable = false;
+                        }
+                    }
+                }
+                elseif (in_array($phieu->loaiphieu,['BH','KTH','TCNKH','CCNNCC','PT','PC','KSCN']) !== false && $phieu->ngay < date('Y-m-d')) {
+                    $controls->deletable = false;
+                }
+            }
+            return view($view, [
+                'phieu' => $phieu, 'controls' => $controls, 'auto_print' => $auto_print
+            ]);
         }
     }
 
@@ -238,11 +242,9 @@ class XemPhieuController extends Controller
         $phieu->doituong = $phieu->getKhachHang();
         unset($phieu->doituong_id);
         $phieu->chinhanh = $phieu->getChiNhanh();
-        unset($phieu->chinhanh_id);
         $phieu->nhanvien_tuvan = $phieu->getNhanVienTuVan();
         unset($phieu->nhanvien_tuvan_id);
         $phieu->nhanvien = $phieu->getNhanVien();
-        unset($phieu->nhanvien_id);
 
         $chitiets = $phieu->getChiTiets('BH');
         foreach ($chitiets as $chitiet) {
@@ -271,9 +273,7 @@ class XemPhieuController extends Controller
         $phieu->doituong = $phieu->getKhachHang();
         unset($phieu->doituong_id);
         $phieu->chinhanh = $phieu->getChiNhanh();
-        unset($phieu->chinhanh_id);
         $phieu->nhanvien = $phieu->getNhanVien();
-        unset($phieu->nhanvien_id);
 
         $chitiets = $phieu->getChiTiets('KTH');
         foreach ($chitiets as $chitiet) {
@@ -302,9 +302,7 @@ class XemPhieuController extends Controller
         $phieu->doituong = $phieu->getNhaCungCap();
         unset($phieu->doituong_id);
         $phieu->chinhanh = $phieu->getChiNhanh();
-        unset($phieu->chinhanh_id);
         $phieu->nhanvien = $phieu->getNhanVien();
-        unset($phieu->nhanvien_id);
 
         $chitiets = $phieu->getChiTiets('NH');
         foreach ($chitiets as $chitiet) {
@@ -325,9 +323,7 @@ class XemPhieuController extends Controller
         $phieu->doituong = $phieu->getChiNhanhNhan();
         unset($phieu->doituong_id);
         $phieu->chinhanh = $phieu->getChiNhanh();
-        unset($phieu->chinhanh_id);
         $phieu->nhanvien = $phieu->getNhanVien();
-        unset($phieu->nhanvien_id);
         $phieu->nhanvien_soanhang = $phieu->getNhanVienDuyet();
         unset($phieu->nguoiduyet_id);
 
@@ -349,9 +345,7 @@ class XemPhieuController extends Controller
 
         $phieu->doituong = $phieu->getChiNhanhXuat();
         $phieu->chinhanh = $phieu->getChiNhanh();
-        unset($phieu->chinhanh_id);
         $phieu->nhanvien = $phieu->getNhanVien();
-        unset($phieu->nhanvien_id);
         $phieu->nhanvien_nhanhang = $phieu->getNhanVienDuyet();
         unset($phieu->nguoiduyet_id);
         $phieu->phieuxuat = $phieu->getPhieuXuatKho()->maphieu;
@@ -374,7 +368,6 @@ class XemPhieuController extends Controller
         }
 
         $phieu->nhanvien = $phieu->getNhanVien();
-        unset($phieu->nhanvien_id);
 
         $chitiets = $phieu->getChiTiets('DKHH');
         foreach ($chitiets as $chitiet) {
@@ -395,9 +388,7 @@ class XemPhieuController extends Controller
         $phieu->doituong = $phieu->getDoiTuong($phieu->loaiphieu);
         unset($phieu->doituong_id);
         $phieu->chinhanh = $phieu->getChiNhanh();
-        unset($phieu->chinhanh_id);
         $phieu->nhanvien = $phieu->getNhanVien();
-        unset($phieu->nhanvien_id);
         $phieu->tenphieu = Funcs::getTenPhieu($phieu->loaiphieu);
         if ($phieu->loaiphieu == 'PT' || $phieu->loaiphieu == 'PC') {
             $phieu->khoanmuc = $phieu->getKhoanMuc();
@@ -415,9 +406,7 @@ class XemPhieuController extends Controller
         }
 
         $phieu->chinhanh = $phieu->getChiNhanh();
-        unset($phieu->chinhanh_id);
         $phieu->nhanvien = $phieu->getNhanVien();
-        unset($phieu->nhanvien_id);
 
         return $phieu;
     }

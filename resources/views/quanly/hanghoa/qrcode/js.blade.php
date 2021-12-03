@@ -25,7 +25,8 @@
 
                     // Query parameters will be ?search=[term]&type=public
                     return query;
-                }
+                },
+                delay: 300
             },
             allowClear: true,
             placeholder: 'Chọn hàng hóa...'
@@ -87,13 +88,8 @@
             ],
             height: '450px',
             movableColumns: false,
-            pagination: 'local',
-            paginationSize: 10,
-            dataFiltered: function () {
-                if (isNull(tblHangHoa) || isUndefined(tblHangHoa)) {
-                    return false;
-                }
-                setTimeout(() => {tblHangHoa.getColumns()[0].updateDefinition()},10);
+            dataChanged: () => {
+                tblHangHoa.getColumns()[0].updateDefinition();
             }
         });
     }
@@ -128,7 +124,7 @@
                     soluong,
                     dongia: hanghoa.dongia
                 }
-                tblHangHoa.addData(dataTable, true);
+                tblHangHoa.addData(dataTable,true).then(() => {tblHangHoa.getColumns()[0].updateDefinition()});
             }
 
             $('#boxHangHoa input').val('').trigger('change');

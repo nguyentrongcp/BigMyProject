@@ -31,6 +31,10 @@
 
         autosize($('#inpGhiChu'));
 
+        @if(in_array('danh-muc.khach-hang.chinh-sua',$info->phanquyen) === false)
+        $('#modalXemKH .col-thongtin i').remove();
+        @endif
+
         $('#btnXemPhieu').click(() => {
             sToast.toast(0,'Bạn chưa chọn hàng hóa!');
         })
@@ -47,7 +51,8 @@
 
                     // Query parameters will be ?search=[term]&type=public
                     return query;
-                }
+                },
+                delay: 250
             },
             templateResult: (value) => {
                 if (!isUndefined(value.id)) {
@@ -142,14 +147,8 @@
                     }},
             ],
             height: '100%',
-            movableColumns: false,
-            pagination: 'local',
-            paginationSize: 10,
-            dataFiltered: function () {
-                if (isNull(tblHangHoa) || isUndefined(tblHangHoa)) {
-                    return false;
-                }
-                setTimeout(() => {tblHangHoa.getColumns()[0].updateDefinition()},10);
+            dataChanged: () => {
+                tblHangHoa.getColumns()[0].updateDefinition();
                 actionTinhTien();
                 if (tblHangHoa.getData().length === 0) {
                     $('#lblMaPhieu').text('-----').off('click');
@@ -224,7 +223,7 @@
             rowContextMenu: [
                 {
                     label: '<i class="fa fa-check"></i> Chọn hàng',
-                    action: (e, row) => {
+                    action: () => {
                         $('#btnTraHang').click();
                     }
                 },
@@ -295,7 +294,7 @@
                 tblData.push(value);
             })
 
-            tblHangHoa.setData(tblData);
+            tblHangHoa.setData(tblData).then(() => { actionTinhTien() });
             $('#lblMaPhieu').text(data[0].maphieu).off('click').click(() => {
                 mPhieu('/quan-ly/xem-phieu/' + data[0].maphieu).xemphieu();
             })
@@ -527,6 +526,7 @@
                 _value = doi_ngay(value);
             }
             $(col).find('span').text(_value);
+            @if(in_array('danh-muc.khach-hang.chinh-sua',$info->phanquyen) !== false)
             let edit = $(col).find('i.edit');
             if (edit.length > 0) {
                 edit.off('click').click(() => {
@@ -597,6 +597,7 @@
                     }
                 })
             }
+            @endif
         }
 
         $('#modalXemKH').modal('show');

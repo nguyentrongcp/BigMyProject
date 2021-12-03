@@ -125,13 +125,8 @@
             ],
             height: '450px',
             movableColumns: false,
-            pagination: 'local',
-            paginationSize: 10,
-            dataFiltered: function () {
-                if (isNull(tblHangHoa) || isUndefined(tblHangHoa)) {
-                    return false;
-                }
-                setTimeout(() => {tblHangHoa.getColumns()[0].updateDefinition()},10);
+            dataChanged: () => {
+                tblHangHoa.getColumns()[0].updateDefinition()
             }
         });
     }
@@ -164,7 +159,7 @@
                 soluong,
                 hansudung
             }
-            tblHangHoa.addData(dataTable, true);
+            tblHangHoa.addData(dataTable,true).then(() => {tblHangHoa.getColumns()[0].updateDefinition()});
 
             $('#boxHangHoa input').val('').trigger('change');
             $('#selHangHoa').val(null).trigger('change').focus().select2('open');
@@ -259,11 +254,11 @@
                     }, cellClick: (e, cell) => {
                         mPhieu('/quan-ly/xem-phieu/' + cell.getValue() + '?deletable=1').xemphieu(cell.getTable());
                     }},
-                @if($info->id == '1000000000')
+                @if(in_array('role.chi-nhanh.tat-ca',$info->phanquyen) !== false || in_array('nhap-hang.danh-sach',$info->phanquyen) !== false)
                 {title: 'Cửa hàng', field: 'chinhanh', headerSort: false},
                 @endif
                 {title: 'Nhà cung cấp', field: 'doituong', headerSort: false},
-                @if($info->id == '1000000000')
+                @if(in_array('role.gia-nhap',$info->phanquyen) !== false || in_array('nhap-hang.danh-sach',$info->phanquyen) !== false)
                 {title: 'Tiền thanh toán', field: 'tienthanhtoan', headerHozAlign: 'right',
                     hozAlign: 'right', headerSort: false, vertAlign: 'middle',
                     formatter: function(cell) {

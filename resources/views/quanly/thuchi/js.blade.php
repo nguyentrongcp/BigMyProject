@@ -83,28 +83,11 @@
     }
 
     function initSelDoiTuong() {
-        let results = JSON.parse('{!! $doituongs !!}');
-        let count = 0;
-        let length = results.length;
-        $('#modalLapPhieu .selDoiTuong').select2({
-            data: results,
-            matcher: (params, data) => {
-                let result = null;
-                // If there are no search terms, return all of the data
-                // if ($.trim(params.term) === '') {
-                //     return data;
-                // }
-                if (count < 20 && (data.slug.indexOf(convertToSlug(params.term)) > -1 || data.dienthoai.indexOf(convertToSlug(params.term)) > -1)) {
-                    result = data;
-                    count++;
-                }
-
-                if (--length === 0) {
-                    length = results.length;
-                    count = 0;
-                }
-                return result;
-            },
+        let results = JSON.parse('{!! str_replace("'","\'",$doituongs) !!}');
+        initSelect2($('#modalLapPhieu .selDoiTuong'),results,{
+            matcher: ['dienthoai','ten'],
+            defaultText: ['dienthoai','ten'],
+            placeholder: 'Chọn đối tượng...',
             templateResult: (value) => {
                 if (!isUndefined(value.id)) {
                     return $('' +
@@ -116,19 +99,11 @@
                     return value.text;
                 }
             },
-            templateSelection: (value) => {
-                if (convertToSlug(value.dienthoai) !== '') {
-                    return value.dienthoai + ' - ' + value.ten;
-                }
-                else {
-                    return value.text;
-                }
-            },
-            placeholder: 'Chọn đối tượng...'
-        }).on('select2:select', () => {
+        })
+        $('#modalLapPhieu .selDoiTuong').on('select2:select', () => {
             $('#modalLapPhieu .inpSoTien').focus();
             $('#modalLapPhieu .selDoiTuong').removeClass('is-invalid');
-        }).val(null).trigger('change');
+        });
     }
 
     function initChiNhanh() {

@@ -4,7 +4,6 @@
     let tblDanhSachPhieu;
     let nhanviens = JSON.parse('{!! str_replace("'","\'",json_encode($nhanviens)) !!}');
     init();
-    initSelNhanVien();
     initTblHangHoa();
     initTblPhieuXuat();
     initActionChonHang();
@@ -21,14 +20,12 @@
             autoApply: true
         });
         autosize($('#inpGhiChu'));
-    }
-
-    function initSelNhanVien() {
-        $('#selNhanVien').select2({
-            data: nhanviens,
+        initSelect2($('#selNhanVien'),nhanviens,{
             allowClear: true,
-            placeholder: info.dienthoai + ' - ' + info.ten
-        }).val(null).trigger('change');
+            placeholder: info.dienthoai + ' - ' + info.ten,
+            matcher: ['dienthoai','ten'],
+            defaultText: ['dienthoai','ten']
+        })
     }
 
     function initTblHangHoa() {
