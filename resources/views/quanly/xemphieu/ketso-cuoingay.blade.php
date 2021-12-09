@@ -212,7 +212,8 @@
             })
     })
     @endif
-
+    @endif
+    @if($controls->printable)
     $('#btnInPhieu').click(() => {
         $('#boxPhieuIn').print()
     });

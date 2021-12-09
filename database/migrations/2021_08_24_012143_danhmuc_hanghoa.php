@@ -27,6 +27,8 @@ class DanhmucHanghoa extends Migration
             $table->tinyInteger('is_quydoi')->default(0);
             $table->string('dang')->nullable();
             $table->text('congdung')->nullable();
+            $table->text('hinhanh')->nullable();
+            $table->string('lieuluong')->nullable();
             $table->text('hoatchat')->nullable();
             $table->text('ghichu')->nullable();
 

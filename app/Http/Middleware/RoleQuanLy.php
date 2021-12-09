@@ -30,6 +30,9 @@ class RoleQuanLy
             if (strpos($currentUrl,'quan-ly/xem-phieu') !== false) {
                 $currentUrl = 'quan-ly/xem-phieu';
             }
+            if (strpos($currentUrl,'quan-ly/hang-hoa/in-qrcode') !== false) {
+                $currentUrl = 'quan-ly/hang-hoa/qrcode';
+            }
             if (in_array($currentUrl,$urls) === false) {
                 abort(404);
             }

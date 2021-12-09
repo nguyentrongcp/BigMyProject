@@ -308,10 +308,11 @@
                 })
         })
         @endif
-
-        $('#btnInPhieu').click(() => {
-            $('#boxPhieuIn').print()
-        });
     @endif
+    @if($controls->printable)
+    $('#btnInPhieu').click(() => {
+        $('#boxPhieuIn').print()
+    });
+@endif
 </script>
 </body>

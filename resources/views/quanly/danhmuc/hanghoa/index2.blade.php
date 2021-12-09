@@ -60,6 +60,11 @@
                     <span></span>
                 </div>
                 <div class="divider my-3"></div>
+                <div class="col-thongtin" data-field="lieuluong" data-title="Liều lượng">
+                    <strong>Liều lượng <i class="fa fa-edit text-info edit"></i></strong>
+                    <span></span>
+                </div>
+                <div class="divider my-3"></div>
                 <div class="col-thongtin" data-field="ghichu" data-title="Ghi chú">
                     <strong>Ghi chú <i class="fa fa-edit text-info edit"></i></strong>
                     <span></span>

@@ -89,6 +89,7 @@
             let dang = $('#modalThemMoi .selDang').val();
             let congdung = $('#modalThemMoi .inpCongDung').val().trim();
             let hoatchat = $('#modalThemMoi .inpHoatChat').val().trim();
+            let lieuluong = $('#modalThemMoi .inpLieuLuong').val().trim();
             let ghichu = $('#modalThemMoi .inpGhiChu').val().trim();
             let lientuc = $('#chkLienTuc')[0].checked;
             let checked = true;
@@ -116,7 +117,7 @@
                 type: 'get',
                 dataType: 'json',
                 data: {
-                    ten,donvitinh,nhom,quycach,gianhap,dongia,ghichu,congdung,hoatchat,dang,mamoi
+                    ten,donvitinh,nhom,quycach,gianhap,dongia,ghichu,congdung,hoatchat,dang,mamoi,lieuluong
                 }
             }).done((result) => {
                 if (result.succ) {
@@ -319,6 +320,8 @@
                     visible: isNull(views) ? false : views.hoatchat},
                 {title: "Công dụng", field: "congdung", vertAlign: 'middle', headerSort: false, contextMenu,
                     visible: isNull(views) ? false : views.congdung},
+                {title: "Liều lượng", field: "lieuluong", vertAlign: 'middle', headerSort: false, contextMenu,
+                    visible: isNull(views) ? false : views.lieuluong},
                 {title: "Ghi chú", field: "ghichu", vertAlign: 'middle', headerSort: false, contextMenu,
                     visible: isNull(views) ? true : views.ghichu}
             ],
@@ -351,6 +354,9 @@
                     return false;
                 }
                 setTimeout(() => {tblDanhSach.getColumns()[0].updateDefinition()},10);
+            },
+            dataChanged: () => {
+                tblDanhSach.getColumns()[0].updateDefinition();
             }
         });
         initSearchTable(tblDanhSach,['ma','ten','hoatchat']);
@@ -530,7 +536,7 @@
         if (field === 'mamoi') {
             mInput(data.ten,value,false).text(ten,ten + '...',onSubmit);
         }
-        if (['congdung','hoatchat','ghichu'].indexOf(field) !== -1) {
+        if (['congdung','hoatchat','ghichu','lieuluong'].indexOf(field) !== -1) {
             mInput(data.ten,value).textarea(ten,ten + '...',onSubmit);
         }
         if (field === 'gianhap') {

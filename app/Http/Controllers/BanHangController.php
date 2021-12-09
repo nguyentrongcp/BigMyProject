@@ -39,7 +39,7 @@ class BanHangController extends Controller
         $q = Funcs::convertToSlug($request->q);
 
         $models = HangHoa::where('slug','like',"%$q%")->orWhere('ma','like',"%$q%")
-            ->limit(20)->get(['id','ma','ten','donvitinh','nhom','quycach','ghichu','hoatchat','congdung','dang']);
+            ->limit(20)->get(['id','ma','ten','donvitinh','nhom','quycach','ghichu','hoatchat','congdung','dang','hinhanh','lieuluong']);
 
         foreach($models as $model) {
             $model->tonkho = $tonkhos[$model->ma] ?? 0;

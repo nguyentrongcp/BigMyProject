@@ -1,5 +1,6 @@
 <!-- jQuery -->
 <script src="/giaodien/plugins/jquery/jquery.min.js"></script>
+<script src="/giaodien/my_plugins/viewer/viewer.min.js"></script>
 <!-- Bootstrap -->
 <script src="/giaodien/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
 <!-- AdminLTE -->
@@ -21,7 +22,7 @@
 
 <script src="/giaodien/my_plugins/autosize/autosize.min.js"></script>
 
-<script src="/giaodien/dist/js/function.js?version=1.5"></script>
+<script src="/giaodien/dist/js/function.js?version=1.6.2"></script>
 
 <script src="/giaodien/dist/js/socket.io.js"></script>
 
@@ -103,42 +104,11 @@
 //     initSoPhieuNhap();
 {{--    @endif--}}
 
-{{--    @if(in_array('role.chi-nhanh.tat-ca',$dsquyen) !== false)--}}
+    @if(in_array('role.chi-nhanh.tat-ca',$info->phanquyen) !== false)
     $('#btnChuyenCuaHang').click(() => {
-        mInput('Chuyển cửa hàng','').select2('Chọn cửa hàng','Vui lòng chọn cửa hàng cần chuyển',
-            '/api/quan-ly/danh-muc/chi-nhanh/tim-kiem?selectAll=0',true,
-            () => {
-                let chinhanh_id = $('#modalInput .value').val();
-                let chinhanh_ten = $('#modalInput .value option:selected').text();
-                if (isNull(chinhanh_id)) {
-                    $('#modalInput .value').addClass('is-invalid');
-                    return false;
-                }
-                sToast.confirm('Chuyển cửa hàng?',
-                    'Xác nhận chuyển sang cửa hàng <span class="text-info">' + chinhanh_ten + '</span>',
-                    (result) => {
-                        if (result.isConfirmed) {
-                            sToast.loading('Đang chuyển cửa hàng. Vui lòng chờ...')
-                            $.ajax({
-                                url: '/api/quan-ly/danh-muc/nhan-vien/chuyen-cua-hang',
-                                type: 'get',
-                                dataType: 'json',
-                                data: {
-                                    id: info.id,
-                                    chinhanh_id
-                                }
-                            }).done((result) => {
-                                if (result.succ) {
-                                    sToast.notification(1,'Chuyển cửa hàng thành công.',() => {
-                                        location.reload();
-                                    })
-                                }
-                            });
-                        }
-                    });
-            }, 'Bạn chưa chọn cửa hàng cần chuyển!');
+        initChuyenCuaHang();
     });
-{{--    @endif--}}
+    @endif
 
     // checkMatKhauMacDinh();
 

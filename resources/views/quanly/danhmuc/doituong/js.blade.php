@@ -140,6 +140,9 @@
                     return false;
                 }
                 setTimeout(() => {tblDanhSach.getColumns()[0].updateDefinition()},10);
+            },
+            dataChanged: () => {
+                tblDanhSach.getColumns()[0].updateDefinition();
             }
         });
         initSearchTable(tblDanhSach,['ma','dienthoai','ten']);

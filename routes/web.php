@@ -19,7 +19,7 @@ Route::get('/', function () {
 
 Route::prefix('mobile')->group(function() {
     Route::get('/', function () {
-        return redirect('/mobile/danh-muc/nhan-vien');
+        return view('mobile.index');
     });
     Route::get('dang-nhap', function() {
         return view('mobile.login');

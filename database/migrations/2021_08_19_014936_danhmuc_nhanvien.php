@@ -35,6 +35,7 @@ class DanhmucNhanvien extends Migration
             $table->text('cmnd_matsau')->nullable();
             $table->integer('chucvu')->default(0);
             $table->tinyInteger('is_thuviec')->default(0);
+            $table->tinyInteger('is_parttime')->default(0);
             $table->integer('loai')->default(1);
             $table->text('ghichu')->nullable();
             $table->text('phanquyen')->nullable();

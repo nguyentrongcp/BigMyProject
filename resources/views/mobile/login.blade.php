@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <title>MyProject By Nguyễn Đình Trọng</title>
 
     <!-- Google Font: Source Sans Pro -->
@@ -23,7 +23,7 @@
     <!-- /.login-logo -->
     <div class="card card-outline card-primary">
         <div class="card-header text-center">
-            <span class="h1"><b>My</b>PROJECT</span>
+            <span class="h1">VTNN HAI LÚA</span>
         </div>
         <div class="card-body">
             <p class="login-box-msg">Đăng nhập để bắt đầu phiên làm việc</p>
@@ -133,16 +133,24 @@
                 }
                 else {
                     Cookies.set('token', result.data.token, { expires: 7 });
-                    window.ReactNativeWebView.postMessage(JSON.stringify({
-                        type: 'thongbao-init',
-                        topics: ['hailua_' + result.data.token,'hailua_' + result.data.chinhanh_id]
-                    }));
+                    localStorage.setItem('token',result.data.token);
+                    if (!isUndefined(window.ReactNativeWebView)) {
+                        window.ReactNativeWebView.postMessage(JSON.stringify({
+                            type: 'thongbao-init',
+                            topics: ['hailua_' + result.data.token,'hailua_' + result.data.chinhanh_id]
+                        }));
+                    }
                     Swal.update({title: 'Đang đăng nhập vào hệ thống...'});
-                    setTimeout(() => {location.href = "{{ route('mobile.nhan-vien') }}"},300);
+                    setTimeout(() => {location.href = "{{ route('mobile.lichsu-diemdanh') }}"},300);
                 }
             }
         });
     })
+
+    function testAppMobile() {
+        alert(localStorage.getItem('token'));
+        // window.ReactNativeWebView.postMessage(JSON.stringify({type: 'download', url: 'https://hailua.center/qrcode-diemdanh/LaiVung.png'}));
+    }
 
     function showError (type, noti) {
         if (type === 'dienthoai') {

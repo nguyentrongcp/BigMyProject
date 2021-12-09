@@ -115,6 +115,10 @@
                         <label>Công dụng</label>
                         <textarea rows="2" class="form-control inpCongDung" placeholder="Nhập công dụng..."></textarea>
                     </div>
+                    <div class="form-group">
+                        <label>Liều lượng</label>
+                        <textarea rows="2" class="form-control inpLieuLuong" placeholder="Nhập liều lượng..."></textarea>
+                    </div>
                     <div class="form-group mb-0">
                         <label>Ghi chú</label>
                         <textarea rows="2" class="form-control inpGhiChu" placeholder="Nhập ghi chú..."></textarea>

@@ -31,8 +31,7 @@
     }
 
     function addItem(value, isPrepend = false) {
-        let avatar = '/logo.jpg';
-        // let avatar = isNull(value.hinhanh) ? '' : JSON.parse(value.hinhanh);
+        let hinhanh = isNull(value.hinhanh) ? '' : JSON.parse(value.hinhanh);
         // if (avatar.length > 0) {
         //     avatar = avatar[0].url;
         // }
@@ -43,7 +42,7 @@
         let temp = $(
             '<li class="item">' +
             '   <div class="product-img">' +
-            '       <img src="' + avatar + '" alt="Product Image" class="img-size-50">' +
+            '       <img src="' + hinhanh.url + '" alt="Product Image" class="img-size-50">' +
             '   </div>' +
             '   <div class="product-info">' +
             '       <div class="product-title text-muted ten">' + ten + '</div>' +
@@ -68,10 +67,11 @@
             '   </div>' +
             '</li>'
         );
+        clickViewerImage(temp.find('img'));
         temp.find('img').on('error', function () {
             $(this).attr('src','/logo.jpg');
+            temp.find('img').off('click');
         });
-        // clickViewerImage(temp.find('img'));
         temp.find('.tonkho').click(() => {
             initTonKhoGiaBan(value.ma);
         });

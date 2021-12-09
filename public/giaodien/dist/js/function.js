@@ -911,6 +911,41 @@ function initThongBaoGia() {
     });
 }
 
+function initChuyenCuaHang() {
+    mInput('Chuyển cửa hàng','').select2('Chọn cửa hàng','Vui lòng chọn cửa hàng cần chuyển',
+        '/api/quan-ly/danh-muc/chi-nhanh/tim-kiem?selectAll=0',true,
+        () => {
+            let chinhanh_id = $('#modalInput .value').val();
+            let chinhanh_ten = $('#modalInput .value option:selected').text();
+            if (isNull(chinhanh_id)) {
+                $('#modalInput .value').addClass('is-invalid');
+                return false;
+            }
+            sToast.confirm('Chuyển cửa hàng?',
+                'Xác nhận chuyển sang cửa hàng <span class="text-info">' + chinhanh_ten + '</span>',
+                (result) => {
+                    if (result.isConfirmed) {
+                        sToast.loading('Đang chuyển cửa hàng. Vui lòng chờ...')
+                        $.ajax({
+                            url: '/api/quan-ly/danh-muc/nhan-vien/chuyen-cua-hang',
+                            type: 'get',
+                            dataType: 'json',
+                            data: {
+                                id: info.id,
+                                chinhanh_id
+                            }
+                        }).done((result) => {
+                            if (result.succ) {
+                                sToast.notification(1,'Chuyển cửa hàng thành công.',() => {
+                                    location.reload();
+                                })
+                            }
+                        });
+                    }
+                });
+        }, 'Bạn chưa chọn cửa hàng cần chuyển!');
+}
+
 function initSoPhieuXuat() {
     $.ajax({
         url: '/api/quan-ly/chuyenkho-noibo/nhap-kho/so-phieuxuat',
@@ -1192,4 +1227,30 @@ function initSelect2 (element, data, option = {}) {
     if (!isUndefined(option.allowClear)) {
         element.val(null).trigger('change');
     }
+}
+
+function showViewerImage(image) {
+    let img = $('<img src="' + $(image).attr('src') + '">')
+    let viewer = new Viewer(img[0]);
+    img.on('hidden', () => {
+        viewer.destroy();
+    });
+    viewer.show();
+}
+
+function showViewerUrl(url) {
+    let img = $('<img src="' + url + '">')
+    let viewer = new Viewer(img[0]);
+    img.on('hidden', () => {
+        viewer.destroy();
+    });
+    viewer.show();
+}
+
+function clickViewerImage(images) {
+    $.each(images, function(key, image) {
+        $(image).click(() => {
+            showViewerImage($(image));
+        });
+    })
 }

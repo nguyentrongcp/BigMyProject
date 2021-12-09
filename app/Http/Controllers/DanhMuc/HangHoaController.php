@@ -34,7 +34,7 @@ class HangHoaController extends Controller
         $q = Funcs::convertToSlug($request->q);
         $nhanvien = Funcs::getNhanVienByToken($request->cookie('token'),['id','chinhanh_id']);
 
-        $options = ['id','ma','ten','donvitinh','nhom','quycach'];
+        $options = ['id','ma','ten','donvitinh','nhom','quycach','hinhanh'];
         if ($nhanvien->id == '1000000000') {
             $options[] = 'gianhap';
         }
@@ -65,7 +65,7 @@ class HangHoaController extends Controller
         else {
             $models = HangHoa::orderBy('updated_at','desc')->get();
         }
-        if (Funcs::isPhanQuyenByToken('role.gia-nhap',$request->cookie('token'))) {
+        if (!Funcs::isPhanQuyenByToken('role.gia-nhap',$request->cookie('token'))) {
             foreach($models as $model) {
                 unset($model->gianhap);
             }
@@ -114,6 +114,7 @@ class HangHoaController extends Controller
         $ghichu = $request->ghichu ?? null;
         $hoatchat = $request->hoatchat ?? null;
         $congdung = $request->congdung ?? null;
+        $lieuluong = $request->lieuluong ?? null;
         $dang = $request->dang ?? null;
         $id_cha = $request->id_cha ?? null;
 
@@ -166,6 +167,7 @@ class HangHoaController extends Controller
         $model->quycach = $quycach;
         $model->hoatchat = $hoatchat;
         $model->congdung = $congdung;
+        $model->lieuluong = $lieuluong;
         $model->dang = $dang;
         $model->deleted_at = null;
         if ($id_cha != null) {

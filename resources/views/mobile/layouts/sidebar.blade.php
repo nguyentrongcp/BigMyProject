@@ -39,7 +39,7 @@
         border-top: 1px solid #c2cfdc
     }
 </style>
-<div class="modal fade" id="modalMenu">
+<div class="modal" id="modalMenu">
     <div class="modal-dialog modal-fullsize">
         <div class="modal-content h-100">
             <div class="modal-header p-0">
@@ -109,7 +109,7 @@
 {{--                            <span>Danh Sách Nhập Hàng</span>--}}
 {{--                        </div>--}}
 {{--                    </div>--}}
-                    @if(in_array('danh-muc.thu-chi.mobile',$info->phanquyen) !== false)
+                    @if(in_array('thu-chi.mobile',$info->phanquyen) !== false)
                     <div class="item">
                         <div data-href="{{ route('mobile.thu-chi') }}"
                              class="{{ url()->current() == route('mobile.thu-chi') ? ' active' : '' }}"
@@ -119,6 +119,12 @@
                         </div>
                     </div>
                     @endif
+                    <div class="item">
+                        <div class="none-url doi-matkhau">
+                            <i class="fas fa-lock text-success"></i>
+                            <span>Đổi Mật Khẩu</span>
+                        </div>
+                    </div>
 {{--                    <div class="item">--}}
 {{--                        <div data-href="{{ route('mobile.lich-nghi') }}"--}}
 {{--                             class="{{ url()->current() == route('mobile.lich-nghi') ? ' active' : '' }}"--}}

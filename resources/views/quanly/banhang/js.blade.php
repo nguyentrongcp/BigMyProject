@@ -155,7 +155,9 @@
                 congdung: hanghoa.congdung,
                 dongia: hanghoa.dongia,
                 giamgia, soluong,
-                thanhtien: soluong * (parseFloat(hanghoa.dongia) - giamgia)
+                thanhtien: soluong * (parseFloat(hanghoa.dongia) - giamgia),
+                hinhanh: hanghoa.hinhanh,
+                lieuluong: hanghoa.lieuluong
             }
             tblHangHoa.addData(dataTable,true).then(() => {
                 tblHangHoa.getColumns()[0].updateDefinition()
@@ -269,6 +271,14 @@
                     menu: subMenus
                 }
             ];
+            if (!isNull(cell.getData().hinhanh)) {
+                menus.unshift({
+                    label: '<i class="fa fa-image text-dark"></i> Hình ảnh',
+                    action: () => {
+                        showViewerUrl(JSON.parse(cell.getData().hinhanh).url);
+                    }
+                })
+            }
 
             return menus;
         }
