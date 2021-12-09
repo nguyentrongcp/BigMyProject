@@ -62,7 +62,7 @@
                     <i class="fas fa-users mr-2"></i> Thông tin cá nhân
 {{--                    <span class="float-right text-muted text-sm">3 mins</span>--}}
                 </div>
-                @if($info->id == '1000000000')
+                @if(in_array('role.chi-nhanh.tat-ca',$info->phanquyen) !== false)
                 <div href="#" class="dropdown-item c-pointer" id="btnChuyenCuaHang">
                     <i class="fa fa-refresh mr-2"></i> Chuyển cửa hàng
                     {{--                    <span class="float-right text-muted text-sm">3 mins</span>--}}

@@ -210,8 +210,6 @@
                     $('#modalPhanQuyen .lblSoQuyen').text(checked ? --soQuyen : ++soQuyen);
                 }
             },
-            pagination: 'local',
-            paginationSize: 10,
             pageLoaded: () => {
                 tblDanhSach.getColumns()[0].updateDefinition();
             },
