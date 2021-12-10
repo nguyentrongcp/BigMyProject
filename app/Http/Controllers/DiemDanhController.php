@@ -192,6 +192,9 @@ class DiemDanhController extends Controller
 
         $ngaycong = strtotime($ngay.' '.$time) - strtotime($ngay.' '.$model->tg_batdau);
         $ngaycong = $ngaycong / 3600;
+        $phanle = $ngaycong - ((int) $ngaycong);
+        $ngaycong = (int) $ngaycong;
+        $ngaycong = $phanle >= 0.75 ? ($ngaycong + 1) : $ngaycong;
 
         $model->chinhanh_ketthuc = $chinhanh_id;
         $model->tg_ketthuc = $time;

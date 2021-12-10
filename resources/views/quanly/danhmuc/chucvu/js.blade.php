@@ -211,16 +211,13 @@
                 }
             },
             pageLoaded: () => {
-                tblDanhSach.getColumns()[0].updateDefinition();
+                tblPhanQuyen.getColumns()[0].updateDefinition();
             },
             dataFiltered: function () {
-                if (isNull(tblDanhSach) || isUndefined(tblDanhSach)) {
+                if (isNull(tblPhanQuyen) || isUndefined(tblPhanQuyen)) {
                     return false;
                 }
-                setTimeout(() => {tblDanhSach.getColumns()[0].updateDefinition()},10);
-            },
-            dataChanged: () => {
-                tblDanhSach.getColumns()[0].updateDefinition();
+                setTimeout(() => {tblPhanQuyen.getColumns()[0].updateDefinition()},10);
             }
         });
         initSearchTable(tblPhanQuyen,['ten','chucnang']);

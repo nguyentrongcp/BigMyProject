@@ -498,11 +498,13 @@
                     {
                         label: '<i class="fa fa-check-square-o text-success"></i> Chọn tất cả',
                         action: () => {
+                            let dataUpdate = [];
                             $.each(tblPhanQuyen.getRows(), function (key, row) {
                                 if (!row.getData().checked) {
-                                    tblPhanQuyen.updateData([{id: row.getIndex(), checked: true}])
+                                    dataUpdate.push({id: row.getIndex(), checked: true});
                                 }
                             })
+                            tblPhanQuyen.updateData(dataUpdate);
                             $('#modalPhanQuyen .lblSoQuyen').text(data.length);
                         },
                         disabled: isTatCa
@@ -510,11 +512,13 @@
                     {
                         label: '<i class="fa fa-square-o"></i> Bỏ chọn tất cả',
                         action: () => {
+                            let dataUpdate = [];
                             $.each(tblPhanQuyen.getRows(), function (key, row) {
                                 if (row.getData().checked) {
-                                    tblPhanQuyen.updateData([{id: row.getIndex(), checked: false}])
+                                    dataUpdate.push({id: row.getIndex(), checked: false});
                                 }
                             })
+                            tblPhanQuyen.updateData(dataUpdate);
                             $('#modalPhanQuyen .lblSoQuyen').text(0);
                         },
                         disabled: isEmpty
@@ -585,14 +589,11 @@
                 }
             },
             pageLoaded: () => {
-                if (isNull(tblDanhSach) || isUndefined(tblDanhSach)) {
+                if (isNull(tblPhanQuyen) || isUndefined(tblPhanQuyen)) {
                     return false;
                 }
-                setTimeout(() => {tblDanhSach.getColumns()[0].updateDefinition()},10);
+                setTimeout(() => {tblPhanQuyen.getColumns()[0].updateDefinition()},10);
             },
-            dataChanged: () => {
-                tblDanhSach.getColumns()[0].updateDefinition();
-            }
         });
         initSearchTable(tblPhanQuyen,['ten','chucnang']);
 

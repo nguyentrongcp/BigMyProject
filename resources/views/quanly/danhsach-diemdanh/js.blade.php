@@ -50,12 +50,13 @@
                     label: '<i class="fa fa-info-circle text-info"></i> Chi tiết',
                     action: (e, row) => {
                         let data = row.getData();
-                        $('#modalChiTiet').modal('show').find('.title').text(data.tennhanvien);
-                        tblChiTiet.setData('/api/quan-ly/diem-danh/lich-su', {
-                            nhanvien_id: data.nhanvien_id,
-                            thang: data.thang,
-                            nam: data.nam
-                        })
+                        $('#modalChiTiet').off('shown.bs.modal').on('shown.bs.modal', () => {
+                            tblChiTiet.setData('/api/quan-ly/diem-danh/lich-su', {
+                                nhanvien_id: data.nhanvien_id,
+                                thang: data.thang,
+                                nam: data.nam
+                            })
+                        }).modal('show').find('.title').text(data.tennhanvien);
                     }
                 }
             ],
@@ -143,8 +144,6 @@
                     }, bottomCalc: 'sum'},
             ],
             height: '465px',
-            pagination: 'local',
-            paginationSize: 10,
             dataFiltered: function () {
                 if (isNull(tblChiTiet) || isUndefined(tblChiTiet)) {
                     return false;

@@ -33,6 +33,7 @@ class DanhmucKhachhang extends Migration
             $table->double('congno',12,0)->default(0);
             $table->dateTime('lancuoi_muahang')->nullable();
             $table->string('nhanvien_id',10)->nullable();
+            $table->tinyInteger('is_nongdan')->default(0);
             $table->text('ghichu')->nullable();
 
             $table->dateTime('created_at');

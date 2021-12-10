@@ -21,12 +21,7 @@
         $('#modalThemMoi input, #modalThemMoi textarea').keypress(function(e) {
             let keyCode = e.keyCode || e.which;
             if (keyCode === 13) {
-                if ($('#modalThemMoi').hasClass('show')) {
-                    $('#modalThemMoi .btnSubmit').click();
-                }
-                else {
-                    $('#modalThemQuyDoi .btnSubmit').click();
-                }
+                $('#modalThemMoi .btnSubmit').click();
                 e.preventDefault();
                 return false;
             }

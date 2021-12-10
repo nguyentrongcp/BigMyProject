@@ -12,6 +12,7 @@ use App\Http\Controllers\DanhMuc\HangHoaController;
 use App\Http\Controllers\DanhMuc\KhachHangController;
 use App\Http\Controllers\DanhMuc\NhaCungCapController;
 use App\Http\Controllers\DanhMuc\NhanVienController;
+use App\Http\Controllers\DanhMuc\NongDanController;
 use App\Http\Controllers\DanhMuc\PhanQuyenController;
 use App\Http\Controllers\DiemDanhController;
 use App\Http\Controllers\HangHoa\GiaBanController;
@@ -128,6 +129,15 @@ Route::prefix('quan-ly')->group(function() {
                 Route::get('xoa',[ChucVuController::class, 'xoa']);
                 Route::get('danh-sach',[ChucVuController::class, 'danh_sach']);
                 Route::get('danhsach-phanquyen',[ChucVuController::class, 'danhsach_phanquyen']);
+            });
+
+            Route::prefix('nong-dan')->group(function() {
+                Route::get('them-moi',[NongDanController::class, 'them_moi']);
+                Route::get('cap-nhat',[NongDanController::class, 'cap_nhat']);
+                Route::get('xoa',[NongDanController::class, 'xoa']);
+                Route::get('phuc-hoi',[NongDanController::class, 'phuc_hoi']);
+                Route::get('danh-sach',[NongDanController::class, 'danh_sach']);
+                Route::get('tim-kiem',[NongDanController::class, 'tim_kiem']);
             });
 
             Route::prefix('dia-chi')->group(function() {
