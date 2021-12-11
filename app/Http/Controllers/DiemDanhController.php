@@ -94,25 +94,30 @@ class DiemDanhController extends Controller
         $token = $request->cookie('token');
 //        $today = $this->ngay;
         $today = date('Y-m-d');
-        $result = DiemDanh::where([
-            'nhanvien_id' => Funcs::getNhanVienIDByToken($token),
+        $nhanvien = Funcs::getNhanVienByToken($token,['id','is_parttime']);
+        $results = DiemDanh::where([
+            'nhanvien_id' => $nhanvien->id,
             'ngay' => $today
-        ])->first(['id','ngay','tg_batdau','tg_ketthuc','ngaycong','chinhanh_batdau','chinhanh_ketthuc']);
+        ])->orderByDesc('id')->get(['id','ngay','tg_batdau','tg_ketthuc','ngaycong','chinhanh_batdau','chinhanh_ketthuc']);
+        $checked = count($results) == 0 ? 0 : ($results[0]->tg_ketthuc == null ? 1 : 2);
+        if ($nhanvien->is_parttime && $checked == 2) {
+            $checked = 0;
+        }
 
         return [
             'succ' => 1,
             'data' => [
                 'today' => $today,
-                'checked' => $result == null ? 0 : ($result->tg_ketthuc == null ? 1 : 2),
-                'result' => $result
+                'checked' => $checked,
+                'results' => $results
             ]
         ];
     }
 
     public function bat_dau(Request $request) {
         $token = $request->cookie('token');
-        $nhanvien_id = $request->nhanvien_id ?? Funcs::getNhanVienIDByToken($token);
-        $nhanvien = NhanVien::find($nhanvien_id,['id','chinhanh_id']);
+        $nhanvien = Funcs::getNhanVienByToken($token,['id','chinhanh_id','is_parttime']);
+        $nhanvien_id = $request->nhanvien_id ?? $nhanvien->id;
         $chinhanh_id = $request->chinhanh_id ?? $nhanvien->chinhanh_id;
         $toado = $request->toado ?? null;
 //        $ngay = $this->ngay;
@@ -125,7 +130,7 @@ class DiemDanhController extends Controller
             'ngay' => $ngay
         ])->count();
 
-        if ($checked > 0) {
+        if ($checked > 0 && !$nhanvien->is_parttime) {
             return [
                 'succ' => 0,
                 'noti' => 'Bạn đã điểm danh bắt đầu rồi. Không thể điểm danh lại!'
@@ -163,8 +168,8 @@ class DiemDanhController extends Controller
 
     public function ket_thuc(Request $request) {
         $token = $request->cookie('token');
-        $nhanvien_id = $request->nhanvien_id ?? Funcs::getNhanVienIDByToken($token);
-        $nhanvien = NhanVien::find($nhanvien_id,['id','chinhanh_id','is_parttime']);
+        $nhanvien = Funcs::getNhanVienByToken($token,['id','chinhanh_id','is_parttime']);
+        $nhanvien_id = $request->nhanvien_id ?? $nhanvien->id;
         $chinhanh_id = $request->chinhanh_id ?? $nhanvien->chinhanh_id;
         $toado = $request->toado ?? null;
 //        $ngay = $this->ngay;
@@ -175,7 +180,7 @@ class DiemDanhController extends Controller
         $model = DiemDanh::where([
             'nhanvien_id' => $nhanvien_id,
             'ngay' => $ngay
-        ])->first(['id','tg_batdau','chinhanh_ketthuc','tg_ketthuc','ngaycong']);
+        ])->whereNull('tg_ketthuc')->first(['id','tg_batdau','chinhanh_ketthuc','tg_ketthuc','ngaycong']);
 
         if ($model == null) {
             return [

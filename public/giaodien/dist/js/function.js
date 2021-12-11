@@ -803,24 +803,7 @@ function initDiemDanh(chinhanh_id = '1000000000') {
                 (data.checked === 0 ? 'Bạn chưa điểm danh bắt đầu' :
                     (data.checked === 1 ? 'Bạn chưa điểm danh kết thúc' : 'Bạn đã hoàn thành điểm danh hôm nay'))+
                 '               </h5>' +
-                '               <div class="d-flex">' +
-                '                   <h6>Thời gian bắt đầu:</h6>' +
-                '                   <h6 class="ml-auto font-weight-bolder text-primary tg_batdau">' +
-                (data.checked > 0 ? data.result.tg_batdau : '---') +
-                '                   </h6>' +
-                '               </div>' +
-                '               <div class="d-flex">' +
-                '                   <h6>Thời gian kết thúc:</h6>' +
-                '                   <h6 class="ml-auto font-weight-bolder text-danger tg_ketthuc">' +
-                (data.checked === 2 ? data.result.tg_ketthuc : '---') +
-                '                   </h6>' +
-                '               </div>' +
-                '               <div class="d-flex">' +
-                '                   <h6>Ngày công:</h6>' +
-                '                   <h6 class="ml-auto font-weight-bolder text-info ngaycong">' +
-                (data.checked === 2 ? data.result.ngaycong : 0) +
-                '                   </h6>' +
-                '               </div>' +
+                '               <div class="box-result"></div>' +
                 '            </div>' +
                 '            <div class="modal-footer">' +
                 (data.checked < 2 ? '<button type="button" class="btn ' + (data.checked === 0 ? 'btn-primary' : 'btn-danger') + ' submit">' +
@@ -830,11 +813,37 @@ function initDiemDanh(chinhanh_id = '1000000000') {
                 '        </div>' +
                 '    </div>' +
                 '</div>');
-            if (data.checked < 2) {
-                modal.find('.submit').click(() => {
-                    initActionDiemDanh(chinhanh_id,data.checked === 0)
-                })
-            }
+            data.results.forEach((result, stt) => {
+                if (stt > 0) {
+                    modal.find('.box-result').append('<div class="divider my-3"></div>');
+                }
+                let boxDiemDanh = $(
+                    '               <div class="d-flex">' +
+                    '                   <h6>Thời gian bắt đầu:</h6>' +
+                    '                   <h6 class="ml-auto font-weight-bolder text-primary tg_batdau">' +
+                    result.tg_batdau +
+                    '                   </h6>' +
+                    '               </div>' +
+                    '               <div class="d-flex">' +
+                    '                   <h6>Thời gian kết thúc:</h6>' +
+                    '                   <h6 class="ml-auto font-weight-bolder text-danger tg_ketthuc">' +
+                    (result.tg_ketthuc != null ? result.tg_ketthuc : '---') +
+                    '                   </h6>' +
+                    '               </div>' +
+                    '               <div class="d-flex">' +
+                    '                   <h6>Ngày công:</h6>' +
+                    '                   <h6 class="ml-auto font-weight-bolder text-info ngaycong">' +
+                    result.ngaycong +
+                    '                   </h6>' +
+                    '               </div>'
+                );
+                modal.find('.box-result').append(boxDiemDanh);
+                if (data.checked < 2 && stt === 0) {
+                    modal.find('.submit').click(() => {
+                        initActionDiemDanh(chinhanh_id,boxDiemDanh,data.checked === 0)
+                    })
+                }
+            })
             modal.on('hidden.bs.modal', () => {
                 modal.remove();
             }).modal('show');
@@ -842,7 +851,7 @@ function initDiemDanh(chinhanh_id = '1000000000') {
     });
 }
 
-function initActionDiemDanh(chinhanh_id, is_batdau = true) {
+function initActionDiemDanh(chinhanh_id, boxDiemDanh, is_batdau = true) {
     sToast.confirm('Xác nhận điểm danh ' + (is_batdau ? 'bắt đầu' : 'kết thúc'),'',
         (confirmed) => {
             if (confirmed.isConfirmed) {
@@ -857,12 +866,12 @@ function initActionDiemDanh(chinhanh_id, is_batdau = true) {
                 }).done((result) => {
                     if (result.succ) {
                         if (is_batdau) {
-                            $('#modalDiemDanh .tg_batdau').text(result.data.tg_batdau);
+                            boxDiemDanh.find('.tg_batdau').text(result.data.tg_batdau);
                             $('#modalDiemDanh .title').removeClass('text-primary').addClass('text-danger').text('Bạn chưa điểm danh kết thúc');
                         }
                         else {
-                            $('#modalDiemDanh .tg_ketthuc').text(result.data.tg_ketthuc);
-                            $('#modalDiemDanh .ngaycong').text(result.data.ngaycong);
+                            boxDiemDanh.find('.tg_ketthuc').text(result.data.tg_ketthuc);
+                            boxDiemDanh.find('.ngaycong').text(result.data.ngaycong);
                             $('#modalDiemDanh .title').removeClass('text-danger').addClass('text-info').text('Bạn đã hoàn thành điểm danh hôm nay');
                         }
                         $('#modalDiemDanh .submit').remove();
