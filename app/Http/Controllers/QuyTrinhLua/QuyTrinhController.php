@@ -4,6 +4,7 @@ namespace App\Http\Controllers\QuyTrinhLua;
 
 use App\Functions\Funcs;
 use App\Http\Controllers\Controller;
+use App\Models\QuyTrinhLua\GiaiDoan;
 use App\Models\QuyTrinhLua\MuaVu;
 use App\Models\QuyTrinhLua\QuyTrinh;
 use App\Models\QuyTrinhLua\SanPham;
@@ -42,7 +43,7 @@ class QuyTrinhController extends Controller
             ])->orderBy('tu')->orderBy('den')->get();
         }
 
-        $sanphams = SanPham::withTrashed()->where('phanloai',$phanloai)->get(['id','ten','donvitinh','dongia']);
+        $sanphams = SanPham::withTrashed()->get(['id','ten','donvitinh','dongia']);
         foreach($sanphams as $key => $sanpham) {
             $sanphams[$sanpham->id] = $sanpham;
             unset($sanphams[$key]);
@@ -185,7 +186,7 @@ class QuyTrinhController extends Controller
 
         if ($value == '') {
             $errors = [
-                'giaidoan' => 'Giai đoạn không được bỏ trống!',
+                'giaidoan_id' => 'Bạn chưa chọn giai đoạn!',
                 'tu' => 'Số ngày không hợp lệ!',
                 'den' => 'Số ngày không hợp lệ!',
                 'sanpham_id' => 'Bạn chưa chọn sản phẩm!',
@@ -202,10 +203,17 @@ class QuyTrinhController extends Controller
         DB::beginTransaction();
         $model = QuyTrinh::withTrashed()->find($id);
         $model->$field = $value;
+        if ($field == 'giaidoan_id') {
+            $giaidoan = GiaiDoan::find($value);
+            $model->giaidoan = $giaidoan->ten;
+            $model->tu = $giaidoan->tu;
+            $model->den = $giaidoan->den;
+            $model->phanloai = $giaidoan->phanloai;
+        }
 
         if ($model->save()) {
             if ($field == 'sanpham_id' || $field == 'soluong') {
-                $sanpham = SanPham::withTrashed()->find($field == 'sanpham_id' ? $value : $model->sanpham_id,['ten','donvitinh','phanloai','dongia']);
+                $sanpham = SanPham::withTrashed()->find($field == 'sanpham_id' ? $value : $model->sanpham_id,['ten','donvitinh','dongia']);
                 if ($field == 'sanpham_id') {
                     if ($sanpham == null) {
                         return [
@@ -216,7 +224,6 @@ class QuyTrinhController extends Controller
                     $model->sanpham = $sanpham->ten;
                     $model->donvitinh = $sanpham->donvitinh;
                     $model->dongia = $sanpham->dongia;
-                    $model->phanloai = $sanpham->phanloai;
                 }
                 $model->thanhtien = (float) $sanpham->dongia * (float) $model->soluong;
             }

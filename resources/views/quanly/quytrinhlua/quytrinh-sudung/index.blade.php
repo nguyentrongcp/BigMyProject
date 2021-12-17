@@ -46,12 +46,12 @@
                                     <ul class="nav nav-tabs" role="tablist" id="boxTabMain">
                                         <li class="nav-item">
                                             <a class="nav-link active font-weight-bolder" data-title="Phân bón" id="tabPhanBon" data-toggle="pill" href="#boxPhanBon" role="tab">
-                                                Bảng Phân Bón
+                                                Bảng Quy Trình Sử Dụng Phân Bón
                                             </a>
                                         </li>
                                         <li class="nav-item">
                                             <a class="nav-link font-weight-bolder" data-title="Thuốc" id="tabThuoc" data-toggle="pill" href="#boxThuoc" role="tab">
-                                                Bảng Thuốc
+                                                Bảng Quy Trình Sử Dụng Thuốc
                                             </a>
                                         </li>
                                     </ul>

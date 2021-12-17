@@ -12,7 +12,7 @@
 
         function init() {
             $('#btnLamMoi').click(() => {
-                $('#boxTabMain .nav-link.active').trigger('shown.bs.tab');
+                setDataTable($('#boxTabMain .nav-link.active').attr('data-title'));
             })
             $('#selMuaVu').select2({
                 data: muavus,
@@ -459,6 +459,16 @@
                     }
                 ];
                 @if(in_array('quy-trinh-lua.quy-trinh.chinh-sua',$info->phanquyen) !== false)
+                menus.unshift({
+                    label: '<i class="fa fa-edit text-primary"></i> Đổi giai đoạn',
+                    action: (e, cell) => {
+                        let field = 'giaidoan_id';
+                        let data = cell.getData();
+                        let value = data.giaidoan_id;
+                        let ten = 'Giai đoạn';
+                        clickSuaThongTin(field,value,ten,data);
+                    }
+                });
                 if ($('#modalXem .col-thongtin[data-field=' + cell.getField() + '] i.edit').length > 0) {
                     menus.unshift({
                         label: '<i class="fa fa-edit text-primary"></i> Chỉnh sửa',
@@ -561,16 +571,12 @@
         function clickSuaThongTin(field, value, ten, data, col = null) {
             let onSubmit = () => {
                 let value = $('#modalInput .value').val();
-                if (field !== 'sanpham') {
+                if (['sanpham','giaidoan_id'].indexOf(field) === -1) {
                     value = value.trim();
-                    if (['tu','den','soluong'].indexOf(field) > -1) {
-                        value = parseFloat(value);
-                        if (field === 'soluong' && (isNaN(value) || value < 0)) {
+                    if (['soluong'].indexOf(field) > -1) {
+                        value = parseInt(value);
+                        if (isNaN(value) || value < 0) {
                             showErrorModalInput('Số lượng không hợp lệ!');
-                            return false;
-                        }
-                        if (['tu','den'].indexOf(field) > -1 && isNaN(value)) {
-                            showErrorModalInput(ten + ' không hợp lệ!');
                             return false;
                         }
                     }
@@ -580,7 +586,7 @@
                     }
                 }
                 else if (value == null) {
-                    showErrorModalInput('Bạn chưa chọn sản phẩm!');
+                    showErrorModalInput(field === 'giaidoan_id' ? 'Bạn chưa chọn sản phẩm!' : 'Bạn chưa chọn giai đoạn!');
                     return false;
                 }
                 sToast.confirm('Xác nhận cập nhật ' + ten.toLowerCase() + '?','',
@@ -598,17 +604,9 @@
                             }).done((result) => {
                                 if (result.succ) {
                                     $('#modalInput').modal('hide');
-                                    if (field === 'sanpham') {
-                                        if (result.data.model.phanloai === 'Phân bón') {
-                                            if ($('#tabPhanBon').hasClass('active')) {
-                                                table.phan.updateData([{...result.data.model}])
-                                            }
-                                        }
-                                        else {
-                                            if ($('#tabThuoc').hasClass('active')) {
-                                                table.thuoc.updateData([{...result.data.model}])
-                                            }
-                                        }
+                                    if (field === 'giaidoan_id') {
+                                        setDataTable('Phân bón');
+                                        setDataTable('Thuốc');
                                     }
                                     else {
                                         if ($('#tabPhanBon').hasClass('active')) {
@@ -626,17 +624,17 @@
                         }
                     });
             }
-            if (field === 'giaidoan') {
-                mInput(data.ten,value,true).text(ten,ten + '...',onSubmit);
-            }
             if (['ghichu','congdung'].indexOf(field) !== -1) {
                 mInput(data.ten,value,field === 'congdung').textarea(ten,ten + '...',onSubmit);
             }
-            if (['tu','den','soluong'].indexOf(field) !== -1) {
+            if (['soluong'].indexOf(field) !== -1) {
                 mInput(data.ten,value,true).number(ten,ten + '...',onSubmit);
             }
             if (field === 'sanpham') {
                 mInput(data.ten,value,true).select2(ten,'Chọn sản phẩm...','/api/quan-ly/quy-trinh-lua/san-pham/tim-kiem',false,onSubmit);
+            }
+            if (field === 'giaidoan_id') {
+                mInput(data.ten,value,true).select2(ten,'Chọn giai đoạn...',giaidoans,false,onSubmit);
             }
         }
         @endif
