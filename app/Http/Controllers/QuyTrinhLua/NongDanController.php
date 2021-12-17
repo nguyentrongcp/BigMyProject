@@ -1,34 +1,27 @@
 <?php
 
-namespace App\Http\Controllers\DanhMuc;
+namespace App\Http\Controllers\QuyTrinhLua;
 
 use App\Functions\Funcs;
 use App\Http\Controllers\Controller;
-use App\Models\DanhMuc\CayTrong;
 use App\Models\DanhMuc\KhachHang;
+use App\Models\DanhMuc\NhanVien;
+use App\Models\QuyTrinhLua\NongDan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class NongDanController extends Controller
 {
     public function index() {
-        $caytrongs = CayTrong::all('ten as text');
-
-        return view('quanly.danhmuc.nongdan.index', [
-            'caytrongs' => $caytrongs
-        ]);
+        return view('quanly.quytrinhlua.nongdan.index');
     }
 
     public function danh_sach(Request $request) {
-        $info = Funcs::getNhanVienByToken($request->cookie('token'),['id','chinhanh_id']);
-        if (Funcs::isPhanQuyenByToken('danh-muc.nong-dan.action',$request->cookie('token'))) {
-            $results = KhachHang::withTrashed()->where('id','!=','1000000000')->where('is_nongdan',1);
+        if (Funcs::isPhanQuyenByToken('quy-trinh-lua.nong-dan.action',$request->cookie('token'))) {
+            $results = NongDan::withTrashed()->where('id','!=','1000000000');
         }
         else {
-            $results = KhachHang::where('id','!=','1000000000')->where('is_nongdan',1);;
-        }
-        if(!Funcs::isPhanQuyenByToken('role.chi-nhanh.tat-ca',$request->cookie('token'))) {
-            $results = $results->where('chinhanh_id',$info->chinhanh_id);
+            $results = NongDan::where('id','!=','1000000000');
         }
         $results = $results->orderBy('deleted_at')->get();
 
@@ -44,8 +37,6 @@ class NongDanController extends Controller
         $xa = $request->xa ?? '';
         $huyen = $request->huyen ?? '';
         $tinh = $request->tinh ?? '';
-        $caytrong = $request->caytrong ?? null;
-        $dientich = $request->dientich ?? null;
         $diachi = '';
         $diachi .= ($_diachi != '' ? $_diachi.', ' : '').($xa != '' ? $xa.', ' : '')
             .($huyen != '' ? $huyen.', ' : '').($tinh ?? '');
@@ -65,7 +56,7 @@ class NongDanController extends Controller
             ];
         }
 
-        if (KhachHang::where('dienthoai',$dienthoai)->count() > 0) {
+        if (NongDan::where('dienthoai',$dienthoai)->count() > 0) {
             return [
                 'succ' => 0,
                 'type' => 'dienthoai',
@@ -73,12 +64,16 @@ class NongDanController extends Controller
             ];
         }
 
-        $nhanvien = Funcs::getNhanVienByToken($request->cookie('token'),['chinhanh_id','id']);
-        $model = new KhachHang();
+        $model = new NongDan();
+
+        do {
+            $model->id = rand(1000000000,9999999999);
+        }
+        while (NhanVien::find($model->id,'id') != null);
+
         $model->ten = $ten;
         $model->slug = Funcs::convertToSlug($ten);
         $model->danhxung = $danhxung;
-        $model->chinhanh_id = $nhanvien->chinhanh_id;
         $model->dienthoai = $dienthoai;
         $model->dienthoai2 = $dienthoai2;
         $model->diachi = $diachi ?? null;
@@ -87,11 +82,7 @@ class NongDanController extends Controller
         $model->huyen = $huyen ?? null;
         $model->tinh = $tinh ?? null;
         $model->ghichu = $ghichu ?? null;
-        $model->caytrong = $caytrong ?? null;
-        $model->dientich = $dientich ?? null;
         $model->deleted_at = null;
-        $model->is_nongdan = 1;
-        $model->nhanvien_id = $nhanvien->id;
 
         if ($model->save()) {
             return [
@@ -137,7 +128,7 @@ class NongDanController extends Controller
                 ];
             }
             else {
-                if (KhachHang::where('id','!=',$id)->where('dienthoai',$value)->count() > 0) {
+                if (NongDan::where('id','!=',$id)->where('dienthoai',$value)->count() > 0) {
                     return [
                         'succ' => 0,
                         'erro' => 'Số điện thoại nông dân đã tồn tại!'
@@ -146,7 +137,7 @@ class NongDanController extends Controller
             }
         }
 
-        $model = KhachHang::find($id);
+        $model = NongDan::find($id);
 
         if ($field == 'diachi') {
             $value = json_decode($value);
@@ -194,7 +185,7 @@ class NongDanController extends Controller
             ];
         }
 
-        $model = KhachHang::find($id);
+        $model = NongDan::find($id);
 
         if ($model->delete()) {
             return [
@@ -223,7 +214,7 @@ class NongDanController extends Controller
             ];
         }
 
-        $model = KhachHang::withTrashed()->find($id);
+        $model = NongDan::withTrashed()->find($id);
 
         if ($model->restore()) {
             return [
@@ -241,7 +232,7 @@ class NongDanController extends Controller
 
     public function thong_tin(Request $request) {
         $id = $request->id;
-        $khachhang = KhachHang::find($id);
+        $khachhang = NongDan::find($id);
 
         if ($khachhang == null) {
             return [

@@ -6,7 +6,7 @@
     let views = localStorage.getItem('banhang.views');
     views = isNull(views) ? {} : JSON.parse(views);
     init();
-    initSelHangHoa(true);
+    initSelHangHoa();
     initActionThemHangHoa();
     initSelKhachHang();
     initSelNhanVien();

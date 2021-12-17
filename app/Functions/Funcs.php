@@ -8,6 +8,7 @@ use App\Models\DanhMuc\QuyDoi;
 use App\Models\HangHoaChiTiet;
 use App\Models\Phieu;
 use App\Models\PhieuChiTiet;
+use App\Models\QuyTrinhLua\NongDan;
 use Kreait\Firebase\Messaging\CloudMessage;
 
 class Funcs
@@ -90,6 +91,11 @@ class Funcs
         curl_close($curl);
 
         return $result;
+    }
+
+    public static function checkToken($token) {
+        $checked = NongDan::where('remember_token',$token)->count();
+        return $checked ? 'nongdan' : (NhanVien::where('remember_token',$token)->count() > 0 ? 'nhanvien' : null);
     }
 
     public static function getNhanVienByToken($token, $columns=null) {

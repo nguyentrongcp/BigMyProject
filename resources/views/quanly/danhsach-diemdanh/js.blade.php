@@ -60,18 +60,7 @@
                     }
                 }
             ],
-            height: '450px',
-            dataGrouped: () => {
-                if (isNull(tblDanhSach) || isUndefined(tblDanhSach)) {
-                    return false;
-                }
-                tblDanhSach.getData().forEach((value, key) => {
-                    tblDanhSach.updateData([{
-                        id: value.id,
-                        stt: key+1
-                    }])
-                })
-            }
+            height: '450px'
         });
 
         initSearchTable(tblDanhSach,['tenchinhanh','tennhanvien','tenchucvu']);

@@ -57,8 +57,7 @@
                 @if(in_array('danh-muc.hang-hoa',$info->phanquyen) !== false || in_array('danh-muc.chi-nhanh',$info->phanquyen) !== false ||
                     in_array('danh-muc.nhan-vien',$info->phanquyen) !== false || in_array('danh-muc.khach-hang',$info->phanquyen) !== false ||
                     in_array('danh-muc.nha-cung-cap',$info->phanquyen) !== false || in_array('danh-muc.doi-tuong',$info->phanquyen) !== false ||
-                    in_array('danh-muc.phan-quyen',$info->phanquyen) !== false || in_array('danh-muc.chuc-vu',$info->phanquyen) !== false ||
-                    in_array('danh-muc.nong-dan',$info->phanquyen) !== false)
+                    in_array('danh-muc.phan-quyen',$info->phanquyen) !== false || in_array('danh-muc.chuc-vu',$info->phanquyen) !== false)
                 <li class="nav-item has-treeview">
                     <a href="#" class="nav-link">
                         <i class="nav-icon fa fa-bars"></i>
@@ -99,14 +98,6 @@
                                 <p>Khách Hàng</p>
                             </a>
                         </li>
-                        @endif
-                        @if(in_array('danh-muc.nong-dan',$info->phanquyen) !== false)
-                            <li class="nav-item">
-                                <a href="{{ route('danh-muc.nong-dan') }}" class="nav-link{{ url()->current() == route('danh-muc.nong-dan') ? ' active' : '' }}">
-                                    <i class="far fa-circle nav-icon"></i>
-                                    <p>Nông dân</p>
-                                </a>
-                            </li>
                         @endif
                         @if(in_array('danh-muc.nha-cung-cap',$info->phanquyen) !== false)
                         <li class="nav-item">
@@ -289,6 +280,59 @@
                         <p>Danh Sách Điểm Danh</p>
                     </a>
                 </li>
+                @endif
+                @if(in_array('quy-trinh-lua.nong-dan',$info->phanquyen) !== false)
+                    <li class="nav-item has-treeview">
+                        <a href="#" class="nav-link">
+                            <i class="nav-icon fas fa-leaf"></i>
+                            <p>
+                                Quy Trình Lúa Kiên Giang
+                                <i class="right fas fa-angle-left"></i>
+                            </p>
+                        </a>
+                        <ul class="nav nav-treeview">
+                            @if(in_array('quy-trinh-lua.nong-dan',$info->phanquyen) !== false)
+                                <li class="nav-item">
+                                    <a href="{{ route('quy-trinh-lua.nong-dan') }}" class="nav-link{{ url()->current() == route('quy-trinh-lua.nong-dan') ? ' active' : '' }}">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Danh Mục Nông Dân</p>
+                                    </a>
+                                </li>
+                            @endif
+                            @if(in_array('quy-trinh-lua.mua-vu',$info->phanquyen) !== false)
+                                <li class="nav-item">
+                                    <a href="{{ route('quy-trinh-lua.mua-vu') }}" class="nav-link{{ url()->current() == route('quy-trinh-lua.mua-vu') ? ' active' : '' }}">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Danh Mục Mùa Vụ</p>
+                                    </a>
+                                </li>
+                            @endif
+                            @if(in_array('quy-trinh-lua.san-pham',$info->phanquyen) !== false)
+                                <li class="nav-item">
+                                    <a href="{{ route('quy-trinh-lua.san-pham') }}" class="nav-link{{ url()->current() == route('quy-trinh-lua.san-pham') ? ' active' : '' }}">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Danh Mục Sản Phẩm</p>
+                                    </a>
+                                </li>
+                            @endif
+                            @if(in_array('quy-trinh-lua.quy-trinh',$info->phanquyen) !== false)
+                                <li class="nav-item">
+                                    <a href="{{ route('quy-trinh-lua.quy-trinh') }}" class="nav-link{{ url()->current() == route('quy-trinh-lua.quy-trinh') ? ' active' : '' }}">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Quy Trình Sử Dụng (Bảng)</p>
+                                    </a>
+                                </li>
+                            @endif
+                            @if(in_array('quy-trinh-lua.quy-trinh',$info->phanquyen) !== false)
+                                <li class="nav-item">
+                                    <a href="{{ route('quy-trinh-lua.cay-quy-trinh') }}" class="nav-link{{ url()->current() == route('quy-trinh-lua.cay-quy-trinh') ? ' active' : '' }}">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Quy Trình Sử Dụng (Cây)</p>
+                                    </a>
+                                </li>
+                            @endif
+                        </ul>
+                    </li>
                 @endif
                 <li class="nav-item">
                     <a href="https://ui-banhang.hailua.center/index5.php" class="nav-link" target="_blank">

@@ -2,8 +2,8 @@
 
 @section('breadcrumb')
     <li class="breadcrumb-item"><a href="#">Home</a></li>
-    <li class="breadcrumb-item">Danh Mục</li>
-    <li class="breadcrumb-item active">Nông Dân</li>
+    <li class="breadcrumb-item">Quy Trình Lúa</li>
+    <li class="breadcrumb-item active">Danh Mục Nông Dân</li>
 @stop
 
 @section('body')
@@ -28,7 +28,7 @@
                                     <button class="btn btn-default ml-1" id="btnLamMoi">
                                         <i class="fa fa-refresh"></i>
                                     </button>
-                                    @if(in_array('danh-muc.nong-dan.them-moi',$info->phanquyen) !== false)
+                                    @if(in_array('quy-trinh-lua.nong-dan.them-moi',$info->phanquyen) !== false)
                                         <button class="btn bg-gradient-primary font-weight-bolder ml-1" data-toggle="modal" data-target="#modalThemMoi">
                                             Thêm Mới
                                         </button>
@@ -43,7 +43,7 @@
         </section>
     </div>
 
-    @if(in_array('danh-muc.nong-dan.them-moi',$info->phanquyen) !== false)
+    @if(in_array('quy-trinh-lua.nong-dan.them-moi',$info->phanquyen) !== false)
         <div class="modal fade" id="modalThemMoi">
             <div class="modal-dialog modal-dialog-scrollable">
                 <div class="modal-content">
@@ -98,14 +98,6 @@
                                 <label>Địa chỉ cụ thể</label>
                                 <textarea rows="2" class="form-control diachi inpDiaChi" placeholder="Nhập địa chỉ cụ thể..."></textarea>
                             </div>
-                        </div>
-                        <div class="form-group">
-                            <label>Cây trồng</label>
-                            <select class="form-control selCayTrong" multiple></select>
-                        </div>
-                        <div class="form-group">
-                            <label>Diện tích (công)</label>
-                            <input type="text" class="form-control inpDienTich" placeholder="Nhập diện tích cây trồng...">
                         </div>
                         <div class="form-group mb-0">
                             <label>Ghi chú</label>
@@ -183,18 +175,13 @@
 {{--                        </div>--}}
 {{--                    </div>--}}
                     <div class="divider my-3"></div>
+                    <div class="col-thongtin" data-field="xacthuc_lancuoi">
+                        <strong>Đăng nhập lần cuối</strong>
+                        <span></span>
+                    </div>
+                    <div class="divider my-3"></div>
                     <div class="col-thongtin" data-field="diachi" data-title="Địa chỉ">
                         <strong>Địa chỉ <i class="fa fa-edit text-info edit"></i></strong>
-                        <span></span>
-                    </div>
-                    <div class="divider my-3"></div>
-                    <div class="col-thongtin" data-field="caytrong" data-title="Cây trồng">
-                        <strong>Cây trồng <i class="fa fa-edit text-info edit"></i></strong>
-                        <span></span>
-                    </div>
-                    <div class="divider my-3"></div>
-                    <div class="col-thongtin" data-field="dientich" data-title="Diện tích (công)">
-                        <strong>Diện tích (công) <i class="fa fa-edit text-info edit"></i></strong>
                         <span></span>
                     </div>
                     <div class="divider my-3"></div>
@@ -204,7 +191,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    @if(in_array('danh-muc.nong-dan.action',$info->phanquyen) !== false)
+                    @if(in_array('quy-trinh-lua.nong-dan.action',$info->phanquyen) !== false)
                         <button type="button" class="btn bg-gradient-danger delete mr-auto">Xóa Thông Tin</button>
                     @endif
                     <button type="button" class="btn bg-gradient-secondary" data-dismiss="modal">Thoát</button>
@@ -215,5 +202,5 @@
 @stop
 
 @section('js-custom')
-    @include('quanly.danhmuc.nongdan.js')
+    @include('quanly.quytrinhlua.nongdan.js')
 @stop

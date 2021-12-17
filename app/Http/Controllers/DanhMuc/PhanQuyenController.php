@@ -66,7 +66,7 @@ class PhanQuyenController extends Controller
         if (PhanQuyen::where('ma',$ma)->count() > 0) {
             return [
                 'succ' => 0,
-                'type' => 'stt',
+                'type' => 'ma',
                 'erro' => 'Mã quyền đã tồn tại!'
             ];
         }

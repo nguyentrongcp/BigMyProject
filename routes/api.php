@@ -12,7 +12,10 @@ use App\Http\Controllers\DanhMuc\HangHoaController;
 use App\Http\Controllers\DanhMuc\KhachHangController;
 use App\Http\Controllers\DanhMuc\NhaCungCapController;
 use App\Http\Controllers\DanhMuc\NhanVienController;
-use App\Http\Controllers\DanhMuc\NongDanController;
+use App\Http\Controllers\QuyTrinhLua\CayQuyTrinhController;
+use App\Http\Controllers\QuyTrinhLua\GiaiDoanController;
+use App\Http\Controllers\QuyTrinhLua\MuaVuController;
+use App\Http\Controllers\QuyTrinhLua\NongDanController;
 use App\Http\Controllers\DanhMuc\PhanQuyenController;
 use App\Http\Controllers\DiemDanhController;
 use App\Http\Controllers\HangHoa\GiaBanController;
@@ -22,6 +25,8 @@ use App\Http\Controllers\LoginController;
 use App\Http\Controllers\NhapHang\DanhSachController;
 use App\Http\Controllers\NhapHang\TaoPhieuController;
 use App\Http\Controllers\PhieuController;
+use App\Http\Controllers\QuyTrinhLua\QuyTrinhController;
+use App\Http\Controllers\QuyTrinhLua\SanPhamController;
 use App\Http\Controllers\ThuChiController;
 use App\Http\Controllers\XemPhieuController;
 use Illuminate\Support\Facades\Route;
@@ -51,6 +56,53 @@ Route::prefix('quan-ly')->group(function() {
     });
 
     Route::middleware('role.api')->group(function() {
+        Route::prefix('quy-trinh-lua')->group(function() {
+            Route::prefix('nong-dan')->group(function() {
+                Route::get('them-moi',[NongDanController::class, 'them_moi']);
+                Route::get('cap-nhat',[NongDanController::class, 'cap_nhat']);
+                Route::get('xoa',[NongDanController::class, 'xoa']);
+                Route::get('phuc-hoi',[NongDanController::class, 'phuc_hoi']);
+                Route::get('danh-sach',[NongDanController::class, 'danh_sach']);
+                Route::get('tim-kiem',[NongDanController::class, 'tim_kiem']);
+            });
+
+            Route::prefix('mua-vu')->group(function() {
+                Route::get('them-moi',[MuaVuController::class, 'them_moi']);
+                Route::get('cap-nhat',[MuaVuController::class, 'cap_nhat']);
+                Route::get('xoa',[MuaVuController::class, 'xoa']);
+                Route::get('phuc-hoi',[MuaVuController::class, 'phuc_hoi']);
+                Route::get('danh-sach',[MuaVuController::class, 'danh_sach']);
+            });
+
+            Route::prefix('san-pham')->group(function() {
+                Route::get('them-moi',[SanPhamController::class, 'them_moi']);
+                Route::get('cap-nhat',[SanPhamController::class, 'cap_nhat']);
+                Route::get('xoa',[SanPhamController::class, 'xoa']);
+                Route::get('phuc-hoi',[SanPhamController::class, 'phuc_hoi']);
+                Route::get('danh-sach',[SanPhamController::class, 'danh_sach']);
+                Route::get('tim-kiem',[SanPhamController::class, 'tim_kiem']);
+            });
+
+            Route::prefix('quy-trinh')->group(function() {
+                Route::get('them-moi',[QuyTrinhController::class, 'them_moi']);
+                Route::get('cap-nhat',[QuyTrinhController::class, 'cap_nhat']);
+                Route::get('xoa',[QuyTrinhController::class, 'xoa']);
+                Route::get('phuc-hoi',[QuyTrinhController::class, 'phuc_hoi']);
+                Route::get('danh-sach',[QuyTrinhController::class, 'danh_sach']);
+                Route::get('tim-kiem',[QuyTrinhController::class, 'tim_kiem']);
+            });
+
+            Route::prefix('giai-doan')->group(function() {
+                Route::get('them-moi',[GiaiDoanController::class, 'them_moi']);
+                Route::get('cap-nhat',[GiaiDoanController::class, 'cap_nhat']);
+                Route::get('xoa',[GiaiDoanController::class, 'xoa']);
+                Route::get('danh-sach',[GiaiDoanController::class, 'danh_sach']);
+            });
+
+            Route::prefix('cay-quy-trinh')->group(function() {
+                Route::get('danh-sach',[CayQuyTrinhController::class, 'danh_sach']);
+            });
+        });
         Route::prefix('danh-muc')->group(function() {
             Route::prefix('hang-hoa')->group(function() {
                 Route::get('them-moi',[HangHoaController::class, 'them_moi']);
@@ -129,15 +181,6 @@ Route::prefix('quan-ly')->group(function() {
                 Route::get('xoa',[ChucVuController::class, 'xoa']);
                 Route::get('danh-sach',[ChucVuController::class, 'danh_sach']);
                 Route::get('danhsach-phanquyen',[ChucVuController::class, 'danhsach_phanquyen']);
-            });
-
-            Route::prefix('nong-dan')->group(function() {
-                Route::get('them-moi',[NongDanController::class, 'them_moi']);
-                Route::get('cap-nhat',[NongDanController::class, 'cap_nhat']);
-                Route::get('xoa',[NongDanController::class, 'xoa']);
-                Route::get('phuc-hoi',[NongDanController::class, 'phuc_hoi']);
-                Route::get('danh-sach',[NongDanController::class, 'danh_sach']);
-                Route::get('tim-kiem',[NongDanController::class, 'tim_kiem']);
             });
 
             Route::prefix('dia-chi')->group(function() {

@@ -17,6 +17,12 @@ Route::get('/', function () {
     return redirect('/quan-ly/ban-hang');
 });
 
+Route::get('read-pdf', function () {
+    return view('pdf-reader', [
+        'ten' => $_GET['name']
+    ]);
+});
+
 Route::prefix('mobile')->group(function() {
     Route::get('/', function () {
         return view('mobile.index');
@@ -64,8 +70,19 @@ Route::prefix('quan-ly')->group(function() {
                 ->name('danh-muc.phan-quyen');
             Route::get('chuc-vu', [\App\Http\Controllers\DanhMuc\ChucVuController::class, 'index'])
                 ->name('danh-muc.chuc-vu');
-            Route::get('nong-dan', [\App\Http\Controllers\DanhMuc\NongDanController::class, 'index'])
-                ->name('danh-muc.nong-dan');
+        });
+
+        Route::prefix('quy-trinh-lua')->group(function() {
+            Route::get('nong-dan', [\App\Http\Controllers\QuyTrinhLua\NongDanController::class, 'index'])
+                ->name('quy-trinh-lua.nong-dan');
+            Route::get('mua-vu', [\App\Http\Controllers\QuyTrinhLua\MuaVuController::class, 'index'])
+                ->name('quy-trinh-lua.mua-vu');
+            Route::get('san-pham', [\App\Http\Controllers\QuyTrinhLua\SanPhamController::class, 'index'])
+                ->name('quy-trinh-lua.san-pham');
+            Route::get('quy-trinh', [\App\Http\Controllers\QuyTrinhLua\QuyTrinhController::class, 'index'])
+                ->name('quy-trinh-lua.quy-trinh');
+            Route::get('cay-quy-trinh', [\App\Http\Controllers\QuyTrinhLua\CayQuyTrinhController::class, 'index'])
+                ->name('quy-trinh-lua.cay-quy-trinh');
         });
 
         Route::get('ban-hang', [\App\Http\Controllers\BanHangController::class, 'index'])->name('ban-hang');

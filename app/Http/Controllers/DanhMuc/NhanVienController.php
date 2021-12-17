@@ -9,6 +9,7 @@ use App\Models\DanhMuc\ChiNhanh;
 use App\Models\DanhMuc\ChucVu;
 use App\Models\DanhMuc\NhanVien;
 use App\Models\DanhMuc\PhanQuyen;
+use App\Models\QuyTrinhLua\NongDan;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -197,6 +198,12 @@ class NhanVienController extends Controller
         $taikhoan .= Funcs::convertToSlug($tens[count($tens) - 1]).substr($ngaysinh,2,2);
 
         $model = new NhanVien();
+
+        do {
+            $model->id = rand(1000000000,9999999999);
+        }
+        while (NongDan::find($model->id,'id') != null);
+
         $model->ten = $ten;
         $model->slug = Funcs::convertToSlug($ten);
         $model->dienthoai = $dienthoai;

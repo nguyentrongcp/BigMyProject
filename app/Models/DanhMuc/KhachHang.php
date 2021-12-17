@@ -22,14 +22,9 @@ class KhachHang extends Model
 
         static::creating(function ($model) {
             $model->id = rand(1000000000,9999999999);
-            if ($model->is_nongdan) {
-                $maxMaKH = DB::select("select max(ma) as ma from danhmuc_khachhang where is_nongdan=1")[0];
-            }
-            else {
-                $maxMaKH = DB::select("select max(ma) as ma from danhmuc_khachhang where is_nongdan=0")[0];
-            }
+            $maxMaKH = DB::select("select max(ma) as ma from danhmuc_khachhang")[0];
             if ($maxMaKH->ma == null) {
-                $model->ma = $model->is_nongdan ? 'ND000001' : 'KH000001';
+                $model->ma = 'KH000001';
             }
             else {
                 $maxMaKH = (int) substr($maxMaKH->ma,2);
@@ -37,7 +32,7 @@ class KhachHang extends Model
                 while (strlen((string) $maxMaKH) < 6) {
                     $maxMaKH = '0'.$maxMaKH;
                 }
-                $model->ma = $model->is_nongdan ? 'ND'.$maxMaKH : 'KH'.$maxMaKH;
+                $model->ma = 'KH'.$maxMaKH;
             }
         });
     }

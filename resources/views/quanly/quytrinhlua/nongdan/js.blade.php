@@ -1,9 +1,5 @@
 <script>
     let tblDanhSach;
-    let caytrongs = JSON.parse('{!! str_replace("'","\'",json_encode($caytrongs)) !!}');
-    caytrongs.forEach((value) => {
-        value.id = value.text;
-    })
     let danhxungs = [
         { id: 'Anh', text: 'Anh' },
         { id: 'Chị', text: 'Chị' },
@@ -15,22 +11,22 @@
         { id: 'Ông', text: 'Ông' },
         { id: 'Bà', text: 'Bà' },
     ];
-    let views = localStorage.getItem('danhmuc.nongdan.views');
+    let views = localStorage.getItem('quytrinhlua.nongdan.views');
     views = isNull(views) ? {} : JSON.parse(views);
     init();
     initDanhSach();
 
     function init() {
         $('#btnLamMoi').click(() => {
-            tblDanhSach.setData('/api/quan-ly/danh-muc/nong-dan/danh-sach');
+            tblDanhSach.setData('/api/quan-ly/quy-trinh-lua/nong-dan/danh-sach');
         })
 
-        @if(in_array('danh-muc.nong-dan.chinh-sua',$info->phanquyen) === false)
+        @if(in_array('quy-trinh-lua.nong-dan.chinh-sua',$info->phanquyen) === false)
         $('#modalXem .col-thongtin i').remove();
         @endif
     }
 
-    @if(in_array('danh-muc.nong-dan.them-moi',$info->phanquyen) !== false)
+    @if(in_array('quy-trinh-lua.nong-dan.them-moi',$info->phanquyen) !== false)
     initActionThemMoi();
     function initActionThemMoi() {
         $('#modalThemMoi input, #modalThemMoi textarea').keypress(function(e) {
@@ -45,12 +41,6 @@
                 $(this).removeClass('is-invalid');
             }
         });
-
-        $('#modalThemMoi .selCayTrong').select2({
-            data: caytrongs,
-            placeholder: 'Chọn cây trồng...',
-            allowClear: true
-        }).val(null).trigger('change');
 
         $('#modalThemMoi .selDanhXung').select2({
             data: danhxungs,
@@ -74,8 +64,6 @@
             let huyen = $('#modalThemMoi .selHuyen').val();
             let xa = $('#modalThemMoi .selXa').val();
             let _diachi = $('#modalThemMoi .inpDiaChi').val().trim();
-            let caytrong = $('#modalThemMoi .selCayTrong').val();
-            let dientich = $('#modalThemMoi .inpDienTich').val().trim();
             let ghichu = $('#modalThemMoi .inpGhiChu').val().trim();
             let lientuc = $('#chkLienTuc')[0].checked;
             let checked = true;
@@ -93,20 +81,18 @@
                 return false;
             }
 
-            caytrong = caytrong.join(', ');
-
             sToast.loading('Đang kiểm tra dữ liệu. Vui lòng chờ...');
             $.ajax({
-                url: '/api/quan-ly/danh-muc/nong-dan/them-moi',
+                url: '/api/quan-ly/quy-trinh-lua/nong-dan/them-moi',
                 type: 'get',
                 dataType: 'json',
                 data: {
-                    ten, dienthoai, dienthoai2, tinh, huyen, xa, _diachi, caytrong, dientich, ghichu, danhxung
+                    ten, dienthoai, dienthoai2, tinh, huyen, xa, _diachi, ghichu, danhxung
                 }
             }).done((result) => {
                 if (result.succ) {
-                    $('#modalThemMoi input, #modalThemMoi textarea:not(.select2-search__field)').val('').trigger('input');
-                    $('#modalThemMoi .diachi-container select, #modalThemMoi .selCayTrong').val(null).trigger('change');
+                    $('#modalThemMoi input, #modalThemMoi textarea').val('').trigger('input');
+                    $('#modalThemMoi .diachi-container select').val(null).trigger('change');
                     lientuc ? $('#modalThemMoi .inpTen').focus() : $('#modalThemMoi').modal('hide');
                     autosize.update($('#modalThemMoi textarea'));
                     tblDanhSach.addData(result.data.model,true);
@@ -130,7 +116,7 @@
             $.each($('#modalXem .col-thongtin'), function(key, col) {
                 clickXemThongTin(data,col);
             })
-            @if(in_array('danh-muc.nong-dan.action',$info->phanquyen) !== false)
+            @if(in_array('quy-trinh-lua.nong-dan.action',$info->phanquyen) !== false)
             if (isNull(data.deleted_at)) {
                 $('#modalXem button.delete').attr('class','btn bg-gradient-danger delete')
                     .text('Xóa thông tin').off('click').click(() => {
@@ -166,7 +152,7 @@
                             column.show();
                             views[field] = true;
                         }
-                        localStorage.setItem('danhmuc.nongdan.views', JSON.stringify(views))
+                        localStorage.setItem('quytrinhlua.nongdan.views', JSON.stringify(views))
                     }
                 })
             }
@@ -175,7 +161,7 @@
                     label: '<i class="fa fa-info-circle text-info"></i> Chi tiết',
                     action: xemThongTin
                 },
-                    @if(in_array('danh-muc.nong-dan.action',$info->phanquyen) !== false)
+                    @if(in_array('quy-trinh-lua.nong-dan.action',$info->phanquyen) !== false)
                 {
                     label: '<i class="fas ' + (isNull(data.deleted_at) ? 'fa-trash-alt text-danger' : 'fa-trash-restore-alt text-success')
                         + '"></i> ' + (isNull(data.deleted_at) ? 'Xóa' : 'Phục hồi'),
@@ -194,7 +180,7 @@
                     menu: subMenus
                 }
             ];
-            @if(in_array('danh-muc.nong-dan.chinh-sua',$info->phanquyen) !== false)
+            @if(in_array('quy-trinh-lua.nong-dan.chinh-sua',$info->phanquyen) !== false)
             if ($('#modalXem .col-thongtin[data-field=' + cell.getField() + '] i.edit').length > 0) {
                 menus.unshift({
                     label: '<i class="fa fa-edit text-primary"></i> Chỉnh sửa',
@@ -216,9 +202,9 @@
             columns: [
                 {title: "STT", headerHozAlign: 'center', vertAlign: 'middle', field: "stt", formatter: "rownum",
                     width: 40, headerSort: false, hozAlign: 'center', contextMenu},
-                {title: "Mã", field: "ma", vertAlign: 'middle', contextMenu,
+                {title: "Mã", field: "ma", vertAlign: 'middle', headerSort: false, contextMenu,
                     visible: isNull(views) ? true : views.ma},
-                {title: "Tên", field: "ten", vertAlign: 'middle', contextMenu,
+                {title: "Tên", field: "ten", vertAlign: 'middle', headerSort: false, contextMenu,
                     visible: isNull(views) ? true : views.ten},
                 {title: "Danh xưng", field: "danhxung", vertAlign: 'middle', headerSort: false, contextMenu,
                     visible: isNull(views) ? true : views.danhxung},
@@ -233,19 +219,15 @@
                 //     }},
                 {title: "Địa chỉ", field: "diachi", vertAlign: 'middle', headerSort: false, contextMenu,
                     visible: isNull(views) ? true : views.diachi},
-                {title: "Cây trồng", field: "caytrong", vertAlign: 'middle', headerSort: false, contextMenu,
-                    visible: isNull(views) ? true : views.caytrong},
-                {title: "Diện tích", field: "dientich", vertAlign: 'middle', hozAlign: 'right', headerSort: false, contextMenu,
-                    visible: isNull(views) ? true : views.dientich},
-                // {title: "Lần cuối mua hàng", field: "lancuoi_muahang", vertAlign: 'middle', headerSort: false, contextMenu,
-                //     visible: isNull(views) ? true : views.lancuoi_muahang,
-                //     formatter: (cell) => {
-                //         return doi_ngay(cell.getValue());
-                //     }},
+                {title: "Đăng nhập lần cuối", field: "xacthuc_lancuoi", vertAlign: 'middle', headerSort: false, contextMenu,
+                    visible: isNull(views) ? true : views.xacthuc_lancuoi,
+                    formatter: (cell) => {
+                        return doi_ngay(cell.getValue());
+                    }},
                 {title: "Ghi chú", field: "ghichu", vertAlign: 'middle', headerSort: false, contextMenu,
                     visible: isNull(views) ? true : views.ghichu},
             ],
-            @if(in_array('danh-muc.nong-dan.action',$info->phanquyen) !== false)
+            @if(in_array('quy-trinh-lua.nong-dan.action',$info->phanquyen) !== false)
             rowFormatter: (row) => {
                 if (!isNull(row.getData().deleted_at)) {
                     $(row.getElement()).addClass('text-danger');
@@ -255,21 +237,12 @@
                 }
             },
             @endif
-            ajaxURL: '/api/quan-ly/danh-muc/nong-dan/danh-sach',
+            ajaxURL: '/api/quan-ly/quy-trinh-lua/nong-dan/danh-sach',
             height: '450px',
-            movableColumns: false,
             pagination: 'local',
             paginationSize: 10,
-            pageLoaded: () => {
-                tblDanhSach.getColumns()[0].updateDefinition();
-            },
+            layoutColumnsOnNewData:true,
             dataFiltered: function () {
-                if (isNull(tblDanhSach) || isUndefined(tblDanhSach)) {
-                    return false;
-                }
-                setTimeout(() => {tblDanhSach.getColumns()[0].updateDefinition()},10);
-            },
-            dataSorted: function () {
                 if (isNull(tblDanhSach) || isUndefined(tblDanhSach)) {
                     return false;
                 }
@@ -287,7 +260,7 @@
         let ten = $(col).attr('data-title');
         let value = data[field];
         $(col).find('span').text(value);
-        @if(in_array('danh-muc.nong-dan.chinh-sua',$info->phanquyen) !== false)
+        @if(in_array('quy-trinh-lua.nong-dan.chinh-sua',$info->phanquyen) !== false)
         let edit = $(col).find('i.edit');
         if (edit.length > 0) {
             edit.off('click').click(() => {
@@ -297,13 +270,10 @@
         @endif
     }
 
-    @if(in_array('danh-muc.nong-dan.chinh-sua',$info->phanquyen) !== false)
+    @if(in_array('quy-trinh-lua.nong-dan.chinh-sua',$info->phanquyen) !== false)
     function clickSuaThongTin(field, value, ten, data, col = null) {
         let onSubmit = () => {
-            let value = $('#modalInput .value').val();
-            if (field !== 'caytrong') {
-                value = value.trim();
-            }
+            let value = $('#modalInput .value').val().trim();
             if (field === 'diachi') {
                 let _diachi = value;
                 let xa = $('#modalInput .xa').val();
@@ -312,9 +282,6 @@
                 value = JSON.stringify({
                     _diachi, xa, huyen, tinh
                 })
-            }
-            if (field === 'caytrong') {
-                value = value.join(', ');
             }
             if ((field === 'ten' || field === 'dienthoai') && value === '') {
                 showErrorModalInput(ten + ' không được bỏ trống!');
@@ -325,7 +292,7 @@
                     if (result.isConfirmed) {
                         sToast.loading('Đang cập nhật dữ liệu. Vui lòng chờ...')
                         $.ajax({
-                            url: '/api/quan-ly/danh-muc/nong-dan/cap-nhat',
+                            url: '/api/quan-ly/quy-trinh-lua/nong-dan/cap-nhat',
                             type: 'get',
                             dataType: 'json',
                             data: {
@@ -344,7 +311,7 @@
                     }
                 });
         }
-        if (['ten','dienthoai','dienthoai2','dientich'].indexOf(field) !== -1) {
+        if (['ten','dienthoai','dienthoai2'].indexOf(field) !== -1) {
             mInput(data.ten,value,field === 'ten' || field === 'dienthoai').text(ten,ten + '...',onSubmit);
         }
         if (field === 'ghichu') {
@@ -356,20 +323,17 @@
         if (field === 'diachi') {
             mInput(data.ten,data._diachi).diachi(onSubmit);
         }
-        if (field === 'caytrong') {
-            mInput(data.ten,value).select2(ten,'',caytrongs,true,onSubmit,'',true);
-        }
     }
     @endif
 
-    @if(in_array('danh-muc.nong-dan.action',$info->phanquyen) !== false)
+    @if(in_array('quy-trinh-lua.nong-dan.action',$info->phanquyen) !== false)
     function clickXoaThongTin(cell) {
         sToast.confirm('Xác nhận xóa thông tin nông dân?','',
             (result) => {
                 if (result.isConfirmed) {
                     sToast.loading('Đang xóa dữ liệu. Vui lòng chờ...')
                     $.ajax({
-                        url: '/api/quan-ly/danh-muc/nong-dan/xoa',
+                        url: '/api/quan-ly/quy-trinh-lua/nong-dan/xoa',
                         type: 'get',
                         dataType: 'json',
                         data: {
@@ -399,7 +363,7 @@
                 if (result.isConfirmed) {
                     sToast.loading('Đang phục hồi dữ liệu. Vui lòng chờ...')
                     $.ajax({
-                        url: '/api/quan-ly/danh-muc/nong-dan/phuc-hoi',
+                        url: '/api/quan-ly/quy-trinh-lua/nong-dan/phuc-hoi',
                         type: 'get',
                         dataType: 'json',
                         data: {

@@ -203,6 +203,17 @@ const mInput = (title = '', value = '', is_required = false, size = '') => {
                 options.ajax = {
                     url: data
                 }
+                if (!hideSearch) {
+                    options.ajax.delay = 300;
+                    options.ajax.data = (params) => {
+                        let query = {
+                            q: params.term
+                        };
+
+                        // Query parameters will be ?search=[term]&type=public
+                        return query;
+                    }
+                }
             }
             else {
                 options.data = data;
@@ -436,7 +447,7 @@ function initInputNumeral(inputs) {
 function offEnterTextarea(textareas, onClick = null) {
     $.each(textareas, function(key, textarea) {
         $(textarea).keypress(function(e) {
-            if (e.keyCode === 13) {
+            if (e.keyCode === 13 && !e.shiftKey) {
                 e.preventDefault();
                 if (!isNull(onClick)) {
                     onClick();
@@ -475,11 +486,12 @@ function convertToSlug(text) {
     return slug;
 }
 
-function initSearchTable(table, fields) {
+function initSearchTable(table, fields, idBoxSearch = null, btnExcel = null) {
     if (table == null) {
         return false;
     }
-    let boxSearch = $('.box-search-table[data-target=' + table.element.id + ']');
+    idBoxSearch = idBoxSearch == null ? table.element.id : idBoxSearch;
+    let boxSearch = $('.box-search-table[data-target=' + idBoxSearch + ']');
 
     let timeout = null;
     $(boxSearch).find('input').off('input').on('input', function () {
@@ -506,8 +518,9 @@ function initSearchTable(table, fields) {
                 }, input);
             }
         }, input === '' ? 0 : 300);
-    }).val('');
-    $(boxSearch).find('button.excel').off('click').click(function () {
+    }).val('').trigger('input');
+    btnExcel = btnExcel == null ? $(boxSearch).find('button.excel') : btnExcel;
+    btnExcel.off('click').click(function () {
         sToast.input('Vui lòng nhập tên bảng!',(result) => {
             if (result.value) {
                 if (result.value.trim() !== '') {
@@ -844,6 +857,11 @@ function initDiemDanh(chinhanh_id = '1000000000') {
                     })
                 }
             })
+            if (data.checked === 0 && data.results.length === 0) {
+                modal.find('.submit').click(() => {
+                    initActionDiemDanh(chinhanh_id,null,data.checked === 0)
+                })
+            }
             modal.on('hidden.bs.modal', () => {
                 modal.remove();
             }).modal('show');
@@ -866,7 +884,25 @@ function initActionDiemDanh(chinhanh_id, boxDiemDanh, is_batdau = true) {
                 }).done((result) => {
                     if (result.succ) {
                         if (is_batdau) {
-                            boxDiemDanh.find('.tg_batdau').text(result.data.tg_batdau);
+                            if ($('#modalDiemDanh .box-result > div').length > 0) {
+                                $('#modalDiemDanh .box-result').prepend('<div class="divider my-3"></div>');
+                            }
+                            $('#modalDiemDanh .box-result').prepend(
+                                '               <div class="d-flex">' +
+                                '                   <h6>Thời gian bắt đầu:</h6>' +
+                                '                   <h6 class="ml-auto font-weight-bolder text-primary tg_batdau">' +
+                                result.data.tg_batdau +
+                                '                   </h6>' +
+                                '               </div>' +
+                                '               <div class="d-flex">' +
+                                '                   <h6>Thời gian kết thúc:</h6>' +
+                                '                   <h6 class="ml-auto font-weight-bolder text-danger tg_ketthuc">---</h6>' +
+                                '               </div>' +
+                                '               <div class="d-flex">' +
+                                '                   <h6>Ngày công:</h6>' +
+                                '                   <h6 class="ml-auto font-weight-bolder text-info ngaycong">0</h6>' +
+                                '               </div>'
+                            );
                             $('#modalDiemDanh .title').removeClass('text-primary').addClass('text-danger').text('Bạn chưa điểm danh kết thúc');
                         }
                         else {

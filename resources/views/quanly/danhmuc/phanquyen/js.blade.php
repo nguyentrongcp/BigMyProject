@@ -141,8 +141,8 @@
             groupHeader: function(value, count){
                 return value + '<span class="text-danger ml-3">(' + count + ' quyền)</span>';
             },
-            pagination: 'local',
-            paginationSize: 10,
+            // pagination: 'local',
+            // paginationSize: 10,
             pageLoaded: () => {
                 tblDanhSach.getColumns()[0].updateDefinition();
             },
@@ -153,7 +153,7 @@
                 setTimeout(() => {tblDanhSach.getColumns()[0].updateDefinition()},10);
             },
             dataChanged: () => {
-                tblDanhSach.getColumns()[0].updateDefinition();
+                // tblDanhSach.getColumns()[0].updateDefinition();
             }
         });
         initSearchTable(tblDanhSach,['ma','ten','chucnang']);
@@ -186,9 +186,6 @@
                                 setTimeout(() => {
                                     if (field === 'chucnang') {
                                         tblDanhSach.setData(tblDanhSach.getData());
-                                    }
-                                    else {
-                                        tblDanhSach.getColumns()[0].updateDefinition()
                                     }
                                 },10);
                             }

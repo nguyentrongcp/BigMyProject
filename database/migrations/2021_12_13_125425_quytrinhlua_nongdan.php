@@ -2,9 +2,10 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Schema;
 
-class DanhmucKhachhang extends Migration
+class QuytrinhluaNongdan extends Migration
 {
     /**
      * Run the migrations.
@@ -13,27 +14,24 @@ class DanhmucKhachhang extends Migration
      */
     public function up()
     {
-        Schema::create('danhmuc_khachhang', function (Blueprint $table) {
+        Schema::create('quytrinhlua_nongdan', function (Blueprint $table) {
             $table->string('id',10)->primary();
-            $table->string('old_id',8)->nullable();
             $table->string('ma',8);
             $table->string('ten');
             $table->string('slug');
             $table->string('danhxung');
             $table->string('dienthoai');
             $table->string('dienthoai2')->nullable();
+            $table->string('matkhau')->default(Hash::make('Hailuannv2021'));
             $table->string('diachi')->nullable();
             $table->string('_diachi')->nullable();
             $table->string('xa')->nullable();
             $table->string('huyen')->nullable();
             $table->string('tinh')->nullable();
-            $table->string('caytrong')->nullable();
-            $table->string('dientich')->nullable();
-            $table->string('chinhanh_id',10);
-            $table->double('congno',12,0)->default(0);
-            $table->dateTime('lancuoi_muahang')->nullable();
-            $table->string('nhanvien_id',10)->nullable();
             $table->text('ghichu')->nullable();
+
+            $table->dateTime('xacthuc_lancuoi')->nullable();
+            $table->rememberToken()->nullable();
 
             $table->dateTime('created_at');
             $table->dateTime('updated_at');
@@ -48,6 +46,6 @@ class DanhmucKhachhang extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('danhmuc_khachhang');
+        Schema::dropIfExists('quytrinhlua_nongdan');
     }
 }

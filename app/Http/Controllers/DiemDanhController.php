@@ -78,6 +78,7 @@ class DiemDanhController extends Controller
             ($nhanvien_ids == '' ? '' : " and nhanvien_id in ($nhanvien_ids) ")
             ."group by nhanvien_id
         ");
+        $stt = [];
         foreach($danhsach as $item) {
             $item->id = rand(1000000000,9999999999);
             $item->tennhanvien = $nhanviens[$item->nhanvien_id]->ten ?? 'Chưa rõ';
@@ -85,6 +86,13 @@ class DiemDanhController extends Controller
             $item->tenchinhanh = $chinhanhs[$nhanviens[$item->nhanvien_id]->chinhanh_id ?? '---'] ?? 'Chưa rõ';
             $item->thang = $request->thang;
             $item->nam = $request->nam;
+            if (!isset($stt[$item->tenchinhanh])) {
+                $stt[$item->tenchinhanh] = 1;
+            }
+            else {
+                $stt[$item->tenchinhanh]++;
+            }
+            $item->stt = $stt[$item->tenchinhanh];
         }
 
         return $danhsach;
@@ -116,8 +124,14 @@ class DiemDanhController extends Controller
 
     public function bat_dau(Request $request) {
         $token = $request->cookie('token');
-        $nhanvien = Funcs::getNhanVienByToken($token,['id','chinhanh_id','is_parttime']);
-        $nhanvien_id = $request->nhanvien_id ?? $nhanvien->id;
+        $nhanvien_id = $request->nhanvien_id ?? null;
+        if ($nhanvien_id == null) {
+            $nhanvien = Funcs::getNhanVienByToken($token,['id','chinhanh_id','is_parttime']);
+            $nhanvien_id = $nhanvien->id;
+        }
+        else {
+            $nhanvien = NhanVien::find($nhanvien_id,['id','chinhanh_id','is_parttime']);
+        }
         $chinhanh_id = $request->chinhanh_id ?? $nhanvien->chinhanh_id;
         $toado = $request->toado ?? null;
 //        $ngay = $this->ngay;
@@ -168,8 +182,14 @@ class DiemDanhController extends Controller
 
     public function ket_thuc(Request $request) {
         $token = $request->cookie('token');
-        $nhanvien = Funcs::getNhanVienByToken($token,['id','chinhanh_id','is_parttime']);
-        $nhanvien_id = $request->nhanvien_id ?? $nhanvien->id;
+        $nhanvien_id = $request->nhanvien_id ?? null;
+        if ($nhanvien_id == null) {
+            $nhanvien = Funcs::getNhanVienByToken($token,['id','chinhanh_id','is_parttime']);
+            $nhanvien_id = $nhanvien->id;
+        }
+        else {
+            $nhanvien = NhanVien::find($nhanvien_id,['id','chinhanh_id','is_parttime']);
+        }
         $chinhanh_id = $request->chinhanh_id ?? $nhanvien->chinhanh_id;
         $toado = $request->toado ?? null;
 //        $ngay = $this->ngay;

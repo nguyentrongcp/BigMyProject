@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Functions\Funcs;
+use App\Functions\QuyTrinhLuaFuncs;
 use App\Models\Phieu;
 use App\Models\PhieuChiTiet;
 use Illuminate\Support\Facades\View;
@@ -29,27 +30,38 @@ class AppServiceProvider extends ServiceProvider
     {
         if (isset($_COOKIE['token'])) {
             $token = $_COOKIE['token'];
-            $info = Funcs::getNhanVienByToken($token);
-            if ($info != null) {
-                $info->setTenChiNhanh();
-                $info->setChucVu();
-                $info->urls = Funcs::getUrlPhanQuyenByIDPhanQuyen($info->phanquyen);
-                $info->phanquyen = Funcs::getPhanQuyenByIDPhanQuyen($info->phanquyen);
-                unset($info->quyendacbiet);
-                unset($info->quyenloaibo);
-                $so_phieunhap = Phieu::where([
-                    'loaiphieu' => 'NH',
-                    'status' => 0
-                ])->count();
-                $so_phieuxuat = PhieuChiTiet::whereIn('phieu_id',Phieu::where([
-                    'doituong_id' => $info->chinhanh_id,
-                    'loaiphieu' => 'XKNB'
-                ])->pluck('id'))->where('status',0)->groupBy('phieu_id')->selectRaw('count(*) as sophieu')->get()->count();
-                View::share([
-                    'info' => $info,
-                    'so_phieunhap' => $so_phieunhap,
-                    'so_phieuxuat' => $so_phieuxuat
-                ]);
+            $type = Funcs::checkToken($token);
+            if ($type === 'nhanvien') {
+                $info = Funcs::getNhanVienByToken($token);
+                if ($info != null) {
+                    $info->setTenChiNhanh();
+                    $info->setChucVu();
+                    $info->urls = Funcs::getUrlPhanQuyenByIDPhanQuyen($info->phanquyen);
+                    $info->phanquyen = Funcs::getPhanQuyenByIDPhanQuyen($info->phanquyen);
+                    unset($info->quyendacbiet);
+                    unset($info->quyenloaibo);
+                    $so_phieunhap = Phieu::where([
+                        'loaiphieu' => 'NH',
+                        'status' => 0
+                    ])->count();
+                    $so_phieuxuat = PhieuChiTiet::whereIn('phieu_id',Phieu::where([
+                        'doituong_id' => $info->chinhanh_id,
+                        'loaiphieu' => 'XKNB'
+                    ])->pluck('id'))->where('status',0)->groupBy('phieu_id')->selectRaw('count(*) as sophieu')->get()->count();
+                    View::share([
+                        'info' => $info,
+                        'so_phieunhap' => $so_phieunhap,
+                        'so_phieuxuat' => $so_phieuxuat
+                    ]);
+                }
+            }
+            else {
+                $info = QuyTrinhLuaFuncs::getNongDanByToken($token);
+                if ($info != null) {
+                    View::share([
+                        'info' => $info
+                    ]);
+                }
             }
         }
     }
