@@ -16,10 +16,6 @@
             { id: 'Bột', text: 'Bột' },
             { id: 'Hạt', text: 'Hạt' }
         ]
-        let phanloais = [
-            { id: 'Phân bón', text: 'Phân bón' },
-            { id: 'Thuốc', text: 'Thuốc' }
-        ]
         init();
         initDanhSach();
 
@@ -37,7 +33,6 @@
         initActionThemMoi();
         function initActionThemMoi() {
             initSelect2($('#modalThemMoi .selNhom'),nhoms)
-            initSelect2($('#modalThemMoi .selPhanLoai'),phanloais,{minimumResultsForSearch: -1})
             initSelect2($('#modalThemMoi .selDonViTinh'),donvitinhs)
             initSelect2($('#modalThemMoi .selDang'),dangs,{minimumResultsForSearch: -1, allowClear: true, placeholder: 'Dạng hàng hóa...'});
             $('#modalThemMoi .selHangHoa').html(null).select2({
@@ -103,7 +98,6 @@
                 let donvitinh = $('#modalThemMoi .selDonViTinh').val();
                 let dongia = parseInt($('#modalThemMoi .inpDonGia').attr('data-value'));
                 let nhom = $('#modalThemMoi .selNhom').val();
-                let phanloai = $('#modalThemMoi .selPhanLoai').val();
                 let dang = $('#modalThemMoi .selDang').val();
                 let ghichu = $('#modalThemMoi .inpGhiChu').val().trim();
                 let lientuc = $('#chkLienTuc')[0].checked;
@@ -128,7 +122,7 @@
                     type: 'get',
                     dataType: 'json',
                     data: {
-                        ten,donvitinh,nhom,dongia,ghichu,dang,phanloai
+                        ten,donvitinh,nhom,dongia,ghichu,dang
                     }
                 }).done((result) => {
                     if (result.succ) {
@@ -251,8 +245,6 @@
                         visible: isNull(views) ? true : views.donvitinh},
                     {title: "Nhóm", field: "nhom", vertAlign: 'middle', contextMenu,
                         visible: isNull(views) ? true : views.nhom},
-                    {title: "Phân loại", field: "phanloai", vertAlign: 'middle', contextMenu,
-                        visible: isNull(views) ? true : views.phanloai},
                     {title: "Đơn giá", field: "dongia", hozAlign: 'right', vertAlign: 'middle', headerSort: false,
                         contextMenu, visible: isNull(views) ? true : views.dongia,
                         formatter: (cell) => {
@@ -370,12 +362,11 @@
             if (field === 'dongia') {
                 mInput(data.ten,value).numeral(ten,ten + '...',onSubmit);
             }
-            if (['donvitinh','nhom','dang','phanloai'].indexOf(field) !== -1) {
+            if (['donvitinh','nhom','dang'].indexOf(field) !== -1) {
                 let fields = {
                     donvitinh: donvitinhs,
                     nhom: nhoms,
                     dangs: dangs,
-                    phanloai: phanloais
                 }
                 mInput(data.ten,value).select2(ten,'',fields[field],true,onSubmit);
             }

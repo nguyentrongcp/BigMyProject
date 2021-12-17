@@ -6,6 +6,7 @@ use App\Functions\Funcs;
 use App\Http\Controllers\Controller;
 use App\Models\DanhMuc\KhachHang;
 use App\Models\DanhMuc\NhanVien;
+use App\Models\QuyTrinhLua\MuaVu;
 use App\Models\QuyTrinhLua\NongDan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -13,7 +14,11 @@ use Illuminate\Support\Facades\DB;
 class NongDanController extends Controller
 {
     public function index() {
-        return view('quanly.quytrinhlua.nongdan.index');
+        $muavus = MuaVu::where('status',1)->get();
+
+        return view('quanly.quytrinhlua.nongdan.index', [
+            'muavus' => $muavus
+        ]);
     }
 
     public function danh_sach(Request $request) {

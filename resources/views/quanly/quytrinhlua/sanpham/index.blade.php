@@ -75,19 +75,13 @@
                             </div>
                         </div>
                         <div class="form-row">
-                            <div class="col-4">
+                            <div class="col-6">
                                 <div class="form-group">
                                     <label>Dạng sản phẩm</label>
                                     <select class="form-control selDang"></select>
                                 </div>
                             </div>
-                            <div class="col-4">
-                                <div class="form-group">
-                                    <label>Phân loại</label>
-                                    <select class="form-control selPhanLoai"></select>
-                                </div>
-                            </div>
-                            <div class="col-4">
+                            <div class="col-6">
                                 <div class="form-group required">
                                     <label>Đơn giá</label>
                                     <input type="text" class="form-control numeral inpDonGia" placeholder="Nhập đơn giá...">
@@ -147,19 +141,13 @@
                     </div>
                     <div class="divider my-3"></div>
                     <div class="form-row">
-                        <div class="col-4">
+                        <div class="col-6">
                             <div class="col-thongtin" data-field="dang" data-title="Dạng sản phẩm">
                                 <strong>Dạng sản phẩm <i class="fa fa-edit text-info edit"></i></strong>
                                 <span></span>
                             </div>
                         </div>
-                        <div class="col-4">
-                            <div class="col-thongtin" data-field="phanloai" data-title="Phân loại">
-                                <strong>Phân loại <i class="fa fa-edit text-info edit"></i></strong>
-                                <span></span>
-                            </div>
-                        </div>
-                        <div class="col-4">
+                        <div class="col-6">
                             <div class="col-thongtin" data-field="dongia" data-title="Đơn giá">
                                 <strong>Đơn giá <i class="fa fa-edit text-info edit"></i></strong>
                                 <span></span>

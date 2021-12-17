@@ -7,13 +7,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class ThuaRuong extends Model
+class NongDanMuaVu extends Model
 {
     use HasFactory;
     use softDeletes;
     public $incrementing = false;
     protected $dates = ['deleted_at'];
-    protected $table = 'quytrinhlua_thuaruong';
+    protected $table = 'quytrinhlua_nongdan_muavu';
 
     public static function boot() {
         parent::boot();

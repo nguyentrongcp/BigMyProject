@@ -103,6 +103,27 @@
                             <label>Ghi chú</label>
                             <textarea rows="2" class="form-control inpGhiChu" placeholder="Nhập ghi chú..."></textarea>
                         </div>
+                        @if(count($muavus) > 0)
+                            @foreach($muavus as $key => $muavu)
+                                <div class="card card-outline card-primary mb-0 mt-3">
+                                    <div class="card-header">
+                                        <h3 class="card-title">{{ $muavu->ten }}</h3>
+
+                                        <div class="card-tools">
+                                            <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                                                <i class="fas fa-minus"></i>
+                                            </button>
+                                        </div>
+                                        <!-- /.card-tools -->
+                                    </div>
+                                    <!-- /.card-header -->
+                                    <div class="card-body" style="display: block;">
+                                        The body of the card
+                                    </div>
+                                    <!-- /.card-body -->
+                                </div>
+                            @endforeach
+                        @endif
                     </div>
                     <div class="modal-footer">
                         <div class="custom-control custom-checkbox mr-auto">
