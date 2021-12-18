@@ -7,12 +7,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class MuaVuThuaRuong extends Model
+class QuyTrinhThuaRuong extends Model
 {
     use HasFactory;
     use softDeletes;
     protected $dates = ['deleted_at'];
-    protected $table = 'quytrinhlua_muavu_thuaruong';
+    protected $table = 'quytrinhlua_quytrinh_thuaruong';
 
     protected function serializeDate(DateTimeInterface $date)
     {

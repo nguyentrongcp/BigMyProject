@@ -4,10 +4,11 @@ namespace App\Http\Controllers\QuyTrinhLua;
 
 use App\Functions\Funcs;
 use App\Http\Controllers\Controller;
-use App\Models\DanhMuc\KhachHang;
 use App\Models\DanhMuc\NhanVien;
 use App\Models\QuyTrinhLua\MuaVu;
 use App\Models\QuyTrinhLua\NongDan;
+use App\Models\QuyTrinhLua\ThuaRuong;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -23,12 +24,21 @@ class NongDanController extends Controller
 
     public function danh_sach(Request $request) {
         if (Funcs::isPhanQuyenByToken('quy-trinh-lua.nong-dan.action',$request->cookie('token'))) {
-            $results = NongDan::withTrashed()->where('id','!=','1000000000');
+            $results = NongDan::withTrashed()->orderBy('deleted_at')->get();
         }
         else {
-            $results = NongDan::where('id','!=','1000000000');
+            $results = NongDan::all();
         }
-        $results = $results->orderBy('deleted_at')->get();
+
+        $muavu_ketthuc = ThuaRuong::whereIn('muavu_id',MuaVu::where('status',0)->pluck('id'))
+            ->groupBy('nongdan_id')->selectRaw('count(nongdan_id) as soluong, nongdan_id')->pluck('soluong','nongdan_id');
+        $muavu_hoatdong = ThuaRuong::whereIn('muavu_id',MuaVu::where('status',1)->pluck('id'))
+            ->groupBy('nongdan_id')->selectRaw('count(nongdan_id) as soluong, nongdan_id')->pluck('soluong','nongdan_id');
+
+        foreach($results as $result) {
+            $result->muavu_ketthuc = $muavu_ketthuc[$result->id] ?? 0;
+            $result->muavu_hoatdong = $muavu_hoatdong[$result->id] ?? 0;
+        }
 
         return $results;
     }
@@ -46,6 +56,7 @@ class NongDanController extends Controller
         $diachi .= ($_diachi != '' ? $_diachi.', ' : '').($xa != '' ? $xa.', ' : '')
             .($huyen != '' ? $huyen.', ' : '').($tinh ?? '');
         $ghichu = $request->ghichu ?? null;
+        $muavus = json_decode($request->muavus);
 
         if ($ten == '') {
             return [
@@ -69,6 +80,30 @@ class NongDanController extends Controller
             ];
         }
 
+        $dsmuavus = [];
+        foreach($muavus as $muavu) {
+            if ($muavu->muavu_id == '' || $muavu->muavu_id == null) {
+                return [
+                    'succ' => 0,
+                    'noti' => 'Mùa vụ không hợp lệ!'
+                ];
+            }
+            if ($muavu->ngaysa == '' || $muavu->ngaysa == null) {
+                return [
+                    'succ' => 0,
+                    'noti' => 'Ngày sạ không được bỏ trống!'
+                ];
+            }
+
+            $dsmuavus[] = (object) [
+                'muavu_id' => $muavu->muavu_id,
+                'ngaysa' => $muavu->ngaysa,
+                'dientich' => $muavu->dientich,
+                'ghichu' => $muavu->ghichu
+            ];
+        }
+
+        DB::beginTransaction();
         $model = new NongDan();
 
         do {
@@ -89,7 +124,26 @@ class NongDanController extends Controller
         $model->ghichu = $ghichu ?? null;
         $model->deleted_at = null;
 
-        if ($model->save()) {
+        try {
+            $model->save();
+            $dataTable = [];
+            $nhanvien_id = Funcs::getNhanVienIDByToken($request->cookie('token'));
+            foreach($dsmuavus as $muavu) {
+                $dataTable[] = [
+                    'id' => rand(1000000000,9999999999),
+                    'muavu_id' => $muavu->muavu_id,
+                    'ngaysa' => $muavu->ngaysa,
+                    'dientich' => $muavu->dientich,
+                    'nongdan_id' => $model->id,
+                    'nhanvien_id' => $nhanvien_id,
+                    'created_at' => date('Y-m-d H:i:s'),
+                    'updated_at' => date('Y-m-d H:i:s')
+                ];
+            }
+            if (count($dataTable) > 0) {
+                DB::table('quytrinhlua_nongdan_muavu')->insert($dataTable);
+            }
+            DB::commit();
             return [
                 'succ' => 1,
                 'noti' => 'Thêm nông dân mới thành công.',
@@ -98,7 +152,8 @@ class NongDanController extends Controller
                 ]
             ];
         }
-        else {
+        catch (QueryException $exception) {
+            DB::rollBack();
             return [
                 'succ' => 0,
                 'noti' => 'Thêm nông dân mới thất bại. Vui lòng thử lại!'

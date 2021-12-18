@@ -5,9 +5,9 @@ namespace App\Http\Controllers\QuyTrinhLua;
 use App\Functions\Funcs;
 use App\Http\Controllers\Controller;
 use App\Models\QuyTrinhLua\MuaVu;
-use App\Models\QuyTrinhLua\MuaVuThuaRuong;
-use App\Models\QuyTrinhLua\QuyTrinhSuDung;
+use App\Models\QuyTrinhLua\NongDan;
 use App\Models\QuyTrinhLua\ThuaRuong;
+use App\Models\QuyTrinhLua\QuyTrinh;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -31,8 +31,8 @@ class MuaVuController extends Controller
         }
 
         foreach($results as $result) {
-            $thuaruongs = MuaVuThuaRuong::where('muavu_id',$result->id)->pluck('thuaruong_id');
-            $result->soluong_nongdan = ThuaRuong::whereIn('id',$thuaruongs)->groupBy('nongdan_id')->count();
+            $thuaruongs = ThuaRuong::where('muavu_id',$result->id)->pluck('nongdan_id');
+            $result->soluong_nongdan = NongDan::whereIn('id',$thuaruongs)->count();
             $result->soluong_thuaruong = count($thuaruongs);
         }
 
@@ -90,7 +90,7 @@ class MuaVuController extends Controller
             $model->soluong_nongdan = 0;
             $model->soluong_thuaruong = 0;
             if ($muavu_id != null) {
-                $quytrinhs = QuyTrinhSuDung::where('muavu_id',$muavu_id)->get(['giaidoan','tu','den','sanpham_id','congdung','soluong','ghichu']);
+                $quytrinhs = QuyTrinh::where('muavu_id',$muavu_id)->get(['giaidoan','tu','den','sanpham_id','congdung','soluong','ghichu']);
                 if (count($quytrinhs) > 0) {
                     $dataTable = [];
                     foreach($quytrinhs as $quytrinh) {

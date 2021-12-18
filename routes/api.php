@@ -25,6 +25,7 @@ use App\Http\Controllers\LoginController;
 use App\Http\Controllers\NhapHang\DanhSachController;
 use App\Http\Controllers\NhapHang\TaoPhieuController;
 use App\Http\Controllers\PhieuController;
+use App\Http\Controllers\QuyTrinhLua\ThuaRuongController;
 use App\Http\Controllers\QuyTrinhLua\QuyTrinhController;
 use App\Http\Controllers\QuyTrinhLua\SanPhamController;
 use App\Http\Controllers\ThuChiController;
@@ -101,6 +102,11 @@ Route::prefix('quan-ly')->group(function() {
 
             Route::prefix('cay-quy-trinh')->group(function() {
                 Route::get('danh-sach',[CayQuyTrinhController::class, 'danh_sach']);
+            });
+
+            Route::prefix('thua-ruong')->group(function() {
+                Route::get('cay-quy-trinh',[ThuaRuongController::class, 'cay_quy_trinh']);
+                Route::get('danh-sach',[ThuaRuongController::class, 'danh_sach']);
             });
         });
         Route::prefix('danh-muc')->group(function() {

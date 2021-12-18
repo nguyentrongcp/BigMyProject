@@ -83,6 +83,7 @@ Route::prefix('quan-ly')->group(function() {
                 ->name('quy-trinh-lua.quy-trinh');
             Route::get('cay-quy-trinh', [\App\Http\Controllers\QuyTrinhLua\CayQuyTrinhController::class, 'index'])
                 ->name('quy-trinh-lua.cay-quy-trinh');
+            Route::get('viewer/cay-quy-trinh/{thuaruong_id}', [\App\Http\Controllers\QuyTrinhLua\ThuaRuongController::class, 'index']);
         });
 
         Route::get('ban-hang', [\App\Http\Controllers\BanHangController::class, 'index'])->name('ban-hang');

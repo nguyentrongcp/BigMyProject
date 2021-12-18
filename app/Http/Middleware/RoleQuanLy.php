@@ -33,7 +33,10 @@ class RoleQuanLy
             if (strpos($currentUrl,'quan-ly/hang-hoa/in-qrcode') !== false) {
                 $currentUrl = 'quan-ly/hang-hoa/qrcode';
             }
-            if (in_array($currentUrl,$urls) === false) {
+            if (strpos($currentUrl,'quan-ly/quy-trinh-lua/viewer/cay-quy-trinh') !== false) {
+                $currentUrl = 'quan-ly/quy-trinh-lua/viewer/cay-quy-trinh';
+            }
+            if (in_array($currentUrl,$urls) === false && in_array($currentUrl,['quan-ly/quy-trinh-lua/viewer/cay-quy-trinh']) === false) {
                 abort(404);
             }
 

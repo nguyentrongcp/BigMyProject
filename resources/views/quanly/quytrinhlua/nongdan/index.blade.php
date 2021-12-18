@@ -45,36 +45,32 @@
 
     @if(in_array('quy-trinh-lua.nong-dan.them-moi',$info->phanquyen) !== false)
         <div class="modal fade" id="modalThemMoi">
-            <div class="modal-dialog modal-dialog-scrollable">
+            <div class="modal-dialog modal-dialog-scrollable modal-lg">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title">Thêm Nông Dân Mới</h5>
                     </div>
                     <div class="modal-body">
+                        <div class="form-group required">
+                            <label>Tên nông dân</label>
+                            <input type="text" class="form-control inpTen" placeholder="Nhập tên nông dân...">
+                            <span class="error invalid-feedback">Tên nông dân không được bỏ trống!</span>
+                        </div>
                         <div class="form-row">
-                            <div class="col-9">
-                                <div class="form-group required">
-                                    <label>Tên nông dân</label>
-                                    <input type="text" class="form-control inpTen" placeholder="Nhập tên nông dân...">
-                                    <span class="error invalid-feedback">Tên nông dân không được bỏ trống!</span>
-                                </div>
-                            </div>
-                            <div class="col-3">
+                            <div class="col-4">
                                 <div class="form-group">
                                     <label>Danh xưng</label>
                                     <select class="form-control selDanhXung"></select>
                                 </div>
                             </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="col-6">
+                            <div class="col-4">
                                 <div class="form-group required">
                                     <label>Số điện thoại</label>
                                     <input type="text" class="form-control inpDienThoai" placeholder="Nhập số điện thoại...">
                                     <span class="error invalid-feedback">Số điện thoại không được bỏ trống!</span>
                                 </div>
                             </div>
-                            <div class="col-6">
+                            <div class="col-4">
                                 <div class="form-group">
                                     <label>Số điện thoại 2</label>
                                     <input type="text" class="form-control inpDienThoai2" placeholder="Nhập số điện thoại 2...">
@@ -82,17 +78,25 @@
                             </div>
                         </div>
                         <div class="diachi-container">
-                            <div class="form-group">
-                                <label>Chọn tỉnh/thành phố</label>
-                                <select class="form-group tinh selTinh"></select>
-                            </div>
-                            <div class="form-group">
-                                <label>Chọn quận/huyện/thị xã</label>
-                                <select class="form-group huyen selHuyen"></select>
-                            </div>
-                            <div class="form-group">
-                                <label>Chọn xã/phường/thị trấn</label>
-                                <select class="form-group xa selXa"></select>
+                            <div class="form-row">
+                                <div class="col-4">
+                                    <div class="form-group">
+                                        <label>Chọn tỉnh/thành phố</label>
+                                        <select class="form-group tinh selTinh"></select>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="form-group">
+                                        <label>Chọn quận/huyện/thị xã</label>
+                                        <select class="form-group huyen selHuyen"></select>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="form-group">
+                                        <label>Chọn xã/phường/thị trấn</label>
+                                        <select class="form-group xa selXa"></select>
+                                    </div>
+                                </div>
                             </div>
                             <div class="form-group">
                                 <label>Địa chỉ cụ thể</label>
@@ -103,27 +107,27 @@
                             <label>Ghi chú</label>
                             <textarea rows="2" class="form-control inpGhiChu" placeholder="Nhập ghi chú..."></textarea>
                         </div>
-                        @if(count($muavus) > 0)
-                            @foreach($muavus as $key => $muavu)
-                                <div class="card card-outline card-primary mb-0 mt-3">
-                                    <div class="card-header">
-                                        <h3 class="card-title">{{ $muavu->ten }}</h3>
-
-                                        <div class="card-tools">
-                                            <button type="button" class="btn btn-tool" data-card-widget="collapse">
-                                                <i class="fas fa-minus"></i>
-                                            </button>
-                                        </div>
-                                        <!-- /.card-tools -->
-                                    </div>
-                                    <!-- /.card-header -->
-                                    <div class="card-body" style="display: block;">
-                                        The body of the card
-                                    </div>
-                                    <!-- /.card-body -->
+                        <div id="boxMuaVu">
+                        @foreach($muavus as $key => $muavu)
+                            <div class="card card-outline card-primary mb-0 mt-3">
+                                <div class="card-header">
+                                    <h3 class="card-title font-weight-bolder">{{ $muavu->ten }}</h3>
+{{--                                    <div class="card-tools">--}}
+{{--                                        <button type="button" class="btn btn-tool" data-card-widget="collapse">--}}
+{{--                                            <i class="fas fa-minus"></i>--}}
+{{--                                        </button>--}}
+{{--                                    </div>--}}
                                 </div>
-                            @endforeach
-                        @endif
+                                <div class="card-body">
+                                    <div class="boxMain" data-value="{{ $muavu->id }}"></div>
+                                    <div class="text-right">
+                                        <button class="btn btn-danger btnXoa d-none mr-1">Xóa</button>
+                                        <button class="btn btn-success btnThem">Thêm Thửa Ruộng</button>
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
+                        </div>
                     </div>
                     <div class="modal-footer">
                         <div class="custom-control custom-checkbox mr-auto">
@@ -206,6 +210,21 @@
                         <span></span>
                     </div>
                     <div class="divider my-3"></div>
+                    <div class="form-row">
+                        <div class="col-6">
+                            <div class="col-thongtin" data-field="muavu_ketthuc">
+                                <strong>Mùa vụ đã kết thúc</strong>
+                                <span></span>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="col-thongtin" data-field="muavu_hoatdong">
+                                <strong>Mùa vụ đang hoạt động</strong>
+                                <span></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="divider my-3"></div>
                     <div class="col-thongtin" data-field="ghichu" data-title="Ghi chú">
                         <strong>Ghi chú <i class="fa fa-edit text-info edit"></i></strong>
                         <span></span>
@@ -219,6 +238,21 @@
                 </div>
             </div>
         </div>
+    </div>
+
+    <div class="modal fade" id="modalDanhSachMuaVu">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title w-100 text-center">Danh Sách Mùa Vụ - <span class="title"></span></h4>
+                </div>
+                <div class="modal-body">
+                    <div id="tblDanhSachMuaVu"></div>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
     </div>
 @stop
 
