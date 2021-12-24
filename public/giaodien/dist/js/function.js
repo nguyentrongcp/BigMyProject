@@ -556,7 +556,8 @@ function initDiaChi(container,autoOpen = true) {
 
                 // Query parameters will be ?search=[term]&type=public
                 return query;
-            }
+            },
+            delay: 300
         },
         allowClear: true,
         placeholder: 'Chọn tỉnh/thành phố...'

@@ -4,6 +4,7 @@ namespace App\Http;
 
 use App\Http\Middleware\RoleApi;
 use App\Http\Middleware\RoleMobile;
+use App\Http\Middleware\RoleNongDan;
 use App\Http\Middleware\RoleQuanLy;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
 
@@ -67,6 +68,7 @@ class Kernel extends HttpKernel
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'role.quanly' => RoleQuanLy::class,
         'role.mobile' => RoleMobile::class,
-        'role.api' => RoleApi::class
+        'role.api' => RoleApi::class,
+        'role.nong-dan' => RoleNongDan::class
     ];
 }

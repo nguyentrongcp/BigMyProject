@@ -51,6 +51,23 @@ Route::prefix('mobile')->group(function() {
     });
 });
 
+Route::prefix('nong-dan')->group(function() {
+    Route::get('dang-nhap',[LoginController::class,'nongdan_dangnhap']);
+
+    Route::prefix('thua-ruong')->group(function() {
+        Route::get('them-moi',[ThuaRuongController::class,'them_moi']);
+        Route::get('danh-sach',[ThuaRuongController::class,'danh_sach_mobile']);
+        Route::get('cap-nhat',[ThuaRuongController::class,'cap_nhat']);
+        Route::get('xoa',[ThuaRuongController::class,'xoa']);
+    });
+
+    Route::prefix('quy-trinh')->group(function() {
+        Route::get('danh-sach',[\App\Http\Controllers\NongDan\QuyTrinhController::class,'danh_sach']);
+        Route::get('hoan-thanh',[\App\Http\Controllers\NongDan\QuyTrinhController::class,'hoan_thanh']);
+        Route::get('huy',[\App\Http\Controllers\NongDan\QuyTrinhController::class,'huy']);
+    });
+});
+
 Route::prefix('quan-ly')->group(function() {
     Route::prefix('xac-thuc')->group(function() {
         Route::get('dang-nhap',[LoginController::class,'dang_nhap']);
@@ -107,6 +124,10 @@ Route::prefix('quan-ly')->group(function() {
             Route::prefix('thua-ruong')->group(function() {
                 Route::get('cay-quy-trinh',[ThuaRuongController::class, 'cay_quy_trinh']);
                 Route::get('danh-sach',[ThuaRuongController::class, 'danh_sach']);
+                Route::get('them-moi',[ThuaRuongController::class, 'them_moi']);
+                Route::get('cap-nhat',[ThuaRuongController::class, 'cap_nhat']);
+                Route::get('xoa',[ThuaRuongController::class, 'xoa']);
+                Route::get('phuc-hoi',[ThuaRuongController::class, 'phuc_hoi']);
             });
         });
         Route::prefix('danh-muc')->group(function() {

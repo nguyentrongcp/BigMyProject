@@ -77,7 +77,7 @@
                 '       </div>' +
                 '   </div>' +
                 '   <div class="col-6">' +
-                '       <div class="form-group">' +
+                '       <div class="form-group required">' +
                 '           <label>Ngày sạ</label>' +
                 '           <input type="date" class="form-control inpNgaySa" value="' + date + '">' +
                 '           <span class="error invalid-feedback">Ngày sạ không được bỏ trống!</span>' +
@@ -106,7 +106,7 @@
         })
 
         offEnterTextarea($('#modalThemMoi input, #modalThemMoi textarea'),() => {$('#modalThemMoi .btnSubmit').click()})
-        $('#modalThemMoi input, #modalThemMoi textarea').on('input', function () {
+        $('#modalThemMoi input, #modalThemMoi textarea, #modalThemThuaRuong input').on('input', function () {
             if ($(this).hasClass('is-invalid')) {
                 $(this).removeClass('is-invalid');
             }
@@ -151,6 +151,7 @@
             let muavus = [];
             $.each(boxMuaVus, function(key, value) {
                 let muavu_id = $($(value).parent()).attr('data-value');
+                let ten = $($(value).parent()).attr('data-title');
                 // let tinh = $(value).find('.selTinh').val();
                 // let huyen = $(value).find('.selHuyen').val();
                 // let xa = $(value).find('.selXa').val();
@@ -167,7 +168,7 @@
                     checked = false;
                 }
                 muavus.push({
-                    muavu_id,ghichu,dientich,ngaysa
+                    muavu_id,ghichu,dientich,ngaysa,ten
                 })
             })
 
@@ -203,6 +204,74 @@
             });
         });
     }
+
+    // Code thêm mới Thửa Ruộng
+    initActionThemThuaRuong();
+    $('#modalThemThuaRuong').on('hidden.bs.modal', function () {
+        $(this).find('.is-invalid').removeClass('is-invalid');
+        if ($('.modal.show').length > 0) {
+            $('body').addClass('modal-open');
+        }
+    }).on('shown.bs.modal', function () {
+        $(this).find('.inpDienTich').focus();
+    });
+    offEnterTextarea($('#modalThemThuaRuong input, #modalThemThuaRuong textarea'),() => {$('#modalThemThuaRuong .btnSubmit').click()});
+    $('#modalThemThuaRuong .selMuaVu').select2({
+        minimumResultsForSearch: -1
+    }).on('select2:select', function () {
+        $(this).removeClass('is-invalid')
+    })
+    function initActionThemThuaRuong(nongdan_id) {
+        $('#modalThemThuaRuong .btnSubmit').off('click').click(() => {
+            let dientich = parseFloat($('#modalThemThuaRuong .inpDienTich').val());
+            let ngaysa = $('#modalThemThuaRuong .inpNgaySa').val();
+            let muavu_id = $('#modalThemThuaRuong .selMuaVu').val();
+            if (muavu_id == null) {
+                $('#modalThemThuaRuong .selMuaVu').addClass('is-invalid');
+                return false;
+            }
+            if (isNaN(dientich) || dientich <= 0) {
+                $('#modalThemThuaRuong .inpDienTich').addClass('is-invalid');
+                return false;
+            }
+            if (ngaysa === '') {
+                $('#modalThemThuaRuong .inpNgaySa').addClass('is-invalid');
+                return false;
+            }
+            let ghichu = $('#modalThemThuaRuong .inpGhiChu').val().trim();
+
+            sToast.loading('Đang kiểm tra dữ liệu. Vui lòng chờ...');
+            $.ajax({
+                url: '/api/quan-ly/quy-trinh-lua/thua-ruong/them-moi',
+                type: 'get',
+                dataType: 'json',
+                data: {
+                    dientich,ngaysa,muavu_id,ghichu,nongdan_id
+                }
+            }).done((result) => {
+                if (result.succ) {
+                    $('#modalThemThuaRuong input:not([type=date]), #modalThemThuaRuong textarea').val('').trigger('input');
+                    autosize.update($('#modalThemThuaRuong textarea'));
+                    if ($('#modalDanhSachMuaVu').hasClass('show')) {
+                        tblDanhSachMuaVu.addData(result.data.model,true);
+                    }
+                    $('#modalThemThuaRuong').modal('hide');
+                }
+                else if (!isUndefined(result.type)) {
+                    if (result.type === 'muavu_id') {
+                        $('#modalThemThuaRuong .selMuaVu').addClass('is-invalid');
+                    }
+                    if (result.type === 'dientich') {
+                        $('#modalThemThuaRuong .inpDienTich').addClass('is-invalid');
+                    }
+                    if (result.type === 'ngaysa') {
+                        $('#modalThemThuaRuong .inpNgaySa').addClass('is-invalid');
+                    }
+                }
+            });
+        });
+    }
+    // Endcode thêm mới thửa ruộng
     @endif
 
     function initDanhSach() {
@@ -253,6 +322,13 @@
             }
             let menus = [
                 {
+                    label: '<i class="fa fa-plus text-primary"></i> Thêm thửa ruộng',
+                    action: () => {
+                        $('#modalThemThuaRuong').modal('show');
+                        initActionThemThuaRuong(data.id);
+                    }
+                },
+                {
                     label: '<i class="fa fa-info-circle text-info"></i> Chi tiết',
                     action: xemThongTin
                 },
@@ -277,7 +353,7 @@
             ];
             if (data.muavu_ketthuc > 0 || data.muavu_hoatdong > 0) {
                 menus.unshift({
-                    label: '<i class="fa fa-bars text-purple"></i> Danh sách mùa vụ',
+                    label: '<i class="fa fa-bars text-purple"></i> Danh sách thửa ruộng',
                     action: (e, cell) => {
                         $('#modalDanhSachMuaVu').off('shown.bs.modal').on('shown.bs.modal', () => {
                             if (tblDanhSachMuaVu == null) {
@@ -285,6 +361,7 @@
                             }
                             tblDanhSachMuaVu.setData('/api/quan-ly/quy-trinh-lua/thua-ruong/danh-sach?nongdan_id=' + data.id);
                         }).modal('show').find('.title').text(data.ten);
+                        initActionThemThuaRuong(data.id);
                     }
                 })
             }
@@ -342,10 +419,10 @@
             @if(in_array('quy-trinh-lua.nong-dan.action',$info->phanquyen) !== false)
             rowFormatter: (row) => {
                 if (!isNull(row.getData().deleted_at)) {
-                    $(row.getElement()).addClass('text-danger');
+                    $(row.getElement()).addClass('row-deleted');
                 }
                 else {
-                    $(row.getElement()).removeClass('text-danger');
+                    $(row.getElement()).removeClass('row-deleted');
                 }
             },
             @endif
@@ -383,15 +460,31 @@
                         + '"></i> ' + (isNull(data.deleted_at) ? 'Xóa' : 'Phục hồi'),
                     action: () => {
                         if (isNull(data.deleted_at)) {
-
+                            clickXoaThuaRuong(cell);
                         }
                         else {
-
+                            clickPhucHoiThuaRuong(cell);
                         }
                     }
                 },
                 @endif
             ];
+            let field = cell.getField();
+            if (['dientich','muavu','ngaysa'].indexOf(field) > -1) {
+                menus.unshift({
+                    label: '<i class="fa fa-edit text-primary"></i> Chỉnh sửa',
+                    action: (e, cell) => {
+                        let value = cell.getValue();
+                        let data = cell.getData();
+                        if (field === 'muavu') {
+                            field = 'muavu_id';
+                            value = data.muavu_id;
+                        }
+                        let ten = cell.getColumn().getDefinition().title;
+                        clickSuaThuaRuong(field,value,ten,data);
+                    }
+                });
+            }
 
             return menus;
         }
@@ -401,6 +494,7 @@
                 {title: "STT", headerHozAlign: 'center', vertAlign: 'middle', field: "stt", formatter: "rownum",
                     width: 40, headerSort: false, hozAlign: 'center', contextMenu},
                 {title: "Tên mùa vụ", field: "muavu", vertAlign: 'middle', headerSort: false, contextMenu},
+                {title: "Tên gợi nhớ", field: "ten", vertAlign: 'middle', headerSort: false, contextMenu},
                 {title: "Diện tích (ha)", field: "dientich", vertAlign: 'middle', headerSort: false, contextMenu, hozAlign: 'right'},
                 {title: "Ngày sạ", field: "ngaysa", vertAlign: 'middle', headerSort: false, contextMenu,
                     formatter: (cell) => {
@@ -421,14 +515,15 @@
             @if(in_array('quy-trinh-lua.nong-dan.action',$info->phanquyen) !== false)
             rowFormatter: (row) => {
                 if (!isNull(row.getData().deleted_at)) {
-                    $(row.getElement()).addClass('text-danger');
+                    $(row.getElement()).addClass('row-deleted');
                 }
                 else {
-                    $(row.getElement()).removeClass('text-danger');
+                    $(row.getElement()).removeClass('row-deleted');
                 }
             },
             @endif
             height: '400px',
+            layoutColumnsOnNewData:true,
             dataFiltered: function () {
                 if (isNull(tblDanhSach) || isUndefined(tblDanhSach)) {
                     return false;
@@ -510,6 +605,65 @@
             mInput(data.ten,data._diachi).diachi(onSubmit);
         }
     }
+    function clickSuaThuaRuong(field, value, ten, data) {
+        let onSubmit = () => {
+            let value = $('#modalInput .value').val();
+            if (field === 'ngaysa') {
+                value = $('#boxInputDate').datetimepicker('viewDate').format('YYYY-MM-DD');
+                if (isNull(value)) {
+                    showErrorModalInput('Ngày sạ không được bỏ trống!');
+                    return false;
+                }
+            }
+            if (field === 'dientich') {
+                value = parseFloat(value);
+                if (isNaN(value) || value <= 0) {
+                    showErrorModalInput('Diện tích không hợp lệ!');
+                    return false;
+                }
+            }
+            if (field === 'muavu_id' && value == null) {
+                showErrorModalInput('Bạn chưa chọn mùa vụ!');
+                return false;
+            }
+            sToast.confirm('Xác nhận cập nhật ' + ten.toLowerCase() + '?','',
+                (result) => {
+                    if (result.isConfirmed) {
+                        sToast.loading('Đang cập nhật dữ liệu. Vui lòng chờ...')
+                        $.ajax({
+                            url: '/api/quan-ly/quy-trinh-lua/thua-ruong/cap-nhat',
+                            type: 'get',
+                            dataType: 'json',
+                            data: {
+                                id: data.id,
+                                field, value
+                            }
+                        }).done((result) => {
+                            if (result.succ) {
+                                $('#modalInput').modal('hide');
+                                tblDanhSachMuaVu.updateData([{...result.data.model}]);
+                            }
+                            else if (!isUndefined(result.erro)) {
+                                showErrorModalInput(result.erro);
+                            }
+                        });
+                    }
+                });
+        }
+        if (field === 'dientich') {
+            mInput(data.ten,value,true).number(ten,ten + '...',onSubmit);
+        }
+        if (field === 'ngaysa') {
+            mInput(data.ten,value,true).date(ten,'Nhập ' + ten.toLowerCase() + '...',onSubmit);
+        }
+        if (field === 'muavu_id') {
+            let muavus = JSON.parse('{!! str_replace("'","\'",$muavus) !!}');
+            muavus.forEach((value) => {
+                value.text = value.ten;
+            })
+            mInput(data.ten,value,true).select2(ten,'',muavus,true,onSubmit);
+        }
+    }
     @endif
 
     @if(in_array('quy-trinh-lua.nong-dan.action',$info->phanquyen) !== false)
@@ -567,6 +721,54 @@
                                     clickXoaThongTin(cell);
                                 })
                             }
+                        }
+                    });
+                }
+            });
+    }
+
+    function clickXoaThuaRuong(cell) {
+        sToast.confirm('Xác nhận xóa thông tin thửa ruộng?','',
+            (result) => {
+                if (result.isConfirmed) {
+                    sToast.loading('Đang xóa dữ liệu. Vui lòng chờ...')
+                    $.ajax({
+                        url: '/api/quan-ly/quy-trinh-lua/thua-ruong/xoa',
+                        type: 'get',
+                        dataType: 'json',
+                        data: {
+                            id: cell.getData().id
+                        }
+                    }).done((result) => {
+                        if (result.succ) {
+                            cell.getTable().updateData([{
+                                id: cell.getData().id,
+                                deleted_at: result.data.deleted_at
+                            }])
+                        }
+                    });
+                }
+            });
+    }
+
+    function clickPhucHoiThuaRuong(cell) {
+        sToast.confirm('Xác nhận phục hồi thông tin thửa ruộng?','',
+            (result) => {
+                if (result.isConfirmed) {
+                    sToast.loading('Đang phục hồi dữ liệu. Vui lòng chờ...')
+                    $.ajax({
+                        url: '/api/quan-ly/quy-trinh-lua/thua-ruong/phuc-hoi',
+                        type: 'get',
+                        dataType: 'json',
+                        data: {
+                            id: cell.getData().id
+                        }
+                    }).done((result) => {
+                        if (result.succ) {
+                            cell.getTable().updateData([{
+                                id: cell.getData().id,
+                                deleted_at: null
+                            }])
                         }
                     });
                 }

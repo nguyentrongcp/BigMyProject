@@ -81,6 +81,8 @@ class NongDanController extends Controller
         }
 
         $dsmuavus = [];
+        $tenmuavu = '';
+        $count = 1;
         foreach($muavus as $muavu) {
             if ($muavu->muavu_id == '' || $muavu->muavu_id == null) {
                 return [
@@ -95,11 +97,16 @@ class NongDanController extends Controller
                 ];
             }
 
+            if ($tenmuavu != $muavu->muavu_id) {
+                $count = 1;
+                $tenmuavu = $muavu->muavu_id;
+            }
             $dsmuavus[] = (object) [
                 'muavu_id' => $muavu->muavu_id,
                 'ngaysa' => $muavu->ngaysa,
                 'dientich' => $muavu->dientich,
-                'ghichu' => $muavu->ghichu
+                'ghichu' => $muavu->ghichu,
+                'ten' => $muavu->ten.' ('.$count++.')'
             ];
         }
 
@@ -136,13 +143,15 @@ class NongDanController extends Controller
                     'dientich' => $muavu->dientich,
                     'nongdan_id' => $model->id,
                     'nhanvien_id' => $nhanvien_id,
+                    'ten' => $muavu->ten,
                     'created_at' => date('Y-m-d H:i:s'),
                     'updated_at' => date('Y-m-d H:i:s')
                 ];
             }
             if (count($dataTable) > 0) {
-                DB::table('quytrinhlua_nongdan_muavu')->insert($dataTable);
+                DB::table('quytrinhlua_thuaruong')->insert($dataTable);
             }
+            $model->muavu_hoatdong = count($dataTable);
             DB::commit();
             return [
                 'succ' => 1,

@@ -125,8 +125,22 @@
                     formatter: (cell) => {
                         return doi_ngay(cell.getValue());
                     }},
-                {title: 'TG bắt đầu', field: 'tg_batdau', hozAlign: 'center', headerSort: false, contextMenu, vertAlign: 'middle'},
-                {title: 'TG kết thúc', field: 'tg_ketthuc', hozAlign: 'center', headerSort: false, contextMenu, vertAlign: 'middle'},
+                {title: 'TG bắt đầu', field: 'tg_batdau', hozAlign: 'center', headerSort: false, contextMenu, vertAlign: 'middle',
+                    formatter: (cell) => {
+                        if (cell.getValue() == null) {
+                            return '';
+                        }
+                        let value = cell.getValue().split(':');
+                        return value[0] + ':' + value[1];
+                    }},
+                {title: 'TG kết thúc', field: 'tg_ketthuc', hozAlign: 'center', headerSort: false, contextMenu, vertAlign: 'middle',
+                    formatter: (cell) => {
+                        if (cell.getValue() == null) {
+                            return '';
+                        }
+                        let value = cell.getValue().split(':');
+                        return value[0] + ':' + value[1];
+                    }},
                 {title: 'Ngày công', field: 'ngaycong', hozAlign: 'right', headerSort: false, contextMenu, vertAlign: 'middle',
                     formatter: (cell) => {
                         return '<span class="font-weight-bolder ' + (cell.getValue() > 0 ? 'text-info' : 'text-danger') + '">' + cell.getValue() + '</span>';

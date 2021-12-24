@@ -16,6 +16,7 @@ class QuytrinhluaThuaruong extends Migration
         Schema::create('quytrinhlua_thuaruong', function (Blueprint $table) {
             $table->string('id',10)->primary();
             $table->float('dientich',8,1)->nullable();
+            $table->string('ten');
             $table->string('nongdan_id',10);
             $table->string('muavu_id',10);
             $table->string('toado')->nullable();

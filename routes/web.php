@@ -23,6 +23,22 @@ Route::get('read-pdf', function () {
     ]);
 });
 
+Route::prefix('nong-dan')->group(function() {
+    Route::get('/', function () {
+        return view('nongdan.index');
+    });
+    Route::get('dang-nhap', function() {
+        return view('nongdan.login');
+    })->name('nong-dan.dang-nhap');
+
+    Route::middleware('role.nong-dan')->group(function() {
+        Route::get('thua-ruong', [\App\Http\Controllers\QuyTrinhLua\ThuaRuongController::class, 'mobile_index'])
+            ->name('nong-dan.thua-ruong');
+        Route::get('quy-trinh', [\App\Http\Controllers\NongDan\QuyTrinhController::class, 'index'])
+            ->name('nong-dan.quy-trinh');
+    });
+});
+
 Route::prefix('mobile')->group(function() {
     Route::get('/', function () {
         return view('mobile.index');

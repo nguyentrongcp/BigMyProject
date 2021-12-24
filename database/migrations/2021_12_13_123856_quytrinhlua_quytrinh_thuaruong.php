@@ -17,7 +17,7 @@ class QuytrinhluaQuytrinhThuaruong extends Migration
             $table->increments('id');
             $table->string('quytrinh_id',10);
             $table->string('thuaruong_id',10);
-            $table->tinyInteger('status');
+            $table->tinyInteger('status')->default(1);
             $table->text('lydo')->nullable();
             $table->text('ghichu')->nullable();
 

@@ -4,6 +4,9 @@
 .tabulator-menu {
     border-radius: 5px;
 }
+.tabulator-row.row-deleted {
+    background: #dc354530;
+}
 /*.tabulator-header {*/
 /*    background-color:#333 !important;*/
 /*    color:#fff !important;*/

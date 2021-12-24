@@ -119,7 +119,7 @@
 {{--                                    </div>--}}
                                 </div>
                                 <div class="card-body">
-                                    <div class="boxMain" data-value="{{ $muavu->id }}"></div>
+                                    <div class="boxMain" data-value="{{ $muavu->id }}" data-title="{{ $muavu->ten }}"></div>
                                     <div class="text-right">
                                         <button class="btn btn-danger btnXoa d-none mr-1">Xóa</button>
                                         <button class="btn btn-success btnThem">Thêm Thửa Ruộng</button>
@@ -247,12 +247,56 @@
                     <h4 class="modal-title w-100 text-center">Danh Sách Mùa Vụ - <span class="title"></span></h4>
                 </div>
                 <div class="modal-body">
+                    <div class="d-flex mb-1">
+                        <div class="ml-auto d-flex">
+                            <button class="btn bg-gradient-primary btnThemMoi" data-toggle="modal" data-target="#modalThemThuaRuong">Thêm Mới</button>
+                        </div>
+                    </div>
                     <div id="tblDanhSachMuaVu"></div>
                 </div>
             </div>
             <!-- /.modal-content -->
         </div>
         <!-- /.modal-dialog -->
+    </div>
+
+    <div class="modal fade" id="modalThemThuaRuong">
+        <div class="modal-dialog modal-dialog-scrollable modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Thêm Thửa Ruộng Mới</h5>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Mùa vụ</label>
+                        <select class="form-control selMuaVu">
+                            @foreach($muavus as $muavu)
+                                <option value="{{ $muavu->id }}">{{ $muavu->ten }}</option>
+                            @endforeach
+                        </select>
+                        <span class="error invalid-feedback">Bạn chưa chọn mùa vụ!</span>
+                    </div>
+                    <div class="form-group required">
+                        <label>Diện tích</label>
+                        <input type="number" class="form-control inpDienTich" placeholder="Nhập diện tích thửa ruộng...">
+                        <span class="error invalid-feedback">Diện tích không hợp lệ!</span>
+                    </div>
+                    <div class="form-group">
+                        <label>Ngày Sạ</label>
+                        <input type="date" value="{{ date('Y-m-d') }}" class="form-control inpNgaySa" placeholder="Chọn ngày sạ...">
+                        <span class="error invalid-feedback">Ngày sạ không được bỏ trống!</span>
+                    </div>
+                    <div class="form-group mb-0">
+                        <label>Ghi chú</label>
+                        <textarea rows="2" class="form-control inpGhiChu" placeholder="Nhập ghi chú..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn bg-gradient-primary btnSubmit">Xác Nhận</button>
+                    <button type="button" class="btn bg-gradient-secondary" data-dismiss="modal">Thoát</button>
+                </div>
+            </div>
+        </div>
     </div>
 @stop
 

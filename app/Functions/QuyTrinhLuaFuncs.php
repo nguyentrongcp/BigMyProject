@@ -10,6 +10,10 @@ class QuyTrinhLuaFuncs
         return $columns == null ? NongDan::where('remember_token',$token)->first() : NongDan::where('remember_token',$token)->first($columns);
     }
 
+    public static function checkRememberToken($token) {
+        return NongDan::where('remember_token',$token)->count() > 0;
+    }
+
     public static function getNongDanIDByToken($token) {
         $nongdan = self::getNongDanByToken($token,['id']);
         return $nongdan == null ? null : $nongdan->id;
