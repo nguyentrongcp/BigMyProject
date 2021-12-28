@@ -82,6 +82,7 @@ Route::prefix('quan-ly')->group(function() {
                 Route::get('phuc-hoi',[NongDanController::class, 'phuc_hoi']);
                 Route::get('danh-sach',[NongDanController::class, 'danh_sach']);
                 Route::get('tim-kiem',[NongDanController::class, 'tim_kiem']);
+                Route::post('import',[NongDanController::class, 'import']);
             });
 
             Route::prefix('mua-vu')->group(function() {

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\QuyTrinhLua;
 
 use App\Functions\Funcs;
+use App\Functions\Pusher;
 use App\Http\Controllers\Controller;
 use App\Models\DanhMuc\NhanVien;
 use App\Models\QuyTrinhLua\MuaVu;
@@ -167,6 +168,88 @@ class NongDanController extends Controller
                 'succ' => 0,
                 'noti' => 'Thêm nông dân mới thất bại. Vui lòng thử lại!'
             ];
+        }
+    }
+
+    public function import(Request $request) {
+        $data = json_decode($request->data);
+        $nhanvien_id = Funcs::getNhanVienIDByToken($request->cookie('token'));
+        $listener = 'progress-import-'.$nhanvien_id;
+        $time = time();
+
+        DB::beginTransaction();
+        foreach($data as $item) {
+            $model = new NongDan();
+
+            do {
+                $model->id = rand(1000000000,9999999999);
+            }
+            while (NhanVien::find($model->id,'id') != null || NongDan::find($model->id,'id') != null);
+            $diachi = '';
+            $diachi .= ($item->diachi != '' ? $item->diachi.', ' : '').($item->xa != '' ? $item->xa.', ' : '')
+                .($item->huyen != '' ? $item->huyen.', ' : '').($item->tinh ?? '');
+
+            $model->ten = $item->ten;
+            $model->slug = Funcs::convertToSlug($item->ten);
+            $model->danhxung = $item->danhxung;
+            $model->dienthoai = $item->dienthoai;
+            $model->dienthoai2 = $item->dienthoai2;
+            $model->diachi = $diachi ?? null;
+            $model->_diachi = $item->diachi ?? null;
+            $model->xa = $item->xa ?? null;
+            $model->huyen = $item->huyen ?? null;
+            $model->tinh = $item->tinh ?? null;
+            $model->ghichu = $item->ghichu ?? null;
+
+            try {
+                $model->save();
+                foreach($dsmuavus as $muavu) {
+                    $dataTable[] = [
+                        'id' => rand(1000000000,9999999999),
+                        'muavu_id' => $muavu->muavu_id,
+                        'ngaysa' => $muavu->ngaysa,
+                        'dientich' => $muavu->dientich,
+                        'nongdan_id' => $model->id,
+                        'nhanvien_id' => $nhanvien_id,
+                        'ten' => $muavu->ten,
+                        'created_at' => date('Y-m-d H:i:s'),
+                        'updated_at' => date('Y-m-d H:i:s')
+                    ];
+                }
+                if (count($dataTable) > 0) {
+                    DB::table('quytrinhlua_thuaruong')->insert($dataTable);
+                }
+                $model->muavu_hoatdong = count($dataTable);
+                DB::commit();
+                return [
+                    'succ' => 1,
+                    'noti' => 'Thêm nông dân mới thành công.',
+                    'data' => [
+                        'model' => $model
+                    ]
+                ];
+            }
+            catch (QueryException $exception) {
+                DB::rollBack();
+                return [
+                    'succ' => 0,
+                    'noti' => 'Thêm nông dân mới thất bại. Vui lòng thử lại!'
+                ];
+            }
+        }
+
+        for($i=1; $i<=100; $i++) {
+            sleep(1);
+            $khoangcach = time() - $time;
+            $thoigian = (int) (100*$khoangcach/$i);
+            $thoigian -= $khoangcach;
+            if ($thoigian > 60) {
+                $thoigian = ((int) ($thoigian/60)).' phút';
+            }
+            else {
+                $thoigian .= ' giây';
+            }
+            event(new Pusher($listener,['percent' => $i, 'thoigian' => $thoigian]));
         }
     }
 

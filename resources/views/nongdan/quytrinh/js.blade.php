@@ -2,10 +2,7 @@
     let thuaruong = JSON.parse('{!! str_replace("'","\'",$thuaruong) !!}');
     initDanhMuc(thuaruong.id);
     init();
-    let isFirst = {
-        muavu: true,
-        phanhoi: true
-    };
+    let isFirst = true;
 
     function init() {
         $('#selThuaRuong').tooltip({
@@ -43,77 +40,56 @@
             }
         }).done((results) => {
             addItems(results);
-            if (isFirst.phanhoi) {
-
-            }
             Swal.close();
-            if (isFirst.muavu) {
-                isFirst.muavu = false;
-                setTimeout(() => {
-                    $('#selThuaRuong').tooltip('show');
-                    setTimeout(() => {$('#selThuaRuong').tooltip('hide')}, 5000)
-                }, 5500)
-            }
         });
     }
 
     function addItems(results) {
         let giaidoan_id = '';
-        let currentItem = null;
-        let currenPhanHoi = null;
+        let currentHeader = null;
+        let currenTitle = null;
+        let currentTitle = null;
+        let currentStt = 0;
         results.forEach((item, stt) => {
             let tungay = moment(thuaruong.ngaysa).add(item.tu,'days').format('X');
             let denngay = moment(thuaruong.ngaysa).add(item.den,'days').format('X');
             let ngayhientai = moment('{{ date('Y-m-d') }}').format('X');
-            let giaidoan = (tungay <= ngayhientai && denngay >= ngayhientai) ? 0 : (ngayhientai > denngay ? -1 : 1)
+            let giaidoan = (tungay <= ngayhientai && denngay >= ngayhientai) ? 0 : (ngayhientai > denngay ? -1 : 1);
             if (item.giaidoan_id !== giaidoan_id) {
-                let boxThongTin = $('' +
+                giaidoan_id = item.giaidoan_id;
+                let boxHeader = $('' +
                     '<div>' +
                     '   <i class="fas fa-info bg-info"></i>' +
                     '   <div class="timeline-item">' +
                     '       <span class="time"><i class="fa fa-comments-o"></i> 0</span>' +
-                    '       <div class="timeline-header text-' + (item.phanloai === 'Phân bón' ? 'green' : 'cyan') + '">' +
-                    item.phanloai + '</div>' +
+                    '       <div class="timeline-header">' + item.phanloai + '</div>' +
                     '       <div class="timeline-footer d-flex justify-content-between">' +
                     // '           <a class="btn btn-success btn-sm font-size-btn-sm-mobile">Hoàn Thành Tất Cả</a>' +
                     '           <a class="btn btn-primary btn-sm font-size-btn-sm-mobile ml-auto btnPhanHoi">Gửi Phản Hồi</a>' +
                     '       </div>' +
                     '   </div>' +
                     '</div>');
-                let label = $('' +
+                let boxTitle = $('' +
                     '<div class="time-label">' +
-                    '   <span class="bg-' + (giaidoan < 0 ? 'secondary' : (giaidoan === 0 ? 'primary' : 'purple')) + '">' +
-                    item.giaidoan+ '</span>' +
+                    '   <span class="">' + item.giaidoan+ '</span>' +
                     '</div>');
-                $('#boxMain').append(label).append(boxThongTin);
-                giaidoan_id = item.giaidoan_id;
+                boxHeader.find('.timeline-header').addClass(item.phanloai === 'Thuốc' ? 'text-green' : 'text-cyan');
+                boxTitle.find('span').addClass(giaidoan < 0 ? 'bg-secondary' : (giaidoan === 0 ? 'bg-primary' : 'bg-purple'));
+                $('#boxMain').append(boxTitle).append(boxHeader);
                 if (stt === 0) {
-                    currenPhanHoi = boxThongTin.find('.btnPhanHoi');
+                    currentTitle = boxTitle;
+                    currentHeader = boxHeader;
                 }
-                if (tungay <= ngayhientai && denngay >= ngayhientai && currentItem == null) {
-                    currentItem = label;
-                    currenPhanHoi = boxThongTin.find('.btnPhanHoi');
+                if (tungay <= ngayhientai && denngay >= ngayhientai && currentStt === 0) {
+                    currentTitle = boxTitle;
+                    currentHeader = boxHeader;
+                    currentStt = stt;
                 }
             }
 
-            let trangthai = item.trangthai === 0 ? 'fa fa-clock-o bg-warning' : 'fa fa-check bg-success';
-            let btnAction = null;
-            let textTrangThai = '<span class="trangthai text-warning">Chưa phản hồi</span>';
-            if (ngayhientai < tungay) {
-                trangthai = 'fa fa-clock-o bg-danger';
-                textTrangThai = '<span class="trangthai text-danger">Chưa đến ngày</span>';
-            }
-            else {
-                let textAction = item.trangthai === 0 ? 'Nhấn Để Hoàn Thành' : 'Nhấn Hủy Hoàn Thành';
-                let styleAction = item.trangthai === 0 ? 'primary' : 'danger';
-                btnAction = $('<span class="btnAction btn btn-sm font-size-btn-sm-mobile btn-' + styleAction +'">' + textAction + '</span>');
-                if (item.trangthai === 1) {
-                    textTrangThai = '<span class="trangthai text-success">Đã hoàn thành</span>';
-                }
-            }
             let element = $('' +
                 '<div>' +
-                '   <i class="' + trangthai + '"></i>' +
+                '   <i class=""></i>' +
                 '   <div class="timeline-item">' +
                 '       <div class="timeline-header font-size-mobile font-weight-bolder text-primary">' + item.sanpham + '</div>' +
                 '       <div class="timeline-body">' +
@@ -121,46 +97,64 @@
                 '           <div class="text-right">Số lượng/ha: <span class="font-weight-bolder text-info">' +
                 parseFloat(item.soluong) + '</span> ' + item.donvitinh + '</div>' +
                 '           <div class="timeline-trangthai py-1 my-2">Trạng thái: ' +
-                textTrangThai +
+                '               <span class="trangthai"></span>' +
                 '           </div>' +
                 '           <div class="timeline-action text-right"></div>' +
                 '       </div>' +
                 '   </div>' +
                 '</div>');
-            if (btnAction != null) {
+            if (ngayhientai < tungay) {
+                element.find('>i').addClass('fa fa-clock-o bg-danger');
+                element.find('.trangthai').addClass('text-danger').text('Chưa đến ngày');
+            }
+            else {
+                element.find('>i').addClass(item.trangthai === 0 ? 'fa fa-clock-o bg-warning' : 'fa fa-check bg-success');
+                if (item.trangthai === 1) {
+                    element.find('.trangthai').addClass('text-success').text('Đã hoàn thành');
+                }
+                else {
+                    element.find('.trangthai').addClass('text-warning').text('Chưa hoàn thành');
+                }
+                let btnAction = $('<span class="btnAction btn btn-sm font-size-btn-sm-mobile"></span>');
+                if (item.trangthai === 1) {
+                    btnAction.addClass('btn-danger').text('Nhấn hủy hoàn thành');
+                }
+                else {
+                    btnAction.addClass('btn-primary').text('Nhấn để hoàn thành');
+                }
                 element.find('.timeline-action').append(btnAction);
                 btnAction.click(() => {
                     if (item.trangthai === 0) {
-                        actionHoanThanh(item.id,element);
+                        actionHoanThanh(item,element);
                     }
                     if (item.trangthai === 1) {
-                        actionHuyHoanThanh(item.id,element);
+                        actionHuyHoanThanh(item,element);
                     }
                 })
             }
             $('#boxMain').append(element);
         });
 
-        if (currentItem != null) {
-            $('#container').animate({scrollTop: currentItem.position().top}, 500);
-        }
-        if (currenPhanHoi != null) {
-            currenPhanHoi.tooltip({
-                trigger: 'manual',
-                title: 'Nhấn vào đây để gửi phản hồi trong giai đoạn này!!!',
-            });
-            if (isFirst.phanhoi) {
-                isFirst.phanhoi = false;
-                setTimeout(() => {
-                    currenPhanHoi.tooltip('show');
-                    setTimeout(() => {currenPhanHoi.tooltip('hide')}, 5000)
-                }, 500)
-            }
+        $('#container').animate({scrollTop: currentTitle.position().top}, 500);
+        currentTitle.find('span').tooltip({
+            trigger: 'manual',
+            title: 'Tên giai đoạn',
+        });
+        if (isFirst) {
+            isFirst = false;
+            setTimeout(() => {
+                currentTitle.find('span').tooltip('show');
+                setTimeout(() => {currentTitle.find('span').tooltip('hide')}, 3000)
+            }, 500)
+            setTimeout(() => {
+                $('#selThuaRuong').tooltip('show');
+                setTimeout(() => {$('#selThuaRuong').tooltip('hide')}, 3000)
+            }, 3500)
         }
     }
 
-    function actionHuyHoanThanh(quytrinh_id, element) {
-        sToast.confirm('Xác nhận hủy hoàn thành quy trình này?','',
+    function actionHuyHoanThanh(item, element) {
+        sToast.confirm('Xác nhận hủy sử dụng?',item.sanpham,
             (result) => {
                 if (result.isConfirmed) {
                     sToast.loading('Đang cập nhật dữ liệu. Vui lòng chờ...')
@@ -169,7 +163,7 @@
                         type: 'get',
                         dataType: 'json',
                         data: {
-                            quytrinh_id, thuaruong_id: thuaruong.id
+                            quytrinh_id: item.id, thuaruong_id: thuaruong.id
                         }
                     }).done((result) => {
                         if (result.succ) {
@@ -177,7 +171,7 @@
                             element.find('.trangthai').attr('class','trangthai text-warning').text('Chưa phản hồi');
                             element.find('.btnAction').removeClass('btn-danger').addClass('btn-primary').text('Nhấn để hoàn thành')
                             .off('click').click(() => {
-                                actionHoanThanh(quytrinh_id,element);
+                                actionHoanThanh(item,element);
                             });
                         }
                     });
@@ -185,10 +179,10 @@
             });
     }
 
-    function actionHoanThanh(quytrinh_id, element) {
-        mInput('Xác nhận hoàn thành quy trình','').textarea('Nhập ghi chú','Bạn có thể để trống phần này...',
+    function actionHoanThanh(item, element) {
+        mInput('Xác nhận đã sử dụng "' + item.sanpham + '"','').textarea('Nhập ghi chú','Bạn có thể để trống phần này...',
             () => {
-                sToast.confirm('Xác nhận hoàn thành quy trình này?','',
+                sToast.confirm('Xác nhận đã sử dụng?',item.sanpham,
                     (result) => {
                         if (result.isConfirmed) {
                             sToast.loading('Đang cập nhật dữ liệu. Vui lòng chờ...')
@@ -197,7 +191,7 @@
                                 type: 'get',
                                 dataType: 'json',
                                 data: {
-                                    quytrinh_id, thuaruong_id: thuaruong.id
+                                    quytrinh_id: item.id, thuaruong_id: thuaruong.id
                                 }
                             }).done((result) => {
                                 if (result.succ) {
@@ -205,7 +199,7 @@
                                     element.find('.trangthai').attr('class','trangthai text-success').text('Đã hoàn thành');
                                     element.find('.btnAction').removeClass('btn-primary').addClass('btn-danger').text('Nhấn Hủy Hoàn Thành')
                                         .off('click').click(() => {
-                                            actionHuyHoanThanh(quytrinh_id,element);
+                                            actionHuyHoanThanh(item,element);
                                     });
                                     $('#modalInput').modal('hide');
                                 }

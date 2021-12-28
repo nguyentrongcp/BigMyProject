@@ -29,6 +29,10 @@
                                         <i class="fa fa-refresh"></i>
                                     </button>
                                     @if(in_array('quy-trinh-lua.nong-dan.them-moi',$info->phanquyen) !== false)
+                                        <label class="btn bg-gradient-purple font-weight-bolder ml-1 mb-0" for="inpImport">
+                                            Import file Excel
+                                        </label>
+                                        <input class="d-none" id="inpImport" type="file" accept=".xlsx, .xls">
                                         <button class="btn bg-gradient-primary font-weight-bolder ml-1" data-toggle="modal" data-target="#modalThemMoi">
                                             Thêm Mới
                                         </button>
@@ -298,8 +302,155 @@
             </div>
         </div>
     </div>
+
+    <div class="modal fade" id="modalImport">
+        <div class="modal-dialog modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Chọn các cột tương ứng</h5>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group required">
+                        <label>Chọn Sheet</label>
+                        <select class="form-control selSheet"></select>
+                    </div>
+                    <div class="form-row">
+                        <div class="col">
+                            <div class="form-group required">
+                                <label>Tên nông dân</label>
+                                <select class="form-control selTen" data-title="tên"></select>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-group">
+                                <label>Danh xưng</label>
+                                <select class="form-control selDanhXung" data-title="danh xưng"></select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="col">
+                            <div class="form-group required">
+                                <label>Điện thoại</label>
+                                <select class="form-control selDienThoai" data-title="điện thoại"></select>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-group">
+                                <label>Điện thoại 2</label>
+                                <select class="form-control selDienThoai2" data-title="điện thoại 2"></select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="col">
+                            <div class="form-group">
+                                <label>Tỉnh</label>
+                                <select class="form-control selTinh" data-title="tỉnh"></select>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-group">
+                                <label>Huyện</label>
+                                <select class="form-control selHuyen" data-title="huyện"></select>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-group">
+                                <label>Xã</label>
+                                <select class="form-control selXa" data-title="xã"></select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="col">
+                            <div class="form-group">
+                                <label>Địa chỉ cụ thể</label>
+                                <select class="form-control selDiaChi" data-title="địa chỉ"></select>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-group">
+                                <label>Ghi chú</label>
+                                <select class="form-control selGhiChu" data-title="ghi chú"></select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="col">
+                            <div class="form-group">
+                                <label>Diện tích 1</label>
+                                <select class="form-control selDienTich1" data-title="diện tích 1"></select>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-group">
+                                <label>Ngày sạ 1</label>
+                                <select class="form-control selNgaySa1" data-title="ngày sạ 1"></select>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-group">
+                                <label>Ghi chú 1</label>
+                                <select class="form-control selGhiChu1" data-title="ghi chú 1"></select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="col">
+                            <div class="form-group">
+                                <label>Diện tích 2</label>
+                                <select class="form-control selDienTich2" data-title="diện tích 2"></select>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-group required">
+                                <label>Ngày sạ 2</label>
+                                <select class="form-control selNgaySa2" data-title="ngày sạ 2"></select>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-group">
+                                <label>Ghi chú 2</label>
+                                <select class="form-control selGhiChu2" data-title="ghi chú 2"></select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="col">
+                            <div class="form-group">
+                                <label>Diện tích 3</label>
+                                <select class="form-control selDienTich3" data-title="diện tích 3"></select>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-group required">
+                                <label>Ngày sạ 3</label>
+                                <select class="form-control selNgaySa3" data-title="ngày sạ 3"></select>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-group">
+                                <label>Ghi chú 3</label>
+                                <select class="form-control selGhiChu3" data-title="ghi chú 3"></select>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <strong>***Lưu ý:</strong>
+                        <span class="ml-1">Định dạng ngày theo mẫu ngày-tháng-năm (vd: 29-12-2021)</span>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn bg-gradient-primary btnSubmit">Xác Nhận</button>
+                    <button type="button" class="btn bg-gradient-secondary" data-dismiss="modal">Thoát</button>
+                </div>
+            </div>
+        </div>
+    </div>
 @stop
 
 @section('js-custom')
     @include('quanly.quytrinhlua.nongdan.js')
+    @include('quanly.quytrinhlua.nongdan.import')
 @stop

@@ -89,9 +89,9 @@
             ],
             height: '450px',
             movableColumns: false,
-            dataChanged: () => {
-                tblDanhSach.getColumns()[0].updateDefinition();
-            }
+            // dataChanged: () => {
+            //     tblDanhSach.getColumns()[0].updateDefinition();
+            // }
         });
         initSearchTable(tblDanhSach,['ten']);
     }
