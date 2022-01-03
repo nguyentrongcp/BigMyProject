@@ -9,6 +9,7 @@ use App\Models\HangHoaChiTiet;
 use App\Models\Phieu;
 use App\Models\PhieuChiTiet;
 use App\Models\QuyTrinhLua\NongDan;
+use DateTime;
 use Kreait\Firebase\Messaging\CloudMessage;
 
 class Funcs
@@ -258,5 +259,12 @@ class Funcs
         $response = curl_exec($ch);
         curl_close($ch);
         return $response;
+    }
+
+    public static function validateDate($date, $format = 'Y-m-d')
+    {
+        $d = DateTime::createFromFormat($format, $date);
+        // The Y ( 4 digits year ) returns TRUE for any integer with any number of digits so changing the comparison from == to === fixes the issue.
+        return $d && $d->format($format) === $date;
     }
 }

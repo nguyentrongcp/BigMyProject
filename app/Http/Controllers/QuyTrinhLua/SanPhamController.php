@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\QuyTrinhLua;
 
 use App\Functions\Funcs;
+use App\Functions\QuyTrinhLuaFuncs;
 use App\Http\Controllers\Controller;
 use App\Models\DanhMuc\DonViTinh;
 use App\Models\DanhMuc\HangHoaNhom;
@@ -37,7 +38,6 @@ class SanPhamController extends Controller
         $ten = $request->ten;
         $dongia = $request->dongia;
         $donvitinh = $request->donvitinh;
-        $phanloai = $request->phanloai;
         $nhom = $request->nhom;
         $ghichu = $request->ghichu ?? null;
         $dang = $request->dang ?? null;
@@ -66,13 +66,13 @@ class SanPhamController extends Controller
         }
 
         $model = new SanPham();
+        $model->ma = QuyTrinhLuaFuncs::getMaSanPham();
         $model->ten = $ten;
         $model->slug = Funcs::convertToSlug($ten);
         $model->donvitinh = $donvitinh;
         $model->dongia = $dongia;
         $model->ghichu = $ghichu;
         $model->nhom = $nhom;
-        $model->phanloai = $phanloai;
         $model->dang = $dang;
         $model->deleted_at = null;
 

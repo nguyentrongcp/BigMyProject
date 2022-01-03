@@ -50,10 +50,9 @@ class QuyTrinhController extends Controller
             unset($quytrinh_thuaruong[$key]);
         }
 
-        $sanphams = SanPham::withTrashed()->get(['id','ten','donvitinh','dongia']);
-        foreach($sanphams as $key => $sanpham) {
+        $sanphams = [];
+        foreach(SanPham::withTrashed()->get(['id','ten','donvitinh','dongia']) as $sanpham) {
             $sanphams[$sanpham->id] = $sanpham;
-            unset($sanphams[$key]);
         }
 
         foreach($models as $model) {
@@ -71,8 +70,9 @@ class QuyTrinhController extends Controller
     public function hoan_thanh(Request $request) {
         $quytrinh_id = $request->quytrinh_id ?? null;
         $thuaruong_id = $request->thuaruong_id ?? null;
+        $muavu_id = $request->muavu_id;
 
-        if ($quytrinh_id == null || $thuaruong_id == null ||
+        if ($quytrinh_id == null || $thuaruong_id == null || $muavu_id == null ||
             QuyTrinhThuaRuong::where(['quytrinh_id'=>$quytrinh_id,'thuaruong_id'=>$thuaruong_id])->count() > 0) {
             return [
                 'succ' => 0,
@@ -81,6 +81,7 @@ class QuyTrinhController extends Controller
         }
 
         $quytrinh_thuaruong = new QuyTrinhThuaRuong();
+        $quytrinh_thuaruong->muavu_id = $muavu_id;
         $quytrinh_thuaruong->quytrinh_id = $quytrinh_id;
         $quytrinh_thuaruong->thuaruong_id = $thuaruong_id;
         $quytrinh_thuaruong->ghichu = $request->ghichu ?? null;

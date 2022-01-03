@@ -62,7 +62,9 @@
                     $('#modalThemMoi input, #modalThemMoi textarea').val('').trigger('input');
                     lientuc ? $('#modalThemMoi .inpMa').focus() : $('#modalThemMoi').modal('hide');
                     autosize.update($('#modalThemMoi textarea'));
-                    tblDanhSach.addData(result.data.model,true);
+                    tblDanhSach.addData(result.data.model,true).then(() => {
+                        tblDanhSach.getColumns()[0].updateDefinition();
+                    });
                 }
                 else if (!isUndefined(result.type)) {
                     if (!isUndefined(result.erro)) {

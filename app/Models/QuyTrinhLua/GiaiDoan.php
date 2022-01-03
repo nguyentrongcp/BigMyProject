@@ -13,15 +13,6 @@ class GiaiDoan extends Model
     use softDeletes;
     protected $dates = ['deleted_at'];
     protected $table = 'quytrinhlua_giaidoan';
-    public $incrementing = false;
-
-    public static function boot() {
-        parent::boot();
-
-        static::creating(function ($model) {
-            $model->id = rand(1000000000,9999999999);
-        });
-    }
 
     protected function serializeDate(DateTimeInterface $date)
     {

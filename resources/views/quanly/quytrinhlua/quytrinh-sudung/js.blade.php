@@ -28,6 +28,10 @@
                     initSelGiaiDoan([]);
                 }
             }).trigger('change');
+            initDanhSach('phan');
+            setDataTable('Phân bón');
+            initDanhSach('thuoc');
+            setDataTable('Thuốc')
             $('#tabPhanBon').on('shown.bs.tab', () => {
                 if (table.phan == null) {
                     initDanhSach('phan');
@@ -421,13 +425,13 @@
                             + '"></i> ' + $(col).find('strong').text(),
                         action: () => {
                             if (visible) {
-                                table.phan.getColumn('donvitinh').hide();
-                                table.thuoc.getColumn('donvitinh').hide();
+                                table.phan.getColumn(field).hide();
+                                table.thuoc.getColumn(field).hide();
                                 views[field] = false;
                             }
                             else {
-                                table.phan.getColumn('donvitinh').show();
-                                table.thuoc.getColumn('donvitinh').show();
+                                table.phan.getColumn(field).show();
+                                table.thuoc.getColumn(field).show();
                                 views[field] = true;
                             }
                             localStorage.setItem('quytrinhlua.quytrinh.views', JSON.stringify(views))

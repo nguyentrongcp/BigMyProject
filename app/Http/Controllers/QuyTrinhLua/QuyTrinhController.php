@@ -43,10 +43,9 @@ class QuyTrinhController extends Controller
             ])->orderBy('tu')->orderBy('den')->get();
         }
 
-        $sanphams = SanPham::withTrashed()->get(['id','ten','donvitinh','dongia']);
-        foreach($sanphams as $key => $sanpham) {
+        $sanphams = [];
+        foreach(SanPham::withTrashed()->get(['id','ten','donvitinh','dongia']) as $sanpham) {
             $sanphams[$sanpham->id] = $sanpham;
-            unset($sanphams[$key]);
         }
 
         foreach($models as $model) {
@@ -114,7 +113,7 @@ class QuyTrinhController extends Controller
                 'erro' => 'Bạn chưa chọn sản phẩm'
             ];
         }
-        $sanpham = SanPham::withTrashed()->find($sanpham_id,['ten','donvitinh','phanloai','dongia']);
+        $sanpham = SanPham::withTrashed()->find($sanpham_id,['ten','donvitinh','dongia']);
         if ($sanpham == null) {
             return [
                 'succ' => 0,

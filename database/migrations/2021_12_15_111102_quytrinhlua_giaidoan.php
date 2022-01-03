@@ -13,8 +13,8 @@ class QuytrinhluaGiaidoan extends Migration
      */
     public function up()
     {
-        Schema::create('quytrinhlua_sanpham', function (Blueprint $table) {
-            $table->string('id',10)->primary();
+        Schema::create('quytrinhlua_giaidoan', function (Blueprint $table) {
+            $table->increments('id');
             $table->string('muavu_id',10);
             $table->string('ten');
             $table->integer('tu');
@@ -34,6 +34,6 @@ class QuytrinhluaGiaidoan extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('quytrinhlua_sanpham');
+        Schema::dropIfExists('quytrinhlua_giaidoan');
     }
 }

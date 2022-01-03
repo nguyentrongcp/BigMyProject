@@ -14,7 +14,7 @@ class QuytrinhluaThuaruong extends Migration
     public function up()
     {
         Schema::create('quytrinhlua_thuaruong', function (Blueprint $table) {
-            $table->string('id',10)->primary();
+            $table->increments('id');
             $table->float('dientich',8,1)->nullable();
             $table->string('ten');
             $table->string('nongdan_id',10);

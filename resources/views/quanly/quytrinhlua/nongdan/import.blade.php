@@ -104,9 +104,28 @@
         sToast.confirm('Xác nhận kết nhập dữ liệu nông dân?','',
             (confirmed) => {
                 if (confirmed.isConfirmed) {
+                    $('#modalImport').modal('hide');
+                    let import_id = renderID();
+                    Swal.fire({
+                        title: 'Đang xử lý. Vui lòng chờ...',
+                        html: 'Đã kết nhập được <b class="text-info"><span class="percent">0</span>%</b> (còn <b class="time">... phút</b> nữa)',
+                        timerProgressBar: true,
+                        allowOutsideClick: false,
+                        allowEnterKey: false,
+                        allowEscapeKey: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                            channel.bind('progress-import-' + import_id, function(data) {
+                                $(Swal.getHtmlContainer()).find('.percent').text(data.message.percent);
+                                $(Swal.getHtmlContainer()).find('.time').text(data.message.thoigian);
+                            })
+                        }
+                    });
                     let data = [];
                     _data.forEach((value) => {
+                        let stt = value['stt'];
                         let _object = {
+                            stt: isUndefined(stt) ? '' : stt,
                             ten: value[$('#modalImport .selTen').val()],
                             danhxung: value[$('#modalImport .selDanhXung').val()],
                             dienthoai: value[$('#modalImport .selDienThoai').val()],
@@ -138,33 +157,55 @@
                             data.push(item);
                         }
                     });
-                    Swal.fire({
-                        title: 'Đang xử lý. Vui lòng chờ...',
-                        html: 'Đã kết nhập được <b class="text-info"><span class="percent">50</span>%</b> (còn <b class="time">5 phút</b> nữa)',
-                        timerProgressBar: true,
-                        allowOutsideClick: false,
-                        allowEnterKey: false,
-                        allowEscapeKey: false,
-                        didOpen: () => {
-                            Swal.showLoading();
-                            let ajx = $.ajax({
-                                url: '/api/quan-ly/quy-trinh-lua/nong-dan/import',
-                                type: 'post',
-                                dataType: 'json',
-                                data: {
-                                    data: JSON.stringify(data)
-                                }
-                            }).done((result) => {
-
-                            });
-                            channel.unbind('progress-import-' + info.id);
-                            channel.bind('progress-import-' + info.id, function(data) {
-                                $(Swal.getHtmlContainer()).find('.percent').text(data.message.percent);
-                                $(Swal.getHtmlContainer()).find('.time').text(data.message.thoigian);
-                            })
+                    $.ajax({
+                        url: '/api/quan-ly/quy-trinh-lua/nong-dan/import',
+                        type: 'post',
+                        dataType: 'json',
+                        data: {
+                            data: JSON.stringify(data),
+                            import_id
+                        }
+                    }).done((result) => {
+                        channel.unbind('progress-import-' + import_id);
+                        if (result.succ) {
+                            if (result.data.errors.length > 0) {
+                                downloadErrorFile(result.data.errors);
+                            }
                         }
                     });
                 }
             })
+    }
+
+    function downloadErrorFile(data) {
+        let div_temp = $('<div id="div_temp"></div>');
+        $('body').append(div_temp);
+        let tbl_temp = new Tabulator("#div_temp", {
+            columns: [
+                {title: "STT", field: 'stt'},
+                {title: "Tên", field: "ten"},
+                {title: "Danh xưng", field: 'danhxung'},
+                {title: "Điện thoại", field: "dienthoai"},
+                {title: "Điện thoại 2", field: 'dienthoai2'},
+                {title: "Tỉnh", field: "tinh"},
+                {title: "Huyện", field: 'huyen'},
+                {title: "Xã", field: "xa"},
+                {title: "Địa chỉ", field: 'diachi'},
+                {title: "Ghi chú", field: "ghichu"},
+                {title: "Diện tích 1", field: 'dientich1'},
+                {title: "Ngày sạ 1", field: "ngaysa1"},
+                {title: "Ghi chú 1", field: 'ghichu1'},
+                {title: "Diện tích 2", field: "dientich2"},
+                {title: "Ngày sạ 2", field: 'ngaysa2'},
+                {title: "Ghi chú 2", field: "ghichu2"},
+                {title: "Diện tích 3", field: 'dientich3'},
+                {title: "Ngày sạ 3", field: "ngaysa3"},
+                {title: "Ghi chú 3", field: "ghichu3"},
+                {title: "Tên lỗi", field: "error"},
+            ],
+        });
+        tbl_temp.setData(data);
+        tbl_temp.download('xlsx','Danh sách lỗi.xlsx');
+        div_temp.remove();
     }
 </script>

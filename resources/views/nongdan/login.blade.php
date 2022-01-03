@@ -118,7 +118,7 @@
         sToast.loading('Đang kiểm tra thông tin tài khoản...');
 
         $.ajax({
-            url: '/api/quan-ly/nong-dan/dang-nhap',
+            url: '/api/nong-dan/dang-nhap',
             type: 'get',
             dataType: 'json',
             data: {

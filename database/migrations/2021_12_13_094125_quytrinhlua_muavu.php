@@ -14,7 +14,7 @@ class QuytrinhluaMuavu extends Migration
     public function up()
     {
         Schema::create('quytrinhlua_muavu', function (Blueprint $table) {
-            $table->string('id',10)->primary();
+            $table->increments('id');
             $table->string('ma');
             $table->string('ten');
             $table->date('ngaytao');

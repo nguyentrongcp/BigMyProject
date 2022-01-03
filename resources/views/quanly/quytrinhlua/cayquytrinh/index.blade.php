@@ -56,6 +56,19 @@
                                                 Quy Trình Sử Dụng Thuốc
                                             </a>
                                         </li>
+                                        <li class="nav-item ml-auto">
+                                            <div class="nav-link d-flex font-weight-bolder" role="tab" style="border: unset !important;">
+                                                <span>
+                                                    <i class="fas fa-user mr-1"></i>
+                                                    <strong class="text-info" id="lblSoNongDan">0</strong> nông dân
+                                                </span>
+                                                <span class="mx-2">/</span>
+                                                <span>
+                                                    <i class="fas fa-users mr-1"></i>
+                                                    <strong class="text-info" id="lblSoThuaRuong">0</strong> thửa ruộng
+                                                </span>
+                                            </div>
+                                        </li>
                                     </ul>
                                 </div>
                                 <div class="card-body">

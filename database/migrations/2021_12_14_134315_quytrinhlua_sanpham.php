@@ -14,7 +14,7 @@ class QuytrinhluaSanpham extends Migration
     public function up()
     {
         Schema::create('quytrinhlua_sanpham', function (Blueprint $table) {
-            $table->string('id',10)->primary();
+            $table->increments('id');
             $table->string('ma');
             $table->string('ten');
             $table->string('slug');
@@ -25,7 +25,6 @@ class QuytrinhluaSanpham extends Migration
             $table->text('thanhphan')->nullable();
             $table->text('congdung')->nullable();
             $table->text('hinhanh')->nullable();
-            $table->string('phanloai');
             $table->double('dongia',12,0);
             $table->text('ghichu')->nullable();
 

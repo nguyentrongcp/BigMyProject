@@ -4,6 +4,7 @@ namespace App\Http\Controllers\QuyTrinhLua;
 
 use App\Functions\Funcs;
 use App\Functions\Pusher;
+use App\Functions\QuyTrinhLuaFuncs;
 use App\Http\Controllers\Controller;
 use App\Models\DanhMuc\NhanVien;
 use App\Models\QuyTrinhLua\MuaVu;
@@ -119,6 +120,7 @@ class NongDanController extends Controller
         }
         while (NhanVien::find($model->id,'id') != null);
 
+        $model->ma = QuyTrinhLuaFuncs::getMaNongDan();
         $model->ten = $ten;
         $model->slug = Funcs::convertToSlug($ten);
         $model->danhxung = $danhxung;
@@ -174,83 +176,313 @@ class NongDanController extends Controller
     public function import(Request $request) {
         $data = json_decode($request->data);
         $nhanvien_id = Funcs::getNhanVienIDByToken($request->cookie('token'));
-        $listener = 'progress-import-'.$nhanvien_id;
+        $import_id = $request->import_id;
+        $listener = 'progress-import-'.$import_id;
         $time = time();
+        $length = count($data);
+        $phantram_hientai = -1;
+        $errors = [];
+        $ds_dienthoai = NongDan::pluck('dienthoai')->toArray();
+        $muavu = MuaVu::where('status',1)->orderByDesc('ngaytao')->first(['id','ten']);
 
         DB::beginTransaction();
-        foreach($data as $item) {
-            $model = new NongDan();
 
-            do {
-                $model->id = rand(1000000000,9999999999);
-            }
-            while (NhanVien::find($model->id,'id') != null || NongDan::find($model->id,'id') != null);
-            $diachi = '';
-            $diachi .= ($item->diachi != '' ? $item->diachi.', ' : '').($item->xa != '' ? $item->xa.', ' : '')
-                .($item->huyen != '' ? $item->huyen.', ' : '').($item->tinh ?? '');
-
-            $model->ten = $item->ten;
-            $model->slug = Funcs::convertToSlug($item->ten);
-            $model->danhxung = $item->danhxung;
-            $model->dienthoai = $item->dienthoai;
-            $model->dienthoai2 = $item->dienthoai2;
-            $model->diachi = $diachi ?? null;
-            $model->_diachi = $item->diachi ?? null;
-            $model->xa = $item->xa ?? null;
-            $model->huyen = $item->huyen ?? null;
-            $model->tinh = $item->tinh ?? null;
-            $model->ghichu = $item->ghichu ?? null;
-
-            try {
-                $model->save();
-                foreach($dsmuavus as $muavu) {
-                    $dataTable[] = [
-                        'id' => rand(1000000000,9999999999),
-                        'muavu_id' => $muavu->muavu_id,
-                        'ngaysa' => $muavu->ngaysa,
-                        'dientich' => $muavu->dientich,
-                        'nongdan_id' => $model->id,
-                        'nhanvien_id' => $nhanvien_id,
-                        'ten' => $muavu->ten,
-                        'created_at' => date('Y-m-d H:i:s'),
-                        'updated_at' => date('Y-m-d H:i:s')
-                    ];
-                }
-                if (count($dataTable) > 0) {
-                    DB::table('quytrinhlua_thuaruong')->insert($dataTable);
-                }
-                $model->muavu_hoatdong = count($dataTable);
-                DB::commit();
-                return [
-                    'succ' => 1,
-                    'noti' => 'Thêm nông dân mới thành công.',
-                    'data' => [
-                        'model' => $model
-                    ]
-                ];
-            }
-            catch (QueryException $exception) {
-                DB::rollBack();
-                return [
-                    'succ' => 0,
-                    'noti' => 'Thêm nông dân mới thất bại. Vui lòng thử lại!'
-                ];
-            }
-        }
-
-        for($i=1; $i<=100; $i++) {
-            sleep(1);
-            $khoangcach = time() - $time;
-            $thoigian = (int) (100*$khoangcach/$i);
-            $thoigian -= $khoangcach;
+        foreach($data as $stt => $item) {
+            $errorText = '';
+            $spring = time() - $time;
+            $tongthoigian = (int) ($spring * $length / ($stt + 1));
+            $thoigian = $tongthoigian - $spring;
             if ($thoigian > 60) {
                 $thoigian = ((int) ($thoigian/60)).' phút';
             }
             else {
                 $thoigian .= ' giây';
             }
-            event(new Pusher($listener,['percent' => $i, 'thoigian' => $thoigian]));
+            $percent = (int) (($stt + 1)/$length*100);
+            if ($percent != $phantram_hientai && $spring != 0) {
+                event(new Pusher($listener,['percent' => $percent, 'thoigian' => $thoigian]));
+                $phantram_hientai = $percent;
+            }
+
+            $checked = true;
+            if ($item->ten == '') {
+                $checked = false;
+                $errorText = 'Tên bị bỏ trống!';
+            }
+
+            if ($item->dienthoai == '') {
+                $checked = false;
+                $errorText = 'Số điện thoại bị bỏ trống!';
+            }
+
+            if (in_array($item->dienthoai,$ds_dienthoai) !== false) {
+                $checked = false;
+                $errorText = 'Số điện thoại đã tồn tại!';
+            }
+
+            if ($checked) {
+                $ngaysa1 = $item->ngaysa1 ?? null;
+                $ngaysa2 = $item->ngaysa2 ?? null;
+                $ngaysa3 = $item->ngaysa3 ?? null;
+
+                $diachi = '';
+                $diachi .= ($item->diachi != '' ? $item->diachi.', ' : '').($item->xa != '' ? $item->xa.', ' : '')
+                    .($item->huyen != '' ? $item->huyen.', ' : '').($item->tinh ?? '');
+
+                $model = new NongDan();
+                $model->ten = $item->ten;
+                $model->slug = Funcs::convertToSlug($item->ten);
+                $model->danhxung = $item->danhxung;
+                $model->dienthoai = $item->dienthoai;
+                $model->dienthoai2 = $item->dienthoai2;
+                $model->diachi = $diachi ?? null;
+                $model->_diachi = $item->diachi ?? null;
+                $model->xa = $item->xa ?? null;
+                $model->huyen = $item->huyen ?? null;
+                $model->tinh = $item->tinh ?? null;
+                $model->ghichu = $item->ghichu ?? null;
+
+                try {
+                    $model->save();
+                    if ($muavu != null) {
+                        if (Funcs::validateDate($ngaysa1,'d-m-Y')) {
+                            try {
+                                DB::table('quytrinhlua_thuaruong')->insert([
+                                    'dientich' => $item->dientich1 ?? null,
+                                    'nongdan_id' => $model->id,
+                                    'ten' => $muavu->ten.' 1',
+                                    'muavu_id' => $muavu->id,
+                                    'ngaysa' => date('Y-m-d',strtotime($ngaysa1)),
+                                    'ghichu' => $item->ghichu1 ?? null,
+                                    'nhanvien_id' => $nhanvien_id,
+                                    'created_at' => $model->created_at,
+                                    'updated_at' => $model->updated_at
+                                ]);
+                            }
+                            catch (QueryException $exception) {
+                                $errorText .= $errorText == '' ? '' : '; ';
+                                $errorText .= 'Lỗi thêm thửa ruộng 1';
+                            }
+                        }
+                        elseif (isset($item->ngaysa1)) {
+                            $errorText .= $errorText == '' ? '' : '; ';
+                            $errorText .= 'Lỗi định dạng thửa ruộng 1';
+                        }
+                        if (Funcs::validateDate($ngaysa2,'d-m-Y')) {
+                            try {
+                                DB::table('quytrinhlua_thuaruong')->insert([
+                                    'dientich' => $item->dientich2 ?? null,
+                                    'nongdan_id' => $model->id,
+                                    'ten' => $muavu->ten.' 2',
+                                    'muavu_id' => $muavu->id,
+                                    'ngaysa' => date('Y-m-d',strtotime($ngaysa2)),
+                                    'ghichu' => $item->ghichu2 ?? null,
+                                    'nhanvien_id' => $nhanvien_id,
+                                    'created_at' => $model->created_at,
+                                    'updated_at' => $model->updated_at
+                                ]);
+                            }
+                            catch (QueryException $exception) {
+                                $errorText .= $errorText == '' ? '' : '; ';
+                                $errorText .= 'Lỗi thêm thửa ruộng 2';
+                            }
+                        }
+                        elseif (isset($item->ngaysa2)) {
+                            $errorText .= $errorText == '' ? '' : '; ';
+                            $errorText .= 'Lỗi định dạng thửa ruộng 2';
+                        }
+                        if (Funcs::validateDate($ngaysa3,'d-m-Y')) {
+                            try {
+                                DB::table('quytrinhlua_thuaruong')->insert([
+                                    'dientich' => $item->dientich3 ?? null,
+                                    'nongdan_id' => $model->id,
+                                    'ten' => $muavu->ten.' 3',
+                                    'muavu_id' => $muavu->id,
+                                    'ngaysa' => date('Y-m-d',strtotime($ngaysa3)),
+                                    'ghichu' => $item->ghichu3 ?? null,
+                                    'nhanvien_id' => $nhanvien_id,
+                                    'created_at' => $model->created_at,
+                                    'updated_at' => $model->updated_at
+                                ]);
+                            }
+                            catch (QueryException $exception) {
+                                $errorText .= $errorText == '' ? '' : '; ';
+                                $errorText .= 'Lỗi thêm thửa ruộng 3';
+                            }
+                        }
+                        elseif (isset($item->ngaysa3)) {
+                            $errorText .= $errorText == '' ? '' : '; ';
+                            $errorText .= 'Lỗi định dạng thửa ruộng 3';
+                        }
+                    }
+                }
+                catch (QueryException $exception) {
+                    $errorText .= $errorText == '' ? '' : '; ';
+                    $errorText .= 'Lỗi thêm thông tin nông dân';
+                }
+            }
+            if ($errorText != '') {
+                $item->error = $errorText;
+                $errors[] = $item;
+            }
         }
+        DB::commit();
+        return [
+            'succ' => 1,
+            'noti' => 'Kết nhập dữ liệu thành công.',
+            'data' => [
+                'errors' => $errors
+            ]
+        ];
+    }
+
+    public function import2(Request $request) {
+        $data = json_decode($request->data);
+        $nhanvien_id = Funcs::getNhanVienIDByToken($request->cookie('token'));
+        $import_id = $request->import_id;
+        $listener = 'progress-import-'.$import_id;
+        $time = time();
+        $length = count($data);
+        $phantram_hientai = -1;
+        $errors = [];
+        $ds_dienthoai = NongDan::pluck('dienthoai')->toArray();
+        DB::beginTransaction();
+        $table_nongdan = [];
+        $table_thuaruong = [];
+        $muavu = MuaVu::where('status',1)->orderByDesc('ngaytao')->first(['id','ten']);
+        foreach($data as $stt => $item) {
+            $errorText = '';
+            $spring = time() - $time;
+            $tongthoigian = (int) ($spring * $length / ($stt + 1));
+            $thoigian = $tongthoigian - $spring;
+            if ($thoigian > 60) {
+                $thoigian = ((int) ($thoigian/60)).' phút';
+            }
+            else {
+                $thoigian .= ' giây';
+            }
+            $percent = (int) (($stt + 1)/$length*100);
+            if ($percent != $phantram_hientai && $spring != 0) {
+                event(new Pusher($listener,['percent' => $percent, 'thoigian' => $thoigian]));
+                $phantram_hientai = $percent;
+            }
+
+            $checked = true;
+            if ($item->ten == '') {
+                $checked = false;
+                $errorText = 'Tên bị bỏ trống!';
+            }
+
+            if ($item->dienthoai == '') {
+                $checked = false;
+                $errorText = 'Số điện thoại bị bỏ trống!';
+            }
+
+            if (in_array($item->dienthoai,$ds_dienthoai) !== false) {
+                $checked = false;
+                $errorText = 'Số điện thoại đã tồn tại!';
+            }
+
+            if ($checked) {
+                $ngaysa1 = $item->ngaysa1 ?? null;
+                $ngaysa2 = $item->ngaysa2 ?? null;
+                $ngaysa3 = $item->ngaysa3 ?? null;
+                $ds_dienthoai[] = $item->dienthoai;
+
+                $id = rand(1000000000,9999999999);
+                $diachi = '';
+                $diachi .= ($item->diachi != '' ? $item->diachi.', ' : '').($item->xa != '' ? $item->xa.', ' : '')
+                    .($item->huyen != '' ? $item->huyen.', ' : '').($item->tinh ?? '');
+
+                $table_nongdan[] = [
+                    'id' => $id,
+                    'ten' => $item->ten,
+                    'slug' => Funcs::convertToSlug($item->ten),
+                    'danhxung' => $item->danhxung,
+                    'dienthoai' => $item->dienthoai,
+                    'dienthoai2' => $item->dienthoai2,
+                    'diachi' => $diachi == '' ? null : $diachi,
+                    '_diachi' => $item->diachi ?? null,
+                    'xa' => $item->xa ?? null,
+                    'huyen' => $item->huyen ?? null,
+                    'tinh' => $item->tinh ?? null,
+                    'ghichu' => $item->ghichu ?? null,
+                    'created_at' => date('Y-m-d H:i:s'),
+                    'updated_at' => date('Y-m-d H:i:s')
+                ];
+
+                if ($muavu != null) {
+                    if (Funcs::validateDate($ngaysa1,'d-m-Y')) {
+                        $table_thuaruong[] = [
+                            'id' => rand(1000000000,9999999999),
+                            'dientich' => $item->dientich1 ?? null,
+                            'nongdan_id' => $id,
+                            'ten' => $muavu->ten.' 1',
+                            'muavu_id' => $muavu->id,
+                            'ngaysa' => date('Y-m-d',strtotime($ngaysa1)),
+                            'ghichu' => $item->ghichu1 ?? null,
+                            'nhanvien_id' => $nhanvien_id,
+                            'created_at' => date('Y-m-d H:i:s'),
+                            'updated_at' => date('Y-m-d H:i:s')
+                        ];
+                    }
+                    elseif (isset($item->ngaysa1)) {
+                        $errorText .= $errorText == '' ? '' : '; ';
+                        $errorText .= 'Lỗi định dạng thửa ruộng 1';
+                    }
+                    if (Funcs::validateDate($ngaysa2,'d-m-Y')) {
+                        $table_thuaruong[] = [
+                            'id' => rand(1000000000,9999999999),
+                            'dientich' => $item->dientich2 ?? null,
+                            'nongdan_id' => $id,
+                            'ten' => $muavu->ten.' 2',
+                            'muavu_id' => $muavu->id,
+                            'ngaysa' => date('Y-m-d',strtotime($ngaysa2)),
+                            'ghichu' => $item->ghichu2 ?? null,
+                            'nhanvien_id' => $nhanvien_id,
+                            'created_at' => date('Y-m-d H:i:s'),
+                            'updated_at' => date('Y-m-d H:i:s')
+                        ];
+                    }
+                    elseif (isset($item->ngaysa2)) {
+                        $errorText .= $errorText == '' ? '' : '; ';
+                        $errorText .= 'Lỗi định dạng thửa ruộng 2';
+                    }
+                    if (Funcs::validateDate($ngaysa3,'d-m-Y')) {
+                        $table_thuaruong[] = [
+                            'id' => rand(1000000000,9999999999),
+                            'dientich' => $item->dientich3 ?? null,
+                            'nongdan_id' => $id,
+                            'ten' => $muavu->ten.' 3',
+                            'muavu_id' => $muavu->id,
+                            'ngaysa' => date('Y-m-d',strtotime($ngaysa3)),
+                            'ghichu' => $item->ghichu3 ?? null,
+                            'nhanvien_id' => $nhanvien_id,
+                            'created_at' => date('Y-m-d H:i:s'),
+                            'updated_at' => date('Y-m-d H:i:s')
+                        ];
+                    }
+                    elseif (isset($item->ngaysa3)) {
+                        $errorText .= $errorText == '' ? '' : '; ';
+                        $errorText .= 'Lỗi định dạng thửa ruộng 3';
+                    }
+                }
+            }
+            if ($errorText != '') {
+                $item->error = $errorText;
+                $errors[] = $item;
+            }
+        }
+        DB::table('quytrinhlua_nongdan')->insert($table_nongdan);
+        DB::table('quytrinhlua_thuaruong')->insert($table_thuaruong);
+//        DB::commit();
+        return [
+            'succ' => 1,
+            'noti' => 'Kết nhập dữ liệu thành công.',
+            'data' => [
+                'errors' => $errors
+            ]
+        ];
     }
 
     public function cap_nhat(Request $request) {

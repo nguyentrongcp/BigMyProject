@@ -14,11 +14,13 @@ class QuytrinhluaQuytrinh extends Migration
     public function up()
     {
         Schema::create('quytrinhlua_quytrinh', function (Blueprint $table) {
-            $table->string('id',10)->primary();
+            $table->increments('id');
             $table->integer('tu');
             $table->integer('den');
             $table->text('congdung')->nullable();
+            $table->string('giaidoan_id',10);
             $table->string('giaidoan');
+            $table->string('phanloai');
             $table->string('sanpham_id',10);
             $table->decimal('soluong',8,2);
             $table->string('muavu_id',10);

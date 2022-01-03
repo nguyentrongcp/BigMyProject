@@ -15,7 +15,7 @@ class QuytrinhluaNongdan extends Migration
     public function up()
     {
         Schema::create('quytrinhlua_nongdan', function (Blueprint $table) {
-            $table->string('id',10)->primary();
+            $table->increments('id');
             $table->string('ma',8);
             $table->string('ten');
             $table->string('slug');
