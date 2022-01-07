@@ -15,7 +15,7 @@ class QuytrinhluaGiaidoan extends Migration
     {
         Schema::create('quytrinhlua_giaidoan', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('muavu_id',10);
+            $table->integer('muavu_id');
             $table->string('ten');
             $table->integer('tu');
             $table->integer('den');

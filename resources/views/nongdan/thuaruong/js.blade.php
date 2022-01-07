@@ -326,6 +326,7 @@
                                 if (result.succ) {
                                     data.toado = result.data.model.toado;
                                     container.find('.toado').removeClass('text-danger').addClass('text-success').text('Đã cập nhật')
+                                    container.find('.capnhat-toado').remove();
                                     if ($('#modalThongTin').hasClass('show')) {
                                         layThongTin(data,container);
                                     }

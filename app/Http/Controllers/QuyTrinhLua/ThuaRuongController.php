@@ -5,13 +5,18 @@ namespace App\Http\Controllers\QuyTrinhLua;
 use App\Functions\Funcs;
 use App\Functions\QuyTrinhLuaFuncs;
 use App\Http\Controllers\Controller;
+use App\Models\DanhMuc\NhanVien;
+use App\Models\QuyTrinhLua\GiaiDoan;
+use App\Models\QuyTrinhLua\GiaiDoanPhanHoi;
 use App\Models\QuyTrinhLua\MuaVu;
+use App\Models\QuyTrinhLua\NongDan;
 use App\Models\QuyTrinhLua\QuyTrinhThuaRuong;
 use App\Models\QuyTrinhLua\ThuaRuong;
 use App\Models\QuyTrinhLua\QuyTrinh;
 use App\Models\QuyTrinhLua\SanPham;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ThuaRuongController extends Controller
 {
@@ -20,8 +25,17 @@ class ThuaRuongController extends Controller
             abort(404);
         }
 
+        $thuaruong = ThuaRuong::find($thuaruong_id);
+        if ($thuaruong == null) {
+            abort(404);
+        }
+        $nongdan = NongDan::find($thuaruong->nongdan_id);
+        $muavu = MuaVu::find($thuaruong->muavu_id);
+
         return view('quanly.quytrinhlua.thuaruong.index', [
-            'thuaruong_id' => $thuaruong_id
+            'thuaruong' => $thuaruong,
+            'nongdan' => $nongdan,
+            'muavu' => $muavu
         ]);
     }
 
@@ -37,38 +51,73 @@ class ThuaRuongController extends Controller
         $thuaruong_id = $request->thuaruong_id;
 
         if ($thuaruong_id == null) {
-            return [];
+            return [
+                'data' => [
+                    'danhsach' => []
+                ]
+            ];
         }
 
         $thuaruong = ThuaRuong::find($thuaruong_id,['muavu_id']);
         if ($thuaruong == null) {
-            return [];
+            return [
+                'data' => [
+                    'danhsach' => []
+                ]
+            ];
         }
         $muavu_id = $thuaruong->muavu_id;
         $models = QuyTrinh::where('muavu_id',$muavu_id)->orderBy('phanloai')->orderBy('tu')->orderBy('den')->get();
 
-        $sanphams = SanPham::withTrashed()->get(['id','ten','donvitinh','dongia']);
-        foreach($sanphams as $key => $sanpham) {
+        $sanphams = [];
+        foreach(SanPham::withTrashed()->get(['id','ten','donvitinh','dongia']) as $sanpham) {
             $sanphams[$sanpham->id] = $sanpham;
-            unset($sanphams[$key]);
         }
 
-        $quytrinh_thuaruong = QuyTrinhThuaRuong::where('thuaruong_id',$thuaruong_id)->get();
-
-        foreach($quytrinh_thuaruong as $key => $item) {
+        $quytrinh_thuaruong = [];
+        foreach(QuyTrinhThuaRuong::where('thuaruong_id',$thuaruong_id)->get() as $item) {
             $quytrinh_thuaruong[$item->quytrinh_id] = $item;
-            unset($quytrinh_thuaruong[$key]);
         }
 
+        $giaidoans = [];
         foreach($models as $model) {
             $model->sanpham = $sanphams[$model->sanpham_id]->ten;
             $model->donvitinh = $sanphams[$model->sanpham_id]->donvitinh;
             $model->dongia = $sanphams[$model->sanpham_id]->dongia;
             $model->thanhtien = (float) $model->dongia * (float) $model->soluong;
-            $model->quytrinh_thuaruong = $quytrinh_thuaruong[$model->id] ?? null;
+            $model->quytrinh_thuaruong = $quytrinh_thuaruong[$model->id] ?? [];
+            if (!isset($giaidoans[$model->giaidoan_id])) {
+                $giaidoans[$model->giaidoan_id] = [];
+            }
+            $giaidoans[$model->giaidoan_id][] = $model;
         }
 
-        return $models;
+        $results = [];
+        foreach(GiaiDoan::where('muavu_id',$muavu_id)->orderBy('phanloai')->orderBy('tu')
+                    ->orderBy('den')->get(['id','muavu_id','ten','tu','den','phanloai']) as $item) {
+            $item->quytrinhs = $giaidoans[$item->id] ?? [];
+            $item->phanhois = GiaiDoanPhanHoi::where([
+                'giaidoan_id' => $item->id,
+                'thuaruong_id' => $thuaruong_id
+            ])->orderBy('created_at')->get();
+            $nhanvien_ids = GiaiDoanPhanHoi::where([
+                'giaidoan_id' => $item->id,
+                'thuaruong_id' => $thuaruong_id
+            ])->pluck('nhanvien_id');
+            $nhanviens = NhanVien::withTrashed()->whereIn('id',$nhanvien_ids)->pluck('ten','id');
+            foreach($item->phanhois as $phanhoi) {
+                if ($phanhoi->nhanvien_id != null) {
+                    $phanhoi->nhanvien = $nhanviens[$phanhoi->nhanvien_id] ?? 'Chưa xác định';
+                }
+            }
+            $results[] = $item;
+        }
+
+        return [
+            'data' => [
+                'danhsach' => $results
+            ]
+        ];
     }
 
     public function danh_sach(Request $request) {
@@ -306,6 +355,90 @@ class ThuaRuongController extends Controller
             return [
                 'succ' => 0,
                 'noti' => 'Phục hồi thông tin thửa ruộng thất bại. Vui lòng thử lại sau!'
+            ];
+        }
+    }
+
+    public function traloi_phanhoi(Request $request) {
+        $giaidoan_id = $request->giaidoan_id ?? null;
+        $thuaruong_id = $request->thuaruong_id ?? null;
+        $noidung = $request->noidung ?? '';
+        $nhanvien = Funcs::getNhanVienByToken($request->cookie('token'),['id','ten']);
+        $nongdan_id = ThuaRuong::find($thuaruong_id,'nongdan_id')->nongdan_id;
+
+        if ($giaidoan_id == null || $thuaruong_id == null || $noidung == '') {
+            return [
+                'succ' => 0,
+                'noti' => 'Dữ liệu không hợp lệ!'
+            ];
+        }
+
+        $model = new GiaiDoanPhanHoi();
+        $model->giaidoan_id = $giaidoan_id;
+        $model->thuaruong_id = $thuaruong_id;
+        $model->nhanvien_id = $nhanvien->id;
+        $model->noidung = $noidung;
+
+        try {
+            $model->save();
+            $tieude = $nhanvien->ten.' đã trả lời phản hồi của bạn';
+            DB::table('quytrinhlua_thongbao')->insert([
+                'nongdan_id' => $nongdan_id,
+                'nhanvien_id' => $nhanvien->id,
+                'giaidoan_id' => $giaidoan_id,
+                'phanhoi_id' => $model->id,
+                'tieude' => 'đã trả lời phản hồi của bạn',
+                'noidung' => $noidung,
+                'loai' => 'phanhoi',
+                'created_at' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s')
+            ]);
+            $thongbao = [
+                [
+                    'topic' => $nongdan_id,
+                    'tieude' => $tieude,
+                    'noidung' => $noidung
+                ]
+            ];
+            return [
+                'succ' => 1,
+                'noti' => 'Trả lời phản hồi thành công.',
+                'data' => [
+                    'model' => $model,
+                    'thongbao' => $thongbao
+                ]
+            ];
+        }
+        catch (QueryException $exception) {
+            return [
+                'succ' => 0,
+                'noti' => 'Trả lời phản hồi thất bại. Vui lòng thử lại sau!',
+                'mess' => $exception->getMessage()
+            ];
+        }
+    }
+
+    public function xoa_phan_hoi(Request $request) {
+        $phanhoi_id = $request->phanhoi_id ?? null;
+        if ($phanhoi_id == null) {
+            return [
+                'succ' => 0,
+                'noti' => 'Dữ liệu đầu vào không hợp lệ!'
+            ];
+        }
+
+        $phanhoi = GiaiDoanPhanHoi::find($phanhoi_id);
+
+        if ($phanhoi->delete()) {
+            return [
+                'succ' => 1,
+                'noti' => 'Xóa phản hồi thành công.'
+            ];
+        }
+        else {
+            return [
+                'succ' => 0,
+                'noti' => 'Xóa phản hồi thất bại. Vui lòng thử lại sau!'
             ];
         }
     }

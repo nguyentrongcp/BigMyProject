@@ -3,7 +3,31 @@
 @section('breadcrumb')
     <li class="breadcrumb-item"><a href="#">Home</a></li>
     <li class="breadcrumb-item">Quy Trình Lúa</li>
-    <li class="breadcrumb-item active">Anh Nông Dân Số 1 / Mùa Vụ Đông Xuân 2021</li>
+    <li class="breadcrumb-item">Cây Quy Trình</li>
+    <li class="breadcrumb-item active">{{ $muavu->ten }} | {{ $thuaruong->ten }} | {{ $nongdan->ten }}</li>
+@stop
+
+@section('style-custom')
+    <style>
+        .boxPhanHoi .item-phanhoi:not(:first-child) {
+            border-top: 1px solid #ebebeb;
+            padding-top: 0.25rem;
+            margin-top: 0.25rem;
+        }
+        .boxPhanHoi .item-phanhoi .btnXoa {
+            display: none;
+        }
+        .boxPhanHoi .item-phanhoi:last-child.reply .btnXoa {
+            display: block;
+        }
+        .boxPhanHoi .item-phanhoi .thoigian {
+            margin-left: auto;
+            font-size: 12px;
+        }
+        .boxPhanHoi .item-phanhoi.reply .ten {
+            color: #007bff !important;
+        }
+    </style>
 @stop
 
 @section('body')

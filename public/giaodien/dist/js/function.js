@@ -8,7 +8,7 @@ function renderID() {
 function isUndefined(value) {
     return typeof(value) === 'undefined';
 }
-function doi_ngay(thoigian, co_gio = true) {
+function doi_ngay(thoigian, co_gio = true, fullGio = true) {
     if (isUndefined(thoigian)) {
         return '';
     }
@@ -19,7 +19,12 @@ function doi_ngay(thoigian, co_gio = true) {
     let ngay = thoigian[0].split('-');
     let gio = '';
     if (thoigian.length > 1) {
-        gio = ' ' + thoigian[1];
+        let _gio = thoigian[1];
+        if (!fullGio) {
+            _gio = _gio.split(':');
+            _gio = [_gio[0],_gio[1]].join(':');
+        }
+        gio = ' ' + _gio;
     }
 
     if (co_gio) {

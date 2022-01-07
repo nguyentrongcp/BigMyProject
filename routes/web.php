@@ -36,6 +36,8 @@ Route::prefix('nong-dan')->group(function() {
             ->name('nong-dan.thua-ruong');
         Route::get('quy-trinh', [\App\Http\Controllers\NongDan\QuyTrinhController::class, 'index'])
             ->name('nong-dan.quy-trinh');
+        Route::get('quytrinh-hientai', [\App\Http\Controllers\NongDan\QuyTrinhController::class, 'index_hientai'])
+            ->name('nong-dan.quytrinh-hientai');
     });
 });
 

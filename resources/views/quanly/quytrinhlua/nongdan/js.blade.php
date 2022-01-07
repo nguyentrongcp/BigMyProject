@@ -253,7 +253,9 @@
                     $('#modalThemThuaRuong input:not([type=date]), #modalThemThuaRuong textarea').val('').trigger('input');
                     autosize.update($('#modalThemThuaRuong textarea'));
                     if ($('#modalDanhSachMuaVu').hasClass('show')) {
-                        tblDanhSachMuaVu.addData(result.data.model,true);
+                        tblDanhSachMuaVu.addData(result.data.model,true).then(() => {
+                            tblDanhSachMuaVu.getColumns()[0].updateDefinition();
+                        });
                     }
                     $('#modalThemThuaRuong').modal('hide');
                 }

@@ -25,6 +25,7 @@ use App\Http\Controllers\LoginController;
 use App\Http\Controllers\NhapHang\DanhSachController;
 use App\Http\Controllers\NhapHang\TaoPhieuController;
 use App\Http\Controllers\PhieuController;
+use App\Http\Controllers\QuyTrinhLua\ThongBaoController;
 use App\Http\Controllers\QuyTrinhLua\ThuaRuongController;
 use App\Http\Controllers\QuyTrinhLua\QuyTrinhController;
 use App\Http\Controllers\QuyTrinhLua\SanPhamController;
@@ -63,8 +64,15 @@ Route::prefix('nong-dan')->group(function() {
 
     Route::prefix('quy-trinh')->group(function() {
         Route::get('danh-sach',[\App\Http\Controllers\NongDan\QuyTrinhController::class,'danh_sach']);
+        Route::get('danhsach-hientai',[\App\Http\Controllers\NongDan\QuyTrinhController::class,'danhsach_hientai']);
         Route::get('hoan-thanh',[\App\Http\Controllers\NongDan\QuyTrinhController::class,'hoan_thanh']);
         Route::get('huy',[\App\Http\Controllers\NongDan\QuyTrinhController::class,'huy']);
+        Route::get('gui-phan-hoi',[\App\Http\Controllers\NongDan\QuyTrinhController::class,'gui_phan_hoi']);
+        Route::get('xoa-phan-hoi',[\App\Http\Controllers\NongDan\QuyTrinhController::class,'xoa_phan_hoi']);
+    });
+
+    Route::prefix('thong-bao')->group(function() {
+        Route::get('danh-sach',[ThongBaoController::class,'danh_sach']);
     });
 });
 
@@ -129,6 +137,8 @@ Route::prefix('quan-ly')->group(function() {
                 Route::get('cap-nhat',[ThuaRuongController::class, 'cap_nhat']);
                 Route::get('xoa',[ThuaRuongController::class, 'xoa']);
                 Route::get('phuc-hoi',[ThuaRuongController::class, 'phuc_hoi']);
+                Route::get('traloi-phanhoi',[ThuaRuongController::class, 'traloi_phanhoi']);
+                Route::get('xoa-phan-hoi',[ThuaRuongController::class, 'xoa_phan_hoi']);
             });
         });
         Route::prefix('danh-muc')->group(function() {

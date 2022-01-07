@@ -121,5 +121,42 @@
         .card.card-outline-tabs .card-header a:hover {
             border-top: 3px solid #007bff;
         }
+
+        .font-size-mobile {
+            font-size: 14px !important;
+        }
+        .font-size-btn-sm-mobile {
+            font-size: 12px !important;
+        }
+
+        #dropdownThongBao {
+            max-height: calc(100vh - 200px);
+            overflow-y: auto;
+        }
+        #dropdownThongBao .dropdown-header {
+            font-weight: bolder;
+            color: #6c757d;
+        }
+        #dropdownThongBao .dropdown-item > i {
+            width: 20px;
+        }
+        #dropdownThongBao .dropdown-item.thongbao:not(:active) .tieude {
+            color: #6c757d;
+        }
+        #dropdownThongBao .dropdown-item.quytrinh .tieude {
+            font-weight: bolder;
+        }
+        #dropdownThongBao .dropdown-item.quytrinh .noidung .congdung {
+            text-align: justify;
+        }
+        #dropdownThongBao .dropdown-item.quytrinh:not(:active) .tieude {
+            color: #007bff;
+        }
+        #dropdownThongBao .dropdown-item.quytrinh:not(:active) .soluong {
+            color: #17a2b8;
+        }
+        #dropdownThongBao .dropdown-item .dropdown-divider {
+            margin: 0.25rem 0;
+        }
     </style>
 </head>

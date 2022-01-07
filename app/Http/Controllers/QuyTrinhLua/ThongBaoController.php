@@ -1,0 +1,66 @@
+<?php
+
+namespace App\Http\Controllers\QuyTrinhLua;
+
+use App\Functions\QuyTrinhLuaFuncs;
+use App\Http\Controllers\Controller;
+use App\Models\DanhMuc\NhanVien;
+use App\Models\QuyTrinhLua\GiaiDoan;
+use App\Models\QuyTrinhLua\MuaVu;
+use App\Models\QuyTrinhLua\QuyTrinh;
+use App\Models\QuyTrinhLua\SanPham;
+use App\Models\QuyTrinhLua\ThongBao;
+use App\Models\QuyTrinhLua\ThuaRuong;
+use Illuminate\Http\Request;
+
+class ThongBaoController extends Controller
+{
+    public function danh_sach(Request $request) {
+        $nongdan_id = QuyTrinhLuaFuncs::getNongDanIDByToken($request->cookie('token'));
+
+        $thongbaos = [];
+        foreach(ThongBao::where([
+            'nongdan_id' => $nongdan_id,
+            'is_viewed' => 0,
+            'loai' => 'phanhoi'
+        ])->get() as $item) {
+            $item->nhanvien = NhanVien::withTrashed()->find($item->nhanvien_id,'ten')->ten;
+            $thongbaos[] = $item;
+        }
+
+        $quytrinhs = [];
+        $muavu_ids = MuaVu::where('status',1)->pluck('id');
+        $thuaruongs = ThuaRuong::where('nongdan_id',$nongdan_id)
+            ->whereIn('muavu_id',$muavu_ids)->get(['muavu_id','ngaysa','id']);
+        foreach($thuaruongs as $thuaruong) {
+            $songay = (strtotime(date('Y-m-d')) - strtotime($thuaruong->ngaysa))/86400;
+            $giaidoans = GiaiDoan::where('muavu_id',$thuaruong->muavu_id)->where('tu','<=',$songay)
+                ->where('den','>=',$songay)->orderBy('tu')->orderBy('den')->get();
+            foreach($giaidoans as $giaidoan) {
+                $_quytrinhs = QuyTrinh::where([
+                    'muavu_id' => $thuaruong->muavu_id,
+                    'giaidoan_id' => $giaidoan->id
+                ])->get();
+                foreach($_quytrinhs as $quytrinh) {
+                    $sanpham = SanPham::withTrashed()->find($quytrinh->sanpham_id);
+                    $quytrinh->sanpham = $sanpham->ten;
+                    $quytrinh->donvitinh = $sanpham->donvitinh;
+                }
+                if (count($_quytrinhs) > 0) {
+                    $quytrinhs[] = [
+                        'thuaruong_id' => $thuaruong->id,
+                        'giaidoan_id' => $giaidoan->id,
+                        'danhsach' => $_quytrinhs
+                    ];
+                }
+            }
+        }
+
+        return [
+            'data' => [
+                'quytrinhs' => $quytrinhs,
+                'thongbaos' => $thongbaos
+            ]
+        ];
+    }
+}

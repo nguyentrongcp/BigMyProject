@@ -64,6 +64,9 @@
                 $('#modalInput .value').addClass('is-invalid');
                 $('#modalInput .value').focus();
             }
+            if (result.succ && $('#modalInput.show').length > 0) {
+                $('#modalInput').modal('hide');
+            }
         },
         error: function (e) {
             if (e.status !== 0) {
@@ -103,7 +106,7 @@
                             type: 'thongbao-remove'
                         }));
                     }
-                    location.href = '{{ route('mobile.dang-nhap') }}';
+                    location.href = '{{ route('nong-dan.dang-nhap') }}';
                 }
             })
     })
@@ -168,6 +171,87 @@
     function testAppMobile() {
         alert(Cookies.get('token'));
         // window.ReactNativeWebView.postMessage(JSON.stringify({type: 'download', url: 'https://hailua.center/qrcode-diemdanh/LaiVung.png'}));
+    }
+
+    initThongBao();
+    function initThongBao() {
+        $('#dropdownThongBao').empty();
+        $.ajax({
+            url: '/api/nong-dan/thong-bao/danh-sach',
+            type: 'get',
+            dataType: 'json',
+        }).done((result) => {
+            let thongbaos = result.data.thongbaos;
+            let quytrinhs = result.data.quytrinhs;
+            if (thongbaos.length === 0 && quytrinhs.length === 0) {
+                $('#dropdownThongBao').append('' +
+                    '<span class="dropdown-item dropdown-header text-secondary font-weight-bolder">' +
+                    'Chưa có thông báo mới' +
+                    '</span>');
+            }
+            else {
+                if (thongbaos.length > 0) {
+                    $('#dropdownThongBao').append('' +
+                        '<span class="dropdown-item dropdown-header">' +
+                        thongbaos.length + ' thông báo chưa đọc' +
+                        '</span>' +
+                        '<div class="dropdown-divider"></div>');
+                    thongbaos.forEach((thongbao, stt) => {
+                        let item = $('' +
+                            '<div class="dropdown-item thongbao">' +
+                            '   <div class="text-wrap font-size-mobile text-justify">' +
+                            '       <span class="tieude">' +
+                            '           <strong>' + thongbao.nhanvien + '</strong> ' + thongbao.tieude + ': </span>' +
+                            '       </span>' +
+                            '       <span class="noidung">' + thongbao.noidung + '</span>' +
+                            '   </div>' +
+                            '</div>');
+                        if (stt > 0) {
+                            $('#dropdownThongBao').append('<div class="dropdown-divider"></div>');
+                        }
+                        $('#dropdownThongBao').append(item);
+                    })
+                }
+                if (quytrinhs.length > 0) {
+                    if (thongbaos.length > 0) {
+                        $('#dropdownThongBao').append('<div class="dropdown-divider"></div>');
+                    }
+                    let header = $('<span class="dropdown-item dropdown-header"></span>');
+                    $('#dropdownThongBao').append(header).append('<div class="dropdown-divider"></div>');
+                    let soluong = 0;
+                    quytrinhs.forEach((_quytrinh, stt) => {
+                        soluong += _quytrinh.danhsach.length;
+                        let item = $('' +
+                            '<div class="dropdown-item quytrinh"></div>');
+                        _quytrinh.danhsach.forEach((quytrinh, key) => {
+                            let element = $('' +
+                                '<div class="text-wrap font-size-mobile d-flex flex-column">' +
+                                '   <div class="tieude">' + quytrinh.sanpham + '</div>' +
+                                '   <div class="noidung">' +
+                                '       <div class="congdung">' + quytrinh.congdung + '</div>' +
+                                '       <div class="text-right">Số lượng/ha: <strong class="soluong">' + quytrinh.soluong +
+                                '</strong> ' + quytrinh.donvitinh + '</div>' +
+                                '   </div>' +
+                                '</div>');
+                            if (key > 0) {
+                                item.append('<div class="dropdown-divider"></div>')
+                            }
+                            item.append(element);
+                        })
+                        if (stt > 0) {
+                            $('#dropdownThongBao').append('<div class="dropdown-divider"></div>')
+                        }
+                        $('#dropdownThongBao').append(item);
+                        item.click(() => {
+                            location.href = '/nong-dan/quy-trinh?thuaruong_id=' + _quytrinh.thuaruong_id
+                                + '&giaidoan_id=' + _quytrinh.giaidoan_id
+                        })
+                    });
+                    header.text(soluong + ' quy trình trong hôm nay');
+                    $('#lblSoThongBao').text(soluong + thongbaos.length);
+                }
+            }
+        });
     }
 </script>
 

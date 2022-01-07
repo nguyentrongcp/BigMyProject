@@ -230,6 +230,7 @@ class NongDanController extends Controller
                     .($item->huyen != '' ? $item->huyen.', ' : '').($item->tinh ?? '');
 
                 $model = new NongDan();
+                $model->ma = QuyTrinhLuaFuncs::getMaNongDan();
                 $model->ten = $item->ten;
                 $model->slug = Funcs::convertToSlug($item->ten);
                 $model->danhxung = $item->danhxung;
@@ -250,7 +251,7 @@ class NongDanController extends Controller
                                 DB::table('quytrinhlua_thuaruong')->insert([
                                     'dientich' => $item->dientich1 ?? null,
                                     'nongdan_id' => $model->id,
-                                    'ten' => $muavu->ten.' 1',
+                                    'ten' => $muavu->ten.' (1)',
                                     'muavu_id' => $muavu->id,
                                     'ngaysa' => date('Y-m-d',strtotime($ngaysa1)),
                                     'ghichu' => $item->ghichu1 ?? null,
@@ -273,7 +274,7 @@ class NongDanController extends Controller
                                 DB::table('quytrinhlua_thuaruong')->insert([
                                     'dientich' => $item->dientich2 ?? null,
                                     'nongdan_id' => $model->id,
-                                    'ten' => $muavu->ten.' 2',
+                                    'ten' => $muavu->ten.' (2)',
                                     'muavu_id' => $muavu->id,
                                     'ngaysa' => date('Y-m-d',strtotime($ngaysa2)),
                                     'ghichu' => $item->ghichu2 ?? null,
@@ -296,7 +297,7 @@ class NongDanController extends Controller
                                 DB::table('quytrinhlua_thuaruong')->insert([
                                     'dientich' => $item->dientich3 ?? null,
                                     'nongdan_id' => $model->id,
-                                    'ten' => $muavu->ten.' 3',
+                                    'ten' => $muavu->ten.' (3)',
                                     'muavu_id' => $muavu->id,
                                     'ngaysa' => date('Y-m-d',strtotime($ngaysa3)),
                                     'ghichu' => $item->ghichu3 ?? null,

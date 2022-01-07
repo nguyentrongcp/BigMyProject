@@ -49,6 +49,14 @@
                 <p class="text-center">Xin chào, <strong class="title">NGUYỄN ĐÌNH TRỌNG</strong></p>
                 <div class="box-menu">
                     <div class="item">
+                        <div data-href="{{ route('nong-dan.quytrinh-hientai') }}"
+                             class="{{ url()->current() == route('nong-dan.quytrinh-hientai') ? ' active' : '' }}"
+                             data-title="Quy Trình Hôm Nay">
+                            <i class="fa fa-american-sign-language-interpreting text-success"></i>
+                            <span>Quy Trình Hôm Nay</span>
+                        </div>
+                    </div>
+                    <div class="item">
                         <div data-href="{{ route('nong-dan.thua-ruong') }}"
                              class="{{ url()->current() == route('nong-dan.thua-ruong') ? ' active' : '' }}"
                              data-title="Danh Mục Thửa Ruộng">

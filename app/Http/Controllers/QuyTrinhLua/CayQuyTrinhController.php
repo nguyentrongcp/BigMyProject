@@ -5,6 +5,7 @@ namespace App\Http\Controllers\QuyTrinhLua;
 use App\Functions\Funcs;
 use App\Http\Controllers\Controller;
 use App\Models\QuyTrinhLua\GiaiDoan;
+use App\Models\QuyTrinhLua\GiaiDoanPhanHoi;
 use App\Models\QuyTrinhLua\MuaVu;
 use App\Models\QuyTrinhLua\QuyTrinh;
 use App\Models\QuyTrinhLua\QuyTrinhThuaRuong;
@@ -28,7 +29,7 @@ class CayQuyTrinhController extends Controller
             return [];
         }
         $sothuaruong = ThuaRuong::where('muavu_id',$muavu_id)->count('id');
-        $sonongdan = ThuaRuong::where('muavu_id',$muavu_id)->groupBy('nongdan_id')->count('nongdan_id');
+        $sonongdan = ThuaRuong::where('muavu_id',$muavu_id)->groupBy('nongdan_id')->get('id');
         $models = QuyTrinh::where('muavu_id',$muavu_id)->orderBy('phanloai')->orderBy('tu')->orderBy('den')->get();
 
         $sanphams = [];
@@ -68,13 +69,17 @@ class CayQuyTrinhController extends Controller
                 }
             }
             $item->quytrinhs = $giaidoans[$item->id] ?? [];
+            $max_phanhois = GiaiDoanPhanHoi::where('giaidoan_id',$item->id)->selectRaw('max(id) as max_id')
+                ->groupBy('thuaruong_id')->pluck('max_id');
+            $item->tongso_phanhoi = GiaiDoanPhanHoi::where('giaidoan_id',$item->id)->whereNotNull('nongdan_id')->count();
+            $item->phanhoi_moi = GiaiDoanPhanHoi::whereIn('id',$max_phanhois)->whereNotNull('nongdan_id')->count();
             $results[] = $item;
         }
 
         return [
             'data' => [
                 'sothuaruong' => $sothuaruong,
-                'sonongdan' => $sonongdan,
+                'sonongdan' => count($sonongdan),
                 'danhsach' => $results
             ]
         ];

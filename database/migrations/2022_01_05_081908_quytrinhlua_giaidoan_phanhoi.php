@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class QuytrinhluaQuytrinh extends Migration
+class QuytrinhluaGiaidoanPhanhoi extends Migration
 {
     /**
      * Run the migrations.
@@ -13,18 +13,13 @@ class QuytrinhluaQuytrinh extends Migration
      */
     public function up()
     {
-        Schema::create('quytrinhlua_quytrinh', function (Blueprint $table) {
+        Schema::create('quytrinhlua_giaidoan_phanhoi', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('tu');
-            $table->integer('den');
-            $table->text('congdung')->nullable();
             $table->integer('giaidoan_id');
-            $table->string('giaidoan');
-            $table->string('phanloai');
-            $table->integer('sanpham_id');
-            $table->decimal('soluong',8,2);
-            $table->integer('muavu_id');
-            $table->text('ghichu')->nullable();
+            $table->string('thuaruong_id');
+            $table->integer('nongdan_id')->nullable();
+            $table->string('nhanvien_id',10)->nullable();
+            $table->text('noidung');
 
             $table->dateTime('created_at');
             $table->dateTime('updated_at');
@@ -39,6 +34,6 @@ class QuytrinhluaQuytrinh extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('quytrinhlua_quytrinh');
+        Schema::dropIfExists('quytrinhlua_giaidoan_phanhoi');
     }
 }

@@ -15,8 +15,8 @@ class QuytrinhluaQuytrinhThuaruong extends Migration
     {
         Schema::create('quytrinhlua_quytrinh_thuaruong', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('quytrinh_id',10);
-            $table->string('thuaruong_id',10);
+            $table->integer('quytrinh_id');
+            $table->integer('thuaruong_id');
             $table->tinyInteger('status')->default(1);
             $table->text('lydo')->nullable();
             $table->text('ghichu')->nullable();

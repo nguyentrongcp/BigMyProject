@@ -1,55 +1,15 @@
 <script>
-    let thuaruong = JSON.parse('{!! str_replace("'","\'",$thuaruong) !!}');
-    initDanhMuc(thuaruong.id,'{{ $giaidoan_id }}');
-    init();
-    let isFirst = true;
+    initDanhMuc();
 
-    function init() {
-        $('#selThuaRuong').tooltip({
-            trigger: 'manual',
-            title: 'Nhấn vào đây để đổi sang thửa ruộng khác!!!',
-        });
-
-        $('#selThuaRuong').click(() => {
-            let thuaruongs = JSON.parse('{!! str_replace("'","\'",$thuaruongs) !!}');
-            thuaruongs.forEach((value) => {
-                value.text = value.ten;
-            })
-            mInput('Chuyển đổi thửa ruộng',thuaruong.id)
-                .select2('Chọn thửa ruộng','',thuaruongs,true,() => {
-                    $('#modalInput').modal('hide');
-                    if ($('#modalInput .value').val() != thuaruong.id) {
-                        thuaruong = $('#modalInput .value').select2('data')[0];
-                        initDanhMuc(thuaruong.id);
-                        $('#selThuaRuong .ten').text(thuaruong.ten);
-                        $("#selThuaRuong .ngaysa").text(doi_ngay(thuaruong.ngaysa));
-                    }
-                })
-        })
-    }
-
-    function initDanhMuc(thuaruong_id, giaidoan_id = '') {
+    function initDanhMuc() {
         $('#boxMain').empty();
         sToast.loading('Đang tải dữ liệu. Vui lòng chờ...')
         $.ajax({
-            url: '/api/nong-dan/quy-trinh/danh-sach',
+            url: '/api/nong-dan/quy-trinh/danhsach-hientai',
             type: 'get',
-            dataType: 'json',
-            data: {
-                thuaruong_id
-            }
+            dataType: 'json'
         }).done((result) => {
-            if (result.data.thuaruong.toado == null) {
-                $('#boxAction').removeClass('d-none').find('.btnCapNhatViTri').off('click').click(() => {
-                    capNhatToaDo(result.data.thuaruong,$('#boxAction'));
-                })
-            }
-            else {
-                $('#boxAction').addClass('d-none').find('.btnCapNhatViTri').off('click');
-            }
-            $('#selThuaRuong .songay').text(result.data.thuaruong.songay);
-            addItems(result.data,giaidoan_id);
-            Swal.close();
+
         });
     }
 

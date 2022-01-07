@@ -28,6 +28,8 @@
                     muavu_id: $('#selMuaVu').val(),
                 }
             }).done((result) => {
+                $('#lblSoNongDan').text(result.data.sonongdan);
+                $('#lblSoThuaRuong').text(result.data.sothuaruong);
                 initTimeline(result.data.danhsach);
             });
         }
@@ -43,7 +45,9 @@
                     '<div class="time-label">' +
                     '   <span class="' + color + '">' + giaidoan.ten + '</span>' +
                     '   <span class="float-right text-muted">' +
-                    '       <span><i class="fa fa-commenting mr-1 text-primary"></i><strong class="text-info">10000</strong> phản hồi</span>' +
+                    '       <span><i class="fa fa-comment mr-1 text-warning"></i><strong class="text-info">' + giaidoan.phanhoi_moi + '</strong> phản hồi mới</span>' +
+                    '       <span class="mx-2">/</span>' +
+                    '       <span><i class="fa fa-comments mr-1 text-primary"></i><strong class="text-info">' + giaidoan.tongso_phanhoi + '</strong> phản hồi</span>' +
                     '       <span class="mx-2">/</span>' +
                     '       <span><i class="fa fa-check-square mr-1 text-success"></i><strong class="text-info">'
                     + giaidoan.sohoanthanh + '</strong> hoàn thành</span>' +
