@@ -68,17 +68,21 @@
                 '   <div class="timeline-item">' +
                 '       <div class="timeline-header d-flex">' +
                 '           <span class="title d-flex align-items-center">' + giaidoan.phanloai + '</span>' +
-                '           <span class="ml-auto btn btn-primary btn-sm font-size-btn-sm-mobile btnPhanHoi">Gửi phản hồi</span>' +
+                '           <span class="ml-auto text-muted">Danh sách phản hồi</span>' +
                 '       </div>' +
                 '       <div class="timeline-body">' +
                 '           <div class="lblDefault">Chưa có phản hồi nào</div>' +
                 '           <div class="boxPhanHoi"></div>' +
                 '       </div>' +
-                // '       <div class="timeline-footer d-flex justify-content-between">' +
-                // '           <a class="btn btn-primary btn-sm font-size-btn-sm-mobile ml-auto btnPhanHoi">Gửi Phản Hồi</a>' +
-                // '       </div>' +
+                '       <div class="timeline-footer" style="border-top: 1px solid rgba(0,0,0,.125)">' +
+                '           <textarea class="form-control font-size-mobile" rows="1" placeholder="Nhập nội dung phản hồi..."></textarea>' +
+                '           <div class="text-right mt-1">' +
+                '               <span class="btn btn-primary btn-sm font-size-btn-sm-mobile btnPhanHoi">Gửi phản hồi</span>' +
+                '           </div>' +
+                '       </div>' +
                 '   </div>' +
                 '</div>');
+            autosize(boxHeader.find('textarea'));
             giaidoan.phanhois.forEach((phanhoi) => {
                 let ten = !isUndefined(phanhoi.nhanvien) ? phanhoi.nhanvien : 'Bạn';
                 let boxPhanHoi = $('' +
@@ -109,6 +113,7 @@
             boxHeader.find('.btnPhanHoi').click(() => {
                 actionPhanHoi(giaidoan,boxHeader,result.thuaruong.id);
             });
+            offEnterTextarea(boxHeader.find('textarea'), () => { boxHeader.find('.btnPhanHoi').click() })
             let boxTitle = $('' +
                 '<div class="time-label" data-id="' + giaidoan.id + '">' +
                 '   <span class="">' + giaidoan.ten + '</span>' +
@@ -125,12 +130,16 @@
                 currentHeader = boxHeader;
                 currentStt = stt;
             }
+            let is_hoanthanh = true;
             giaidoan.quytrinhs.forEach((item) => {
+                if (item.trangthai !== 1) {
+                    is_hoanthanh = false;
+                }
                 let element = $('' +
                     '<div>' +
                     '   <i class=""></i>' +
                     '   <div class="timeline-item">' +
-                    '       <div class="timeline-header font-size-mobile font-weight-bolder text-primary">' + item.sanpham + '</div>' +
+                    '       <div class="timeline-header font-size-mobile font-weight-bolder text-primary ten">' + item.sanpham + '</div>' +
                     '       <div class="timeline-body">' +
                     '           <p>' + item.congdung + '</p>' +
                     '           <div class="text-right">Số lượng/ha: <span class="font-weight-bolder text-info">' +
@@ -143,6 +152,7 @@
                     '       </div>' +
                     '   </div>' +
                     '</div>');
+                element.find('.ten').click(() => { initSanPham(item.sanpham_id) })
                 if (item.nongdan_ghichu !== '') {
                     element.find('.timeline-ghichu').append('' +
                         '<div class="py-1 mb-2">' +
@@ -181,6 +191,13 @@
                 }
                 $('#boxMain').append(element);
             })
+            if (is_hoanthanh) {
+                boxTitle.append('' +
+                    '<span class="float-right text-success" style="background-color: unset">' +
+                    '   <i class="fa fa-check mr-1"></i>Đã hoàn thành' +
+                    '</span>')
+                boxTitle.find('span:first').attr('class','bg-success');
+            }
         });
 
         if (giaidoan_id !== '') {
@@ -203,45 +220,44 @@
     }
 
     function actionPhanHoi(giaidoan, boxHeader, thuaruong_id) {
-        mInput('Gửi phản hồi').textarea('Nhập nội dung','Nhập nội dung phản hồi...',
-            () => {
-                let noidung = $('#modalInput .value').val().trim();
-                sToast.confirm('Xác nhận gửi phản hồi?','Giai đoạn ' + giaidoan.ten,
-                    (result) => {
-                        if (result.isConfirmed) {
-                            sToast.loading('Đang xử lý dữ liệu. Vui lòng chờ...')
-                            $.ajax({
-                                url: '/api/nong-dan/quy-trinh/gui-phan-hoi',
-                                type: 'get',
-                                dataType: 'json',
-                                data: {
-                                    giaidoan_id: giaidoan.id, thuaruong_id, noidung
-                                }
-                            }).done((result) => {
-                                if (result.succ) {
-                                    let boxPhanHoi = $('' +
-                                        '<div class="item-phanhoi">' +
-                                        '   <div>' +
-                                        '       <span class="font-weight-bolder">Bạn: </span>' +
-                                        '       <span>' + noidung + '</span>' +
-                                        '   </div>' +
-                                        '   <div class="d-flex align-items-baseline box-action">' +
-                                        '       <span class="text-danger btnXoa">Xóa phản hồi</span>' +
-                                        '       <span class="text-muted thoigian">' + doi_ngay(result.data.model.created_at,true,false) + '</span>' +
-                                        '   </div>' +
-                                        '</div>')
-                                    boxHeader.find('.boxPhanHoi').append(boxPhanHoi);
-                                    boxPhanHoi.find('.btnXoa').click(() => {
-                                        actionXoaPhanHoi(result.data.model.id,boxPhanHoi,boxHeader);
-                                    });
-                                    if (!boxHeader.find('.lblDefault').hasClass('d-none')) {
-                                        boxHeader.find('.lblDefault').addClass('d-none')
-                                    }
-                                }
+        let noidung = boxHeader.find('textarea').val().trim();
+        sToast.confirm('Xác nhận gửi phản hồi?','Giai đoạn ' + giaidoan.ten,
+            (result) => {
+                if (result.isConfirmed) {
+                    sToast.loading('Đang xử lý dữ liệu. Vui lòng chờ...')
+                    $.ajax({
+                        url: '/api/nong-dan/quy-trinh/gui-phan-hoi',
+                        type: 'get',
+                        dataType: 'json',
+                        data: {
+                            giaidoan_id: giaidoan.id, thuaruong_id, noidung
+                        }
+                    }).done((result) => {
+                        if (result.succ) {
+                            let boxPhanHoi = $('' +
+                                '<div class="item-phanhoi">' +
+                                '   <div>' +
+                                '       <span class="font-weight-bolder">Bạn: </span>' +
+                                '       <span>' + noidung + '</span>' +
+                                '   </div>' +
+                                '   <div class="d-flex align-items-baseline box-action">' +
+                                '       <span class="text-danger btnXoa">Xóa phản hồi</span>' +
+                                '       <span class="text-muted thoigian">' + doi_ngay(result.data.model.created_at,true,false) + '</span>' +
+                                '   </div>' +
+                                '</div>')
+                            boxHeader.find('.boxPhanHoi').append(boxPhanHoi);
+                            boxPhanHoi.find('.btnXoa').click(() => {
+                                actionXoaPhanHoi(result.data.model.id,boxPhanHoi,boxHeader);
                             });
+                            if (!boxHeader.find('.lblDefault').hasClass('d-none')) {
+                                boxHeader.find('.lblDefault').addClass('d-none')
+                            }
+                            boxHeader.find('textarea').val('');
+                            autosize.update(boxHeader.find('textarea'))
                         }
                     });
-            })
+                }
+            });
     }
 
     function actionXoaPhanHoi(phanhoi_id, boxPhanHoi, boxHeader) {

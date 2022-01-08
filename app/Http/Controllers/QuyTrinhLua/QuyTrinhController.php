@@ -7,7 +7,9 @@ use App\Http\Controllers\Controller;
 use App\Models\QuyTrinhLua\GiaiDoan;
 use App\Models\QuyTrinhLua\MuaVu;
 use App\Models\QuyTrinhLua\QuyTrinh;
+use App\Models\QuyTrinhLua\QuyTrinhThuaRuong;
 use App\Models\QuyTrinhLua\SanPham;
+use App\Models\QuyTrinhLua\ThuaRuong;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -313,5 +315,51 @@ class QuyTrinhController extends Controller
         return [
             'results' => $models
         ];
+    }
+
+    public function quytrinh_homnay() {
+        $results = [];
+        $muavu_ids = MuaVu::where('status',1)->pluck('id');
+        $quytrinh_ids = QuyTrinh::whereIn('giaidoan_id',GiaiDoan::whereIn('muavu_id',$muavu_ids)->pluck('id'))->pluck('id');
+        $_sanphams = SanPham::withTrashed()->whereIn('id',QuyTrinh::whereIn('id',$quytrinh_ids)->pluck('sanpham_id'))->get(['id','ten','donvitinh']);
+        foreach($_sanphams as $sanpham) {
+            $sanphams[$sanpham->id] = $sanpham;
+        }
+        $_giaidoans = GiaiDoan::whereIn('muavu_id',$muavu_ids)->get(['id','tu','den','ten'])->toArray();
+        foreach($_giaidoans as $giaidoan) {
+            $giaidoans[$giaidoan['id']] = (object) $giaidoan;
+        }
+        foreach(QuyTrinh::whereIn('giaidoan_id',GiaiDoan::whereIn('muavu_id',$muavu_ids)->pluck('id'))
+                    ->get(['id','sanpham_id','soluong','congdung','tu','den','giaidoan','giaidoan_id']) as $quytrinh) {
+            if (isset($giaidoans[$quytrinh->giaidoan_id])) {
+                $giaidoans[$quytrinh->giaidoan_id]->quytrinhs = [];
+            }
+            $giaidoans[$quytrinh->giaidoan_id]->quytrinhs[] = $quytrinh;
+        }
+        $thuaruongs = ThuaRuong::whereIn('muavu_id',$muavu_ids)
+            ->get(['id','ten','nongdan_id','ngaysa']);
+        foreach($thuaruongs as $thuaruong) {
+            $songay = (strtotime(date('Y-m-d')) - strtotime($thuaruong->ngaysa))/86400;
+            $trangthais = QuyTrinhThuaRuong::whereIn('quytrinh_id',$quytrinh_ids)->where('thuaruong_id',$thuaruong->id)
+                ->pluck('status','quytrinh_id');
+            foreach($giaidoans as $giaidoan) {
+                if ($songay >= $giaidoan->tu && $songay <= $giaidoan->den) {
+                    foreach($giaidoan->quytrinhs as $quytrinh) {
+                        $trangthai = $trangthais[$quytrinh->id] ?? 0;
+                        if (!$trangthai) {
+                            $quytrinh->sanpham = $sanphams[$quytrinh->sanpham_id]->ten;
+                            $quytrinh->donvitinh = $sanphams[$quytrinh->sanpham_id]->donvitinh;
+                            $results[] = [
+                                'topic' => $thuaruong->nongdan_id,
+                                'tieude' => 'Quy trình hôm nay',
+                                'noidung' => $quytrinh->sanpham."\nCông dụng: ".$quytrinh->congdung."\nSố lượng/ha: ".((float)$quytrinh->soluong)
+                            ];
+                        }
+                    }
+                }
+            }
+        }
+
+        return $results;
     }
 }

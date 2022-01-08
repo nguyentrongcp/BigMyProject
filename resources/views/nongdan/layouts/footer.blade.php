@@ -199,6 +199,7 @@
                     thongbaos.forEach((thongbao, stt) => {
                         let item = $('' +
                             '<div class="dropdown-item thongbao">' +
+                            '   <div class="font-weight-bolder text-purple">' + thongbao.thuaruong_ten + '</div>' +
                             '   <div class="text-wrap font-size-mobile text-justify">' +
                             '       <span class="tieude">' +
                             '           <strong>' + thongbao.nhanvien + '</strong> ' + thongbao.tieude + ': </span>' +
@@ -210,6 +211,19 @@
                             $('#dropdownThongBao').append('<div class="dropdown-divider"></div>');
                         }
                         $('#dropdownThongBao').append(item);
+                        item.click(() => {
+                            sToast.loading('Đang chuyển trang. Vui lòng chờ...')
+                            $.ajax({
+                                url: '/api/nong-dan/thong-bao/xem',
+                                type: 'get',
+                                dataType: 'json',
+                                data: {
+                                    id: thongbao.id
+                                }
+                            }).done(() => {
+                                location.href = '/nong-dan/quy-trinh?thuaruong_id=' + thongbao.thuaruong_id + '&giaidoan_id=' + thongbao.giaidoan_id
+                            });
+                        })
                     })
                 }
                 if (quytrinhs.length > 0) {
@@ -222,7 +236,10 @@
                     quytrinhs.forEach((_quytrinh, stt) => {
                         soluong += _quytrinh.danhsach.length;
                         let item = $('' +
-                            '<div class="dropdown-item quytrinh"></div>');
+                            '<div class="dropdown-item quytrinh">' +
+                            '   <div class="text-wrap font-weight-bolder text-purple text-center">' + _quytrinh.thuaruong_ten + '</div>' +
+                            '   <div class="dropdown-divider"></div>' +
+                            '</div>');
                         _quytrinh.danhsach.forEach((quytrinh, key) => {
                             let element = $('' +
                                 '<div class="text-wrap font-size-mobile d-flex flex-column">' +
@@ -243,13 +260,78 @@
                         }
                         $('#dropdownThongBao').append(item);
                         item.click(() => {
-                            location.href = '/nong-dan/quy-trinh?thuaruong_id=' + _quytrinh.thuaruong_id
-                                + '&giaidoan_id=' + _quytrinh.giaidoan_id
+                            @if(url()->current() == route('nong-dan.quytrinh-hientai'))
+                            $('#container').animate({
+                                scrollTop: $('#container').scrollTop() +
+                                    $('.timeline .time-label[data-id=' + _quytrinh.giaidoan_id + ']').offset().top - 65
+                            }, 500);
+                            @else
+                                location.href = '/nong-dan/quytrinh-hientai?giaidoan_id=' + _quytrinh.giaidoan_id
+                            @endif
                         })
                     });
                     header.text(soluong + ' quy trình trong hôm nay');
                     $('#lblSoThongBao').text(soluong + thongbaos.length);
                 }
+            }
+        });
+    }
+
+    function initSanPham(sanpham_id) {
+        sToast.loading('Đang lấy thông tin sản phẩm. Vui lòng chờ...')
+        $.ajax({
+            url: '/api/nong-dan/san-pham/thong-tin',
+            type: 'get',
+            dataType: 'json',
+            data: {
+                id: sanpham_id
+            }
+        }).done((result) => {
+            if (result.succ) {
+                let model = result.data.model;
+                let modal = $('' +
+                    '<div class="modal fade" id="modalSanPham">' +
+                    '    <div class="modal-dialog">' +
+                    '        <div class="modal-content">' +
+                    '            <div class="modal-header">' +
+                    '                <h5 class="modal-title">Thông Tin Sản Phẩm</h5>' +
+                    '            </div>' +
+                    '            <div class="modal-body row-thongtin">' +
+                    '                <div class="col-thongtin">' +
+                    '                     <strong>Mã</strong>' +
+                    '                     <span>' + model.ma + '</span>' +
+                    '                </div>' +
+                    '                <div class="divider my-3"></div>' +
+                    '                <div class="col-thongtin">' +
+                    '                     <strong>Tên</strong>' +
+                    '                     <span>' + model.ten + '</span>' +
+                    '                </div>' +
+                    '                <div class="divider my-3"></div>' +
+                    '                <div class="col-thongtin">' +
+                    '                     <strong>Đơn vị tính</strong>' +
+                    '                     <span>' + model.donvitinh + '</span>' +
+                    '                </div>' +
+                    '                <div class="divider my-3"></div>' +
+                    '                <div class="col-thongtin">' +
+                    '                     <strong>Nhóm</strong>' +
+                    '                     <span>' + model.nhom + '</span>' +
+                    '                </div>' +
+                    '                <div class="divider my-3"></div>' +
+                    '                <div class="col-thongtin">' +
+                    '                     <strong>Đơn giá</strong>' +
+                    '                     <span>' + numeral(model.dongia).format('0,0') + '</span>' +
+                    '                </div>' +
+                    '            </div>' +
+                    '            <div class="modal-footer">' +
+                    '                <button type="button" class="btn bg-gradient-secondary" data-dismiss="modal">Thoát</button>' +
+                    '            </div>' +
+                    '        </div>' +
+                    '    </div>' +
+                    '</div>');
+
+                modal.on('hidden.bs.modal', () => {
+                    modal.remove();
+                }).modal('show');
             }
         });
     }

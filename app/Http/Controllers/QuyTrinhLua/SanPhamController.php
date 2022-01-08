@@ -232,4 +232,22 @@ class SanPhamController extends Controller
             'results' => $models
         ];
     }
+
+    public function thong_tin(Request $request) {
+        $id = $request->id;
+        $model = SanPham::find($id);
+        if ($model == null) {
+            return [
+                'succ' => 0,
+                'noti' => 'Sản phẩm không tồn tại hoặc đã bị xóa!'
+            ];
+        }
+
+        return [
+            'succ' => 1,
+            'data' => [
+                'model' => $model
+            ]
+        ];
+    }
 }

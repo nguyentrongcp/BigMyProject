@@ -158,5 +158,35 @@
         #dropdownThongBao .dropdown-item .dropdown-divider {
             margin: 0.25rem 0;
         }
+
+        .timeline .timeline-trangthai {
+            border-top: 1px solid rgba(0,0,0,.125);
+            border-bottom: 1px solid rgba(0,0,0,.125);
+            display: flex;
+            justify-content: space-between;
+        }
+        .timeline .timeline-ghichu > div {
+            border-bottom: 1px solid rgba(0,0,0,.125);
+        }
+        .timeline .boxPhanHoi .item-phanhoi:not(:first-child) {
+            border-top: 1px solid #ebebeb;
+            padding-top: 0.25rem;
+            margin-top: 0.25rem;
+        }
+        .timeline .boxPhanHoi .item-phanhoi .btnXoa {
+            display: none;
+        }
+        .timeline .boxPhanHoi .item-phanhoi:last-child:not(.reply) .btnXoa {
+            display: block;
+        }
+        .timeline .boxPhanHoi .item-phanhoi .thoigian {
+            margin-left: auto;
+        }
+        .timeline .boxPhanHoi .item-phanhoi .box-action {
+            font-size: 12px;
+        }
+        .boxPhanHoi .item-phanhoi.reply .ten {
+            color: #007bff !important;
+        }
     </style>
 </head>

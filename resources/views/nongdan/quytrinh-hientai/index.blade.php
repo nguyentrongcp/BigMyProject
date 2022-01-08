@@ -38,9 +38,17 @@
         <section class="content">
             <div class="h-100 d-flex flex-column">
                 <div class="overflow-auto font-size-mobile" id="container">
-                    <div class="timeline mb-0" id="boxMain">
+{{--                    <div class="card card-outline card-info">--}}
+{{--                        <div class="card-header p-1">--}}
+{{--                            <div class="card-title d-flex flex-column align-items-center w-100">--}}
+{{--                                <h4 class="mb-0 text-info font-weight-bolder">Đông Xuân 2022 4</h4>--}}
+{{--                                <span class="text-muted">Sạ ngày 15-12-2021 (20 ngày)</span>--}}
+{{--                            </div>--}}
+{{--                        </div>--}}
+{{--                    </div>--}}
+{{--                    <div class="timeline mb-0" id="boxMain">--}}
 
-                    </div>
+{{--                    </div>--}}
                 </div>
             </div>
         </section>

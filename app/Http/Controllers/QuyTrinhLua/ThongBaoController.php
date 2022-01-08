@@ -6,6 +6,7 @@ use App\Functions\QuyTrinhLuaFuncs;
 use App\Http\Controllers\Controller;
 use App\Models\DanhMuc\NhanVien;
 use App\Models\QuyTrinhLua\GiaiDoan;
+use App\Models\QuyTrinhLua\GiaiDoanPhanHoi;
 use App\Models\QuyTrinhLua\MuaVu;
 use App\Models\QuyTrinhLua\QuyTrinh;
 use App\Models\QuyTrinhLua\SanPham;
@@ -25,13 +26,15 @@ class ThongBaoController extends Controller
             'loai' => 'phanhoi'
         ])->get() as $item) {
             $item->nhanvien = NhanVien::withTrashed()->find($item->nhanvien_id,'ten')->ten;
+            $item->thuaruong_id = GiaiDoanPhanHoi::find($item->phanhoi_id,['thuaruong_id'])->thuaruong_id;
+            $item->thuaruong_ten = ThuaRuong::withTrashed()->find($item->thuaruong_id,'ten')->ten;
             $thongbaos[] = $item;
         }
 
         $quytrinhs = [];
         $muavu_ids = MuaVu::where('status',1)->pluck('id');
         $thuaruongs = ThuaRuong::where('nongdan_id',$nongdan_id)
-            ->whereIn('muavu_id',$muavu_ids)->get(['muavu_id','ngaysa','id']);
+            ->whereIn('muavu_id',$muavu_ids)->get(['muavu_id','ngaysa','id','ten']);
         foreach($thuaruongs as $thuaruong) {
             $songay = (strtotime(date('Y-m-d')) - strtotime($thuaruong->ngaysa))/86400;
             $giaidoans = GiaiDoan::where('muavu_id',$thuaruong->muavu_id)->where('tu','<=',$songay)
@@ -49,6 +52,7 @@ class ThongBaoController extends Controller
                 if (count($_quytrinhs) > 0) {
                     $quytrinhs[] = [
                         'thuaruong_id' => $thuaruong->id,
+                        'thuaruong_ten' => $thuaruong->ten,
                         'giaidoan_id' => $giaidoan->id,
                         'danhsach' => $_quytrinhs
                     ];
@@ -62,5 +66,16 @@ class ThongBaoController extends Controller
                 'thongbaos' => $thongbaos
             ]
         ];
+    }
+
+    public function xem(Request $request) {
+        $id = $request->id;
+        if ($id !== null) {
+            $thongbao = ThongBao::find($id);
+            $thongbao->is_viewed = 1;
+            $thongbao->update();
+        }
+
+        return [];
     }
 }

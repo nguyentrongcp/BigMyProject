@@ -73,10 +73,14 @@ Route::prefix('nong-dan')->group(function() {
 
     Route::prefix('thong-bao')->group(function() {
         Route::get('danh-sach',[ThongBaoController::class,'danh_sach']);
+        Route::get('xem',[ThongBaoController::class,'xem']);
     });
+
+    Route::get('san-pham/thong-tin',[SanPhamController::class,'thong_tin']);
 });
 
 Route::prefix('quan-ly')->group(function() {
+    Route::get('quytrinh-homnay',[QuyTrinhController::class, 'quytrinh_homnay']);
     Route::prefix('xac-thuc')->group(function() {
         Route::get('dang-nhap',[LoginController::class,'dang_nhap']);
     });

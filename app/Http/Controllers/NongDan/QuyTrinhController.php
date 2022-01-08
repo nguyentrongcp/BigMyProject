@@ -37,7 +37,9 @@ class QuyTrinhController extends Controller
     }
 
     public function index_hientai(Request $request) {
-        return view('nongdan.quytrinh-hientai.index');
+        return view('nongdan.quytrinh-hientai.index', [
+            'giaidoan_id' => $request->giaidoan_id ?? ''
+        ]);
     }
 
     public function danh_sach(Request $request) {
@@ -117,7 +119,7 @@ class QuyTrinhController extends Controller
         $muavu_ids = MuaVu::where('status',1)->pluck('id');
         $nongdan_id = QuyTrinhLuaFuncs::getNongDanIDByToken($request->cookie('token'));
         $thuaruongs = ThuaRuong::where('nongdan_id',$nongdan_id)
-            ->whereIn('muavu_id',$muavu_ids)->get(['muavu_id','ngaysa','id']);
+            ->whereIn('muavu_id',$muavu_ids)->get(['muavu_id','ngaysa','id','ten','toado']);
         $results = [];
         foreach($thuaruongs as $thuaruong) {
             $songay = (strtotime(date('Y-m-d')) - strtotime($thuaruong->ngaysa))/86400;

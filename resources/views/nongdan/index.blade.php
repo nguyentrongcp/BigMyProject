@@ -13,6 +13,6 @@
             Cookies.set('token',token);
         }
     }
-    location.href = '/nong-dan/thua-ruong';
+    location.href = '/nong-dan/quytrinh-hientai';
 </script>
 </html>

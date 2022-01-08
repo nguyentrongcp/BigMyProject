@@ -141,7 +141,7 @@
                         }));
                     }
                     Swal.update({title: 'Đang đăng nhập vào hệ thống...'});
-                    setTimeout(() => {location.href = "{{ route('nong-dan.thua-ruong') }}"},300);
+                    setTimeout(() => {location.href = "{{ route('nong-dan.quytrinh-hientai') }}"},300);
                 }
             }
         });
