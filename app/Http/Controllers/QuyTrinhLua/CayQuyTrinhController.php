@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\QuyTrinhLua\GiaiDoan;
 use App\Models\QuyTrinhLua\GiaiDoanPhanHoi;
 use App\Models\QuyTrinhLua\MuaVu;
+use App\Models\QuyTrinhLua\NongDan;
 use App\Models\QuyTrinhLua\QuyTrinh;
 use App\Models\QuyTrinhLua\QuyTrinhThuaRuong;
 use App\Models\QuyTrinhLua\SanPham;
@@ -28,8 +29,10 @@ class CayQuyTrinhController extends Controller
         if ($muavu_id == null) {
             return [];
         }
-        $sothuaruong = ThuaRuong::where('muavu_id',$muavu_id)->count('id');
-        $sonongdan = ThuaRuong::where('muavu_id',$muavu_id)->groupBy('nongdan_id')->get('id');
+        $nongdan_ids = NongDan::pluck('id');
+        $sothuaruong = ThuaRuong::where('muavu_id',$muavu_id)->whereIn('nongdan_id',$nongdan_ids)->count();
+        $sonongdan = ThuaRuong::where('muavu_id',$muavu_id)->whereIn('nongdan_id',$nongdan_ids)
+            ->groupBy('nongdan_id')->get('id');
         $models = QuyTrinh::where('muavu_id',$muavu_id)->orderBy('phanloai')->orderBy('tu')->orderBy('den')->get();
 
         $sanphams = [];

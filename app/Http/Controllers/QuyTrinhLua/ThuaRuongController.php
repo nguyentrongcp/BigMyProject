@@ -393,7 +393,7 @@ class ThuaRuongController extends Controller
                 'created_at' => date('Y-m-d H:i:s'),
                 'updated_at' => date('Y-m-d H:i:s')
             ]);
-            $thongbao = [
+            $thongbaos = [
                 [
                     'topic' => $nongdan_id,
                     'tieude' => $tieude,
@@ -405,7 +405,7 @@ class ThuaRuongController extends Controller
                 'noti' => 'Trả lời phản hồi thành công.',
                 'data' => [
                     'model' => $model,
-                    'thongbao' => $thongbao
+                    'thongbaos' => $thongbaos
                 ]
             ];
         }

@@ -137,7 +137,7 @@
                     if (!isUndefined(window.ReactNativeWebView)) {
                         window.ReactNativeWebView.postMessage(JSON.stringify({
                             type: 'thongbao-init',
-                            topics: ['hailua_' + result.data.token,'hailua_' + result.data.chinhanh_id]
+                            topics: ['nongdan_' + result.data.token,'nongdan_' + result.data.id]
                         }));
                     }
                     Swal.update({title: 'Đang đăng nhập vào hệ thống...'});

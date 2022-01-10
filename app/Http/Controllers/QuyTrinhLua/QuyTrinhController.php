@@ -6,6 +6,7 @@ use App\Functions\Funcs;
 use App\Http\Controllers\Controller;
 use App\Models\QuyTrinhLua\GiaiDoan;
 use App\Models\QuyTrinhLua\MuaVu;
+use App\Models\QuyTrinhLua\NongDan;
 use App\Models\QuyTrinhLua\QuyTrinh;
 use App\Models\QuyTrinhLua\QuyTrinhThuaRuong;
 use App\Models\QuyTrinhLua\SanPham;
@@ -317,7 +318,7 @@ class QuyTrinhController extends Controller
         ];
     }
 
-    public function quytrinh_homnay() {
+    public function quytrinh_homnay2() {
         $results = [];
         $muavu_ids = MuaVu::where('status',1)->pluck('id');
         $quytrinh_ids = QuyTrinh::whereIn('giaidoan_id',GiaiDoan::whereIn('muavu_id',$muavu_ids)->pluck('id'))->pluck('id');
@@ -352,6 +353,69 @@ class QuyTrinhController extends Controller
                             $results[] = [
                                 'topic' => $thuaruong->nongdan_id,
                                 'tieude' => 'Quy trình hôm nay',
+                                'noidung' => $quytrinh->sanpham."\nCông dụng: ".$quytrinh->congdung."\nSố lượng/ha: ".((float)$quytrinh->soluong)
+                            ];
+                        }
+                    }
+                }
+            }
+        }
+
+        return $results;
+    }
+
+    public function quytrinh_homnay() {
+        $results = [];
+        $muavu_ids = MuaVu::where('status',1)->pluck('id');
+        $giaidoans = GiaiDoan::whereIn('muavu_id',$muavu_ids)->get(['id','tu','den','ten']);
+        $thuaruongs = ThuaRuong::whereIn('muavu_id',$muavu_ids);
+        $whereRaw = '';
+        $giaidoan_ids = [];
+        foreach($giaidoans as $giaidoan) {
+            $tungay = date('Y-m-d',strtotime(-$giaidoan->tu.' days',strtotime(date('Y-m-d'))));
+            $denngay = date('Y-m-d',strtotime(-$giaidoan->den.' days',strtotime(date('Y-m-d'))));
+            if ($whereRaw != '') {
+                $whereRaw .= ' or ';
+            }
+            $whereRaw .= "('$denngay' <= ngaysa and '$tungay' >= ngaysa)";
+            $giaidoan->quytrinhs = QuyTrinh::where('giaidoan_id',$giaidoan->id)->get(['id','sanpham_id','soluong','congdung','tu','den','giaidoan','giaidoan_id']);
+            $giaidoan_ids[] = $giaidoan->id;
+        }
+        $sanphams = [];
+        $_sanphams = SanPham::withTrashed()->whereIn('id',QuyTrinh::whereIn('giaidoan_id',$giaidoan_ids)->pluck('sanpham_id'))
+            ->get(['id','ten','donvitinh']);
+        foreach($_sanphams as $sanpham) {
+            $sanphams[$sanpham->id] = $sanpham;
+        }
+        $whereRaw = '('.$whereRaw.')';
+        $thuaruongs = $thuaruongs->whereRaw($whereRaw)->get(['id','ten','nongdan_id','ngaysa']);
+        $thuaruong_ids = [];
+        $nongdan_ids = [];
+        foreach($thuaruongs as $thuaruong) {
+            $thuaruong_ids[] = $thuaruong->id;
+            $nongdan_ids[] = $thuaruong->nongdan_id;
+        }
+        $_trangthais = QuyTrinhThuaRuong::whereIn('thuaruong_id',$thuaruong_ids)->get(['quytrinh_id','thuaruong_id','status']);
+        $trangthais = [];
+        foreach($_trangthais as $trangthai) {
+            if (!isset($trangthais[$trangthai->thuaruong_id])) {
+                $trangthais[$trangthai->thuaruong_id] = [];
+            }
+            $trangthais[$trangthai->thuaruong_id][$trangthai->quytrinh_id] = $trangthai->status;
+        }
+        $nongdan_hoatdongs = NongDan::whereIn('id',$nongdan_ids)->whereNotNull('remember_token')->pluck('id')->toArray();
+        foreach($thuaruongs as $thuaruong) {
+            $songay = (strtotime(date('Y-m-d')) - strtotime($thuaruong->ngaysa))/86400;
+            foreach($giaidoans as $giaidoan) {
+                if ($songay >= $giaidoan->tu && $songay <= $giaidoan->den) {
+                    foreach($giaidoan->quytrinhs as $quytrinh) {
+                        $trangthai = $trangthais[$thuaruong->id][$quytrinh->id] ?? 0;
+                        if (!$trangthai && in_array($thuaruong->nongdan_id,$nongdan_hoatdongs) !== false) {
+                            $quytrinh->sanpham = $sanphams[$quytrinh->sanpham_id]->ten;
+                            $quytrinh->donvitinh = $sanphams[$quytrinh->sanpham_id]->donvitinh;
+                            $results[] = [
+                                'topic' => $thuaruong->nongdan_id,
+                                'tieude' => 'Hôm nay cần làm',
                                 'noidung' => $quytrinh->sanpham."\nCông dụng: ".$quytrinh->congdung."\nSố lượng/ha: ".((float)$quytrinh->soluong)
                             ];
                         }

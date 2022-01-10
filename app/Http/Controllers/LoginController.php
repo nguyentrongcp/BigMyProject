@@ -104,6 +104,7 @@ class LoginController extends Controller
             'succ' => 1,
             'noti' => 'Đăng nhập thành công.',
             'data' => [
+                'id' => $user->id,
                 'token' => $user->remember_token,
             ]
         ];

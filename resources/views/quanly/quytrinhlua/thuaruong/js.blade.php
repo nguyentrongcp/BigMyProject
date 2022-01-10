@@ -158,6 +158,7 @@
                                 });
                                 textarea.val('');
                                 autosize.update(textarea);
+                                socket.emit('send-notification-nongdan',result.data.thongbaos)
                             }
                         });
                     }

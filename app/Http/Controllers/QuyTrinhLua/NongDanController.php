@@ -114,12 +114,6 @@ class NongDanController extends Controller
 
         DB::beginTransaction();
         $model = new NongDan();
-
-        do {
-            $model->id = rand(1000000000,9999999999);
-        }
-        while (NhanVien::find($model->id,'id') != null);
-
         $model->ma = QuyTrinhLuaFuncs::getMaNongDan();
         $model->ten = $ten;
         $model->slug = Funcs::convertToSlug($ten);
@@ -140,7 +134,6 @@ class NongDanController extends Controller
             $nhanvien_id = Funcs::getNhanVienIDByToken($request->cookie('token'));
             foreach($dsmuavus as $muavu) {
                 $dataTable[] = [
-                    'id' => rand(1000000000,9999999999),
                     'muavu_id' => $muavu->muavu_id,
                     'ngaysa' => $muavu->ngaysa,
                     'dientich' => $muavu->dientich,
@@ -319,7 +312,8 @@ class NongDanController extends Controller
                 }
                 catch (QueryException $exception) {
                     $errorText .= $errorText == '' ? '' : '; ';
-                    $errorText .= 'Lỗi thêm thông tin nông dân';
+//                    $errorText .= 'Lỗi thêm thông tin nông dân';
+                    $errorText .= $exception->getMessage();
                 }
             }
             if ($errorText != '') {

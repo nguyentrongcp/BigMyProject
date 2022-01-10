@@ -276,6 +276,14 @@
             }
         });
     }
+    $.ajax({
+        url: '/api/quan-ly/quytrinh-homnay',
+        type: 'get',
+        dataType: 'json',
+    }).done((result) => {
+        console.log(result);
+    })
+
 
     function initSanPham(sanpham_id) {
         sToast.loading('Đang lấy thông tin sản phẩm. Vui lòng chờ...')
