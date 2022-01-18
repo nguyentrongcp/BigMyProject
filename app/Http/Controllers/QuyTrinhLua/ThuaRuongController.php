@@ -140,7 +140,11 @@ class ThuaRuongController extends Controller
         foreach($results as $result) {
             $result->muavu = $muavus[$result->muavu_id]->ten ?? 'Chưa rõ';
             $result->status = $muavus[$result->muavu_id]->status ?? 'Chưa rõ';
-            $result->tinhtrang_hoanthanh = 0;
+            $result->tinhtrang_hoanthanh = QuyTrinhThuaRuong::where([
+                'muavu_id' => $result->muavu_id,
+                'thuaruong_id' => $result->id,
+                'status' => 1
+            ])->count();
             $result->tongquytrinh = $quytrinh[$result->muavu_id] ?? 0;
         }
 
@@ -161,7 +165,11 @@ class ThuaRuongController extends Controller
         foreach($results as $result) {
             $result->muavu = $muavus[$result->muavu_id]->ten ?? 'Chưa rõ';
             $result->status = $muavus[$result->muavu_id]->status ?? 'Chưa rõ';
-            $result->tinhtrang_hoanthanh = 0;
+            $result->tinhtrang_hoanthanh = QuyTrinhThuaRuong::where([
+                'muavu_id' => $result->muavu_id,
+                'thuaruong_id' => $result->id,
+                'status' => 1
+            ])->count();
             $result->tongquytrinh = $quytrinh[$result->muavu_id] ?? 0;
         }
 
@@ -396,8 +404,8 @@ class ThuaRuongController extends Controller
             $thongbaos = [
                 [
                     'topic' => $nongdan_id,
-                    'tieude' => $tieude,
-                    'noidung' => $noidung
+                    'tieude' => '',
+                    'noidung' => $tieude.': '.$noidung
                 ]
             ];
             return [

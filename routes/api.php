@@ -132,6 +132,10 @@ Route::prefix('quan-ly')->group(function() {
 
             Route::prefix('cay-quy-trinh')->group(function() {
                 Route::get('danh-sach',[CayQuyTrinhController::class, 'danh_sach']);
+                Route::get('danhsach-thuaruong',[CayQuyTrinhController::class, 'danhsach_thuaruong']);
+                Route::get('danhsach-nongdan',[CayQuyTrinhController::class, 'danhsach_nongdan']);
+                Route::get('danhsach-hoanthanh',[CayQuyTrinhController::class, 'danhsach_hoanthanh']);
+                Route::get('danhsach-phanhoimoi',[CayQuyTrinhController::class, 'danhsach_phanhoimoi']);
             });
 
             Route::prefix('thua-ruong')->group(function() {

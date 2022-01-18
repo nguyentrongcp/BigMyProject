@@ -153,7 +153,7 @@
                     '   </div>' +
                     '</div>');
                 element.find('.ten').click(() => { initSanPham(item.sanpham_id) })
-                if (item.nongdan_ghichu !== '') {
+                if (!isNull(item.nongdan_ghichu)) {
                     element.find('.timeline-ghichu').append('' +
                         '<div class="py-1 mb-2">' +
                         '   <span class="font-weight-bolder">Ghi chú:</span>' +
@@ -302,7 +302,7 @@
                             element.find('.trangthai').attr('class','trangthai text-warning').text('Chưa phản hồi');
                             element.find('.btnAction').removeClass('btn-danger').addClass('btn-primary').text('Nhấn để hoàn thành')
                             .off('click').click(() => {
-                                actionHoanThanh(item,element,muavu_id);
+                                actionHoanThanh(item,element,muavu_id,thuaruong_id);
                             });
                             element.find('.timeline-ghichu > div').remove();
                         }
@@ -333,13 +333,15 @@
                                     element.find('.trangthai').attr('class','trangthai text-success').text('Đã hoàn thành');
                                     element.find('.btnAction').removeClass('btn-primary').addClass('btn-danger').text('Nhấn Hủy Hoàn Thành')
                                         .off('click').click(() => {
-                                            actionHuyHoanThanh(item,element,muavu_id);
+                                            actionHuyHoanThanh(item,element,muavu_id,thuaruong_id);
                                     });
-                                    element.find('.timeline-ghichu').append('' +
-                                        '<div class="py-1 mb-2">' +
-                                        '   <span class="font-weight-bolder">Ghi chú:</span>' +
-                                        '   <span class="ghichu">' + ghichu + '</span>' +
-                                        '</div>');
+                                    if (!isNull(ghichu)) {
+                                        element.find('.timeline-ghichu').append('' +
+                                            '<div class="py-1 mb-2">' +
+                                            '   <span class="font-weight-bolder">Ghi chú:</span>' +
+                                            '   <span class="ghichu">' + ghichu + '</span>' +
+                                            '</div>');
+                                    }
                                     $('#modalInput').modal('hide');
                                 }
                             });
@@ -373,7 +375,16 @@
                         }
                     });
             }, () => {
-                setTimeout(() => {sToast.toast(0,'Không lấy được tọa độ. Không thể cập nhật vị trí!')}, 10)
+                if (!isUndefined(window.ReactNativeWebView)) {
+                    window.ReactNativeWebView.postMessage(JSON.stringify({
+                        type: 'open-setting',
+                        title: 'Cho phép quyền truy cập vị trí',
+                        message: 'Bạn cần cho phép quyền truy cập vị trí để sử dụng chức năng này! Nhấn OK để vào phần cài đặt.'
+                    }));
+                }
+                else {
+                    setTimeout(() => {sToast.toast(0,'Không lấy được tọa độ. Không thể cập nhật vị trí!')}, 10)
+                }
             });
         }
     }

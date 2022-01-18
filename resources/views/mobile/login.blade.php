@@ -54,6 +54,12 @@
                             Đăng xuất khỏi tất cả các thiết bị khác
                         </label>
                     </div>
+                    <div class="custom-control custom-checkbox">
+                        <input class="custom-control-input" type="checkbox" id="chkIsNhanVien">
+                        <label class="custom-control-label text-info" for="chkIsNhanVien">
+                            Đăng nhập với tư cách nhân viên công ty
+                        </label>
+                    </div>
                 </div>
                 <button id="btnSubmit" type="submit" class="btn btn-primary btn-block font-weight-bolder">Đăng Nhập</button>
             </div>
@@ -117,8 +123,9 @@
 
         sToast.loading('Đang kiểm tra thông tin tài khoản...');
 
+        let url = $('#chkIsNhanVien')[0].checked ? '/api/quan-ly/xac-thuc/dang-nhap' : '/api/nong-dan/dang-nhap'
         $.ajax({
-            url: '/api/quan-ly/xac-thuc/dang-nhap',
+            url,
             type: 'get',
             dataType: 'json',
             data: {
@@ -132,16 +139,20 @@
                     Swal.close();
                 }
                 else {
-                    Cookies.set('token', result.data.token, { expires: 7 });
+                    Cookies.set('token', result.data.token, { expires: 365 });
                     localStorage.setItem('token',result.data.token);
+                    localStorage.setItem('loginType', $('#chkIsNhanVien')[0].checked ? 'nhan-vien' : 'nong-dan');
                     if (!isUndefined(window.ReactNativeWebView)) {
                         window.ReactNativeWebView.postMessage(JSON.stringify({
                             type: 'thongbao-init',
-                            topics: ['hailua_' + result.data.token,'hailua_' + result.data.chinhanh_id]
+                            topics: result.data.topics
                         }));
                     }
                     Swal.update({title: 'Đang đăng nhập vào hệ thống...'});
-                    setTimeout(() => {location.href = "{{ route('mobile.lichsu-diemdanh') }}"},300);
+                    setTimeout(() => {
+                        location.href = $('#chkIsNhanVien')[0].checked ? "{{ route('mobile.lichsu-diemdanh') }}"
+                            : "{{ route('nong-dan.quytrinh-hientai') }}";
+                    },300);
                 }
             }
         });

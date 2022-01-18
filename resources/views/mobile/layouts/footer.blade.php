@@ -23,7 +23,7 @@
 
 <script src="/giaodien/my_plugins/autosize/autosize.min.js"></script>
 
-<script src="/giaodien/dist/js/function.js?version=1.6.5"></script>
+<script src="/giaodien/dist/js/function.js?version=1.6.6"></script>
 
 @yield('js-include')
 

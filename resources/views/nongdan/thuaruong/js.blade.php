@@ -335,7 +335,16 @@
                         }
                     });
             }, () => {
-                setTimeout(() => {sToast.toast(0,'Không lấy được tọa độ. Không thể cập nhật vị trí!')}, 10)
+                if (!isUndefined(window.ReactNativeWebView)) {
+                    window.ReactNativeWebView.postMessage(JSON.stringify({
+                        type: 'open-setting',
+                        title: 'Cho phép quyền truy cập vị trí',
+                        message: 'Bạn cần cho phép quyền truy cập vị trí để sử dụng chức năng này! Nhấn OK để vào phần cài đặt.'
+                    }));
+                }
+                else {
+                    setTimeout(() => {sToast.toast(0,'Không lấy được tọa độ. Không thể cập nhật vị trí!')}, 10)
+                }
             });
         }
     }

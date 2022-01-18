@@ -146,9 +146,12 @@ const mInput = (title = '', value = '', is_required = false, size = '') => {
     else {
         sttModal = '';
     }
+    if (size !== '') {
+        size = size.trim() + ' ';
+    }
     let modal = $(
         '<div id="modalInput" class="modal fade' + sttModal + '">' +
-        '        <div class="modal-dialog ' + size + ' modal-dialog-centered">' +
+        '        <div class="modal-dialog ' + size + 'modal-dialog-centered">' +
         '            <div class="modal-content">' +
         '                <div class="modal-body">' +
         '                    <div class="form-group"></div>' +
@@ -192,6 +195,28 @@ const mInput = (title = '', value = '', is_required = false, size = '') => {
                 value = doi_ngay(value);
             }
             mInputReturnOptions(modal,'date',label,onSubmit,placeholder,errorText,is_required);
+        },
+        select: (label, data, onSubmit, selected = '', errorText='') => {
+            if (!isNull(label) && !isUndefined(label)) {
+                label = $('<label>' + label + '</label>');
+                if (is_required) {
+                    label.addClass('required');
+                }
+                modal.find('.form-group').append(label)
+            }
+            let select = $('<select class="form-control value"></select>');
+            modal.find('.form-group').append(select).append('<span class="error invalid-feedback">' + errorText + '</span>');
+            data.forEach((item) => {
+                select.append(new Option(item.ten,item.id,item.id === selected));
+            })
+            modal.find('button.submit').click(onSubmit);
+            modal.on('hidden.bs.modal', () => {
+                if ($('.modal.show').length > 0) {
+                    $('body').addClass('modal-open');
+                }
+                modal.remove();
+            });
+            modal.modal('show');
         },
         select2: (label, placeholder, data, hideSearch, onSubmit, errorText='', multiple=false) => {
             if (!isNull(label) && !isUndefined(label)) {
@@ -238,7 +263,7 @@ const mInput = (title = '', value = '', is_required = false, size = '') => {
                 }
                 modal.remove();
             });
-            modal.modal('show');
+            modal.css('height','100vh').modal('show');
         },
         textarea: (label, placeholder, onSubmit, errorText = '') => {
             mInputReturnOptions(modal,'textarea',label,onSubmit,placeholder,errorText,is_required);

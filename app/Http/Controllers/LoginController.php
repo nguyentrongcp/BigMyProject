@@ -54,8 +54,12 @@ class LoginController extends Controller
             'succ' => 1,
             'noti' => 'Đăng nhập thành công.',
             'data' => [
-                'token' => $user->remember_token,
-                'chinhanh_id' => $user->chinhanh_id
+                'topics' => [
+                    'hailua_'.$user->remember_token,
+                    'hailua_'.$user->id,
+                    'hailua_'.$user->chinhanh_id
+                ],
+                'token' => $user->remember_token
             ]
         ];
     }
@@ -104,8 +108,11 @@ class LoginController extends Controller
             'succ' => 1,
             'noti' => 'Đăng nhập thành công.',
             'data' => [
-                'id' => $user->id,
-                'token' => $user->remember_token,
+                'topics' => [
+                    'nongdan_'.$user->id,
+                    'nongdan_'.$user->remember_token
+                ],
+                'token' => $user->remember_token
             ]
         ];
     }

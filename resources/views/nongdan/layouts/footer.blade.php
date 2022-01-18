@@ -23,7 +23,7 @@
 
 <script src="/giaodien/my_plugins/autosize/autosize.min.js"></script>
 
-<script src="/giaodien/dist/js/function.js?version=1.6.4"></script>
+<script src="/giaodien/dist/js/function.js?version=1.6.5"></script>
 
 @yield('js-include')
 
@@ -276,14 +276,6 @@
             }
         });
     }
-    $.ajax({
-        url: '/api/quan-ly/quytrinh-homnay',
-        type: 'get',
-        dataType: 'json',
-    }).done((result) => {
-        console.log(result);
-    })
-
 
     function initSanPham(sanpham_id) {
         sToast.loading('Đang lấy thông tin sản phẩm. Vui lòng chờ...')

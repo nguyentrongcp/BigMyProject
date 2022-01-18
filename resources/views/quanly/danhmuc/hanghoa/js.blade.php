@@ -15,7 +15,8 @@
     let dangs = [
         { id: 'Lỏng', text: 'Lỏng' },
         { id: 'Bột', text: 'Bột' },
-        { id: 'Hạt', text: 'Hạt' }
+        { id: 'Hạt', text: 'Hạt' },
+        { id: 'Gel', text: 'Gel' }
     ]
     init();
     initDanhSach();

@@ -9,6 +9,7 @@ use App\Models\QuyTrinhLua\GiaiDoan;
 use App\Models\QuyTrinhLua\GiaiDoanPhanHoi;
 use App\Models\QuyTrinhLua\MuaVu;
 use App\Models\QuyTrinhLua\QuyTrinh;
+use App\Models\QuyTrinhLua\QuyTrinhThuaRuong;
 use App\Models\QuyTrinhLua\SanPham;
 use App\Models\QuyTrinhLua\ThongBao;
 use App\Models\QuyTrinhLua\ThuaRuong;
@@ -40,10 +41,17 @@ class ThongBaoController extends Controller
             $giaidoans = GiaiDoan::where('muavu_id',$thuaruong->muavu_id)->where('tu','<=',$songay)
                 ->where('den','>=',$songay)->orderBy('tu')->orderBy('den')->get();
             foreach($giaidoans as $giaidoan) {
+                $quytrinh_ids = QuyTrinh::where([
+                    'muavu_id' => $thuaruong->muavu_id,
+                    'giaidoan_id' => $giaidoan->id
+                ])->pluck('id');
                 $_quytrinhs = QuyTrinh::where([
                     'muavu_id' => $thuaruong->muavu_id,
                     'giaidoan_id' => $giaidoan->id
-                ])->get();
+                ])->whereNotIn('id',QuyTrinhThuaRuong::where([
+                    'status' => 1,
+                    'thuaruong_id' => $thuaruong->id
+                ])->whereIn('quytrinh_id',$quytrinh_ids)->pluck('quytrinh_id'))->get();
                 foreach($_quytrinhs as $quytrinh) {
                     $sanpham = SanPham::withTrashed()->find($quytrinh->sanpham_id);
                     $quytrinh->sanpham = $sanpham->ten;

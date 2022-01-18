@@ -6,6 +6,29 @@
     <li class="breadcrumb-item active">Quy Trình Sử Dụng Phân Thuốc</li>
 @stop
 
+@section('style-custom')
+    <style>
+        .boxPhanHoi .item-phanhoi:not(:first-child) {
+            border-top: 1px solid #ebebeb;
+            padding-top: 0.25rem;
+            margin-top: 0.25rem;
+        }
+        .boxPhanHoi .item-phanhoi .btnXoa {
+            display: none;
+        }
+        .boxPhanHoi .item-phanhoi:last-child.reply .btnXoa {
+            display: block;
+        }
+        .boxPhanHoi .item-phanhoi .thoigian {
+            margin-left: auto;
+            font-size: 12px;
+        }
+        .boxPhanHoi .item-phanhoi.reply .ten {
+            color: #007bff !important;
+        }
+    </style>
+@stop
+
 @section('body')
     <div class="content-wrapper">
         <section class="content">
@@ -35,9 +58,9 @@
 {{--                                        <button class="btn bg-gradient-success font-weight-bolder ml-1" id="btnThemQuyTrinh">--}}
 {{--                                            Thêm Nhóm--}}
 {{--                                        </button>--}}
-                                        <button class="btn bg-gradient-primary font-weight-bolder ml-1" data-toggle="modal" data-target="#modalThemMoi">
-                                            Thêm Mới
-                                        </button>
+{{--                                        <button class="btn bg-gradient-primary font-weight-bolder ml-1" data-toggle="modal" data-target="#modalThemMoi">--}}
+{{--                                            Thêm Mới--}}
+{{--                                        </button>--}}
                                     @endif
                                 </div>
                             </div>
@@ -58,12 +81,17 @@
                                         </li>
                                         <li class="nav-item ml-auto">
                                             <div class="nav-link d-flex font-weight-bolder" role="tab" style="border: unset !important;">
-                                                <span>
+                                                <span class="c-pointer">
+                                                    <i class="fa fa-map-marker mr-1"></i>
+                                                    <strong class="text-info" id="lblSoViTri">0</strong> vị trí đã cập nhật
+                                                </span>
+                                                <span class="mx-2">/</span>
+                                                <span class="c-pointer">
                                                     <i class="fas fa-user mr-1"></i>
                                                     <strong class="text-info" id="lblSoNongDan">0</strong> nông dân
                                                 </span>
                                                 <span class="mx-2">/</span>
-                                                <span>
+                                                <span class="c-pointer">
                                                     <i class="fas fa-users mr-1"></i>
                                                     <strong class="text-info" id="lblSoThuaRuong">0</strong> thửa ruộng
                                                 </span>
@@ -192,8 +220,26 @@
             </div>
         </section>
     </div>
-@stop
 
+    <div class="modal fade" id="modalToaDo">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Danh Sách Vị Trí Các Thửa Ruộng</h5>
+                </div>
+                <div class="modal-body">
+                    <div id="map" style="width: 100%; height: 465px"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn bg-gradient-secondary" data-dismiss="modal">Thoát</button>
+                </div>
+            </div>
+        </div>
+    </div>
+@stop
+@section('js-include')
+    <script async src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
+@stop
 @section('js-custom')
     @include('quanly.quytrinhlua.cayquytrinh.js')
 @stop
